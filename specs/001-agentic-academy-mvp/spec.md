@@ -30,13 +30,17 @@ basic practical laboratory experience. No technology stack or architecture at th
   herramientas, transiciones de estado y resúmenes de decisión escritos y revisados por el equipo de
   contenido, etiquetados como explicación didáctica; el razonamiento interno del modelo nunca se
   muestra (FR-027, FR-027a, NFR-008).
+- Q: ¿Qué evidencia se exige para dar por demostrada una competencia y por completada la ruta? →
+  A: Cada módulo tiene un test de conocimientos y al menos un reto de código; un módulo se completa
+  al aprobar ambos y la ruta al completar todos sus módulos; el laboratorio es práctica guiada y no
+  cuenta como evidencia; no hay examen final (FR-008, FR-036, FR-037).
 
 ## Glossary
 
 - **Learning path**: An ordered sequence of modules with defined objectives, prerequisites and a
   level (foundational, intermediate, advanced).
 - **Module**: A unit of study inside a path. Contains lessons, code examples, diagrams, a knowledge
-  check and, for major modules, at least one practical challenge.
+  check, at least one code challenge and, optionally, laboratory scenarios.
 - **Learning objective**: A specific, observable statement of what the learner will be able to do
   after the module (e.g. "Explain the difference between a workflow and an agent").
 - **Competency**: A named capability (e.g. "Design a tool schema") with a level. Competencies are
@@ -67,9 +71,10 @@ design decision is made and labels each technique as established, emerging or ex
 **Why this priority**: Without readable, accurate and structured content there is no learning
 platform. This is the smallest slice that already delivers educational value (Constitution I, III).
 
-**Independent Test**: Load the introductory path, open any module and verify that objectives,
-prerequisites, explanations, code examples, at least one diagram and reference links are presented
-and readable on desktop and mobile widths, without any other capability being available.
+**Independent Test**: Signed in with a learner account, load the introductory path, open any module
+and verify that objectives, prerequisites, explanations, code examples, at least one diagram and
+reference links are presented and readable on desktop and mobile widths, without challenges, the
+laboratory or the dashboard being available.
 
 **Acceptance Scenarios**:
 
@@ -158,7 +163,7 @@ competencies and objectives, all from a single screen.
 
 ### User Story 4 - Complete a practical challenge (Priority: P2)
 
-At the end of a major module the learner takes on a practical challenge based on a realistic
+At the end of each module the learner takes on a practical challenge based on a realistic
 engineering scenario (e.g. "design the tool definitions for a support-ticket triage agent"). The
 challenge states the problem, the expected outcome, instructions and evaluation criteria. The
 learner submits their solution, receives actionable feedback against each criterion and can request
@@ -313,8 +318,10 @@ deprecation notice is visible and that the path's prerequisite order is still va
   are missing before submission; unanswered questions count as incorrect only if they confirm.
 - The learner loses connectivity while answering or submitting: answers in progress are not lost
   and the submission can be retried; no partial or duplicated results are recorded.
-- The learner uses the platform in two browser tabs or devices at the same time: progress is merged
-  without losing any demonstrated competency; the most advanced state wins.
+- The learner uses the platform in two browser tabs or devices at the same time: every recorded
+  result is kept (the best knowledge check result and all challenge submissions), a competency
+  demonstrated in any session stays demonstrated, and "continue where you left off" points to the
+  most recent activity.
 - Content is updated while a learner is in the middle of a module or knowledge check: the learner
   finishes the version they started.
 - A module, path or laboratory scenario fails to load: the learner sees a clear error state with a
@@ -379,8 +386,8 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **FR-007**: Each module MUST present learning objectives, prerequisites, lesson content, at least
   one code example, at least one architecture or flow diagram, reference links and a knowledge
   check.
-- **FR-008**: Each major module MUST include at least one practical challenge or laboratory
-  scenario.
+- **FR-008**: Each module MUST include at least one code challenge. Modules MAY link to laboratory
+  scenarios as guided practice; laboratory use MUST NOT count as evidence of a competency.
 - **FR-009**: Code examples MUST be displayed with syntax highlighting, a language label, a copy
   action and optional annotations, and MUST remain readable on all supported screen sizes.
 - **FR-010**: Each technique or practice presented MUST carry a maturity label: established,
@@ -450,8 +457,9 @@ deprecation notice is visible and that the path's prerequisite order is still va
   provider exposed it at recording time.
 - **FR-028**: The laboratory MUST show, for every scenario, the tools available to the agent and
   their declared permissions.
-- **FR-029**: The laboratory MUST show two executions side by side and highlight differences in
-  steps, tool calls and outcome.
+- **FR-029**: The laboratory MUST show two executions side by side, show for each the number of
+  trace elements, the number of tool calls and the final outcome, and mark the trace elements that
+  appear in only one of them.
 - **FR-030**: When a scenario reaches a potentially destructive or irreversible tool action, the
   execution MUST pause and require explicit learner approval; rejecting MUST be a valid outcome
   that is explained.
@@ -471,10 +479,11 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **FR-035**: The system MUST persist each learner's progress: content viewed, knowledge check
   results, challenge submissions and results, laboratory scenarios explored, and last position.
 - **FR-036**: The system MUST distinguish between "content viewed" and "competency demonstrated".
-  A competency is demonstrated only when the learner passes the assessments and completes the
-  challenges mapped to it.
+  A competency is demonstrated only when the learner has passed every knowledge check and every
+  code challenge mapped to it. Content viewed and laboratory use MUST NOT demonstrate a competency.
 - **FR-037**: A module MUST be considered completed only when its knowledge check is passed and its
-  mandatory challenge (if any) is completed.
+  code challenge(s) are passed. A path MUST be considered completed when all its modules are
+  completed; there is no separate end-of-path assessment in the MVP.
 - **FR-038**: The dashboard MUST show on a single screen: active path, progress expressed as
   competencies demonstrated out of total, completed and pending modules, the next recommended step
   and a "continue where you left off" action.
@@ -547,7 +556,8 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **NFR-004 (Reliability)**: No recorded progress may be lost due to a closed tab, network
   interruption or application error once the system has confirmed it as saved.
 - **NFR-005 (Availability)**: The learning experience SHOULD be available 99.5% of the time per
-  month, excluding announced maintenance.
+  month, excluding announced maintenance. This is an operational target measured after launch, not
+  a release acceptance criterion.
 - **NFR-006 (Security)**: Agents in laboratory scenarios MUST be shown with explicitly defined
   capabilities and least-privilege tool access. Learner-submitted code MUST be treated as untrusted
   and executed only in isolation (FR-022a); a compromised execution MUST NOT reach other learners'
@@ -567,8 +577,9 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **NFR-011 (Quality)**: Critical workflows (studying a module, taking a knowledge check, submitting
   a challenge, saving and viewing progress) MUST be covered by automated tests and automated quality
   checks.
-- **NFR-012 (Readability)**: Technical content MUST be presented with a readable line length,
-  hierarchy of headings and a reading mode free of distractions.
+- **NFR-012 (Readability)**: Lesson prose MUST NOT exceed about 90 characters per line on wide
+  screens, MUST use a consistent heading hierarchy, and module pages MUST NOT show elements unrelated
+  to the current module (promotions, unrelated notifications) while the learner is reading.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -609,27 +620,31 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **SC-002**: 90% of test learners can state, after looking at the dashboard for 10 seconds, their
   current path, their progress and their next step.
 - **SC-003**: 100% of modules in the introductory path contain objectives, prerequisites, at least
-  one code example, at least one diagram with text alternative, a knowledge check mapped to
-  competencies and, for major modules, a challenge or laboratory scenario.
+  one code example, at least one diagram with text alternative, a knowledge check and at least one
+  code challenge, all mapped to competencies.
 - **SC-004**: 100% of assessment items and challenges are traceable to at least one competency.
 - **SC-005**: 0 progress records are lost across sessions, device restarts or network interruptions
   in acceptance testing.
-- **SC-006**: Learners who complete the introductory path pass an end-of-path assessment at a rate
-  of at least 75% on their first or second attempt.
-- **SC-007**: At least 80% of learners who receive feedback on a failed challenge attempt rate it as
-  "useful to know what to change" in usability testing.
-- **SC-008**: At least 70% of learners who start the introductory path complete its first module,
-  and at least 40% complete the whole path, in the first beta cohort.
-- **SC-009**: All learner-facing screens pass an accessibility audit at WCAG 2.2 AA with no critical
+- **SC-006**: In usability testing, at least 80% of learners who fail a challenge attempt can
+  correctly state what to change after reading the feedback.
+- **SC-007**: All learner-facing screens pass an accessibility audit at WCAG 2.2 AA with no critical
   issues.
-- **SC-010**: When an external service the platform depends on is unavailable, 100% of learning
+- **SC-008**: When an external service the platform depends on is unavailable, 100% of learning
   content, knowledge checks and progress views remain usable.
-- **SC-011**: In usability testing, at least 80% of learners can correctly identify, using the
+- **SC-009**: In usability testing, at least 80% of learners can correctly identify, using the
   laboratory, which step of an execution invoked a tool and why a failure case failed.
-- **SC-012**: A new learner can create an account and reach the first lesson in under 3 minutes.
-- **SC-013**: In security testing, 0 submitted programs are able to reach the network, other
+- **SC-010**: A new learner can create an account and reach the first lesson in under 3 minutes.
+- **SC-011**: In security testing, 0 submitted programs are able to reach the network, other
   learners' data or platform secrets.
-- **SC-014**: 95% of challenge submissions receive their results within 30 seconds.
+- **SC-012**: 95% of challenge submissions receive their results within 30 seconds.
+
+**Post-launch outcome goals** — these goals guide product decisions after release and are not
+release acceptance criteria.
+
+- **PG-001**: At least 70% of learners who start the introductory path complete its first module,
+  and at least 40% complete the whole path, in the first beta cohort.
+- **PG-002**: At least 75% of learners who pass a module's knowledge check also pass its code
+  challenge within three submissions.
 
 ## MVP Scope
 
@@ -706,7 +721,5 @@ deprecation notice is visible and that the path's prerequisite order is still va
 **Open questions (non-blocking, assumed defaults above)**
 
 - Should the platform issue a completion certificate in a future release?
-- Should the end-of-path assessment be a separate, larger assessment or the aggregation of module
-  checks? (Assumed: a separate end-of-path assessment.)
 - When should Spanish be released, and should progress demonstrated in one language count for the
   same competency in another? (Assumed: yes, competencies are language-independent.)
