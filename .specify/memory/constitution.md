@@ -7,7 +7,12 @@
 The primary purpose of this application is to teach Agentic AI engineering through structured,
 progressive and practical learning experiences.
 
-- Every feature MUST contribute directly to a measurable learning outcome.
+- Every feature MUST contribute directly to a measurable learning outcome. Public orientation
+  surfaces are the only exception: a page whose purpose is to help a person evaluate the platform
+  and begin learning, such as a landing page, MAY contribute indirectly, provided that it (a) gives
+  only accurate information about objectives, prerequisites and learning methods, (b) has a
+  measurable route to the first learning activity, and (c) adds no promotional content to the
+  learning environment.
 - Educational content MUST prioritize technical accuracy, conceptual clarity and practical
   applicability.
 - The platform MUST explain not only how an agent works, but also why architectural and
@@ -160,4 +165,11 @@ agentic systems.
   - MINOR: Addition of principles or substantial governance changes.
   - PATCH: Clarifications and non-semantic corrections.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-06 | **Last Amended**: 2026-11-06
+### Amendments
+
+- **1.1.0 (2026-11-06)**, Principle I: added the exception for public orientation surfaces. Rationale:
+  the platform needs a public entry point for people deciding whether to study, which can only serve
+  learning indirectly. The conditions keep it honest and measurable, and keep marketing out of the
+  learning environment. Features that complied with 1.0.0 still comply, hence a MINOR version.
+
+**Version**: 1.1.0 | **Ratified**: 2026-11-06 | **Last Amended**: 2026-11-06
