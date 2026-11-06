@@ -130,6 +130,7 @@ No unknowns remain. Entries marked **Measured** were tested on 2026-11-06 agains
 
 - **Decision**: lazy authentication pages, marketing strings outside the entry, and no heavy content engines on the landing page.
 - **Estimate**: entry about 122 KB today, minus moved authentication pages, plus landing code and strings (about 15 KB) and two fonts (52.5 KB), gives **about 190 KB**, under the 300 KB limit of SC-012. To be measured once built.
+- **Result (Measured, T081)**: **179.5 KB** with `pnpm --dir frontend size`: HTML 0.6, entry 118.6, CSS 4.8, landing code and strings 4.2, fonts 51.3. It loads no editor, diagram, highlighter or Markdown code. This counts the application's files, not API responses, the favicon or the share image.
 
 ## R18. Reviewing past attempts
 

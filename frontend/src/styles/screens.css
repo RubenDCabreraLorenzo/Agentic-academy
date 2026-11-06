@@ -244,3 +244,232 @@
     outline-color: Highlight;
   }
 }
+
+/* Landing page. Sections span the page, and their content keeps the layout width. */
+main:has(> .landing) {
+  max-width: none;
+  padding: 0;
+}
+
+.landing-section {
+  padding-block: var(--space-8);
+}
+
+.landing-section-raised {
+  background: var(--surface-1);
+}
+
+.landing-inner {
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+.landing-actions {
+  gap: var(--space-3);
+}
+
+.landing-action-pending {
+  visibility: hidden;
+}
+
+/* Gradients only here and in .public-showcase, and never behind text or code (design tokens, rule 6). */
+.public-hero {
+  position: relative;
+  padding-block: var(--space-7) var(--space-8);
+  overflow: hidden;
+}
+
+.public-hero::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary), transparent);
+  content: "";
+}
+
+.public-hero-copy {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  max-width: 48rem;
+}
+
+.public-hero h1 {
+  font-size: var(--text-display);
+  text-wrap: balance;
+}
+
+.public-hero-summary {
+  max-width: var(--measure-prose);
+  color: var(--text-muted);
+  font-size: var(--text-prose);
+  line-height: var(--leading-prose);
+}
+
+@media (min-width: 60rem) {
+  .public-hero {
+    padding-block: var(--space-9);
+  }
+
+  /* Beside the copy, not behind it. */
+  .public-hero::before {
+    inset: 0 0 0 auto;
+    width: 30%;
+    height: auto;
+    background: radial-gradient(farthest-side at 100% 30%, var(--accent), var(--accent-secondary) 40%, transparent);
+    opacity: 0.35;
+  }
+
+  .public-hero-copy {
+    max-width: 65%;
+  }
+}
+
+.method-steps {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.method-step {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 2px solid var(--border-control);
+}
+
+.method-step-number {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+}
+
+.curriculum-list {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+}
+
+.curriculum-row {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+}
+
+.curriculum-step {
+  font-size: var(--text-small);
+}
+
+.curriculum-meta {
+  color: var(--text-muted);
+  font-size: var(--text-small);
+}
+
+.public-showcase-lab {
+  background: var(--surface-1);
+}
+
+.showcase-layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-6);
+}
+
+@media (min-width: 60rem) {
+  .showcase-layout {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+}
+
+.showcase-panel {
+  position: relative;
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-surface);
+  background: var(--surface-2);
+}
+
+/* A decorative edge above the panel's content. */
+.public-showcase .showcase-panel::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  border-radius: var(--radius-surface) var(--radius-surface) 0 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+  content: "";
+}
+
+.public-showcase-lab .showcase-panel::before {
+  background: linear-gradient(90deg, var(--accent-secondary), transparent);
+}
+
+.showcase-code {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--surface-canvas);
+  color: var(--syntax-foreground);
+  font-size: var(--text-code);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.trace-excerpt {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.trace-excerpt > li {
+  display: grid;
+  gap: var(--space-1);
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--accent-secondary);
+}
+
+.trace-excerpt-label {
+  color: var(--accent-secondary);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.competency-list {
+  display: grid;
+  gap: var(--space-2) var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.competency-list > li {
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.landing-closing {
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Footers */
+.footer-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  justify-content: space-between;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  text-align: left;
+}
+
+.footer-product {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+}

@@ -11,7 +11,8 @@ import { redirects, routes, shellFor } from "./routes";
 import { useMe } from "./session";
 import { AppFrame } from "./shells/AppFrame";
 import { LearningFooter, LearningNav } from "./shells/LearningShell";
-import { PublicFooter, PublicNav } from "./shells/PublicShell";
+import { PublicFooter } from "./shells/PublicFooter";
+import { PublicNav } from "./shells/PublicShell";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

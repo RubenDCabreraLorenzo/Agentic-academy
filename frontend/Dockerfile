@@ -6,6 +6,9 @@ COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY frontend/ ./
 COPY specs/001-agentic-academy-mvp/contracts /app/specs/001-agentic-academy-mvp/contracts
+# The public address, for share tags. Optional: they are omitted without it.
+ARG VITE_PUBLIC_ORIGIN
+ENV VITE_PUBLIC_ORIGIN=$VITE_PUBLIC_ORIGIN
 RUN pnpm build
 
 FROM nginx:1.27-alpine

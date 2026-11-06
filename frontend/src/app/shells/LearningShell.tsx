@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router";
 import { post } from "../../api/client";
 import { Button } from "../../components/ui/Button";
+import { LegalLinks, PublisherDetails } from "./LegalLinks";
 
 export function LearningNav() {
   const { t } = useTranslation();
@@ -41,5 +42,15 @@ export function LearningNav() {
 
 export function LearningFooter() {
   const { t } = useTranslation();
-  return <>{t("app.name")}</>;
+  return (
+    <div className="footer-layout">
+      <div>
+        <p className="footer-product">{t("app.name")}</p>
+        <PublisherDetails />
+      </div>
+      <p className="footer-links">
+        <LegalLinks />
+      </p>
+    </div>
+  );
 }

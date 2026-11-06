@@ -68,11 +68,24 @@
     },
     "lab": {
       "title": "Laboratory"
+    },
+    "privacy": {
+      "title": "Privacy notice"
+    },
+    "terms": {
+      "title": "Terms"
     }
   },
   "ui": {
     "mainNav": "Main",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "footerNav": "Footer"
+  },
+  "legal": {
+    "privacy": "Privacy notice",
+    "terms": "Terms",
+    "contact": "Contact",
+    "beforeRegistering": "Before you register, you can read:"
   },
   "states": {
     "loading": "Loading…",

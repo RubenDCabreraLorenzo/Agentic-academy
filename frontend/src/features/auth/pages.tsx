@@ -9,6 +9,7 @@ import { Loading } from "../../components/states";
 import { Alert } from "../../components/ui/Alert";
 import { Button, LinkButton } from "../../components/ui/Button";
 import { Field } from "../../components/ui/Field";
+import { legal } from "../legal/availability";
 
 function useErrorMessage() {
   const { t } = useTranslation();
@@ -95,6 +96,13 @@ export function SignUpPage() {
         <Button type="submit" disabled={busy}>
           {t("auth.signUpSubmit")}
         </Button>
+        {(legal.privacy || legal.terms) && (
+          <p className="row muted text-small">
+            {t("legal.beforeRegistering")}
+            {legal.privacy && <Link to="/privacy">{t("legal.privacy")}</Link>}
+            {legal.terms && <Link to="/terms">{t("legal.terms")}</Link>}
+          </p>
+        )}
         <p>
           {t("auth.haveAccount")} <Link to="/sign-in">{t("auth.signInSubmit")}</Link>
         </p>

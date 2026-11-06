@@ -1,4 +1,4 @@
-/** The route table (routes contract). T077 and T099 add /privacy, /terms and the check history. */
+/** The route table (routes contract). T099 adds the check history. */
 import i18n from "../../../src/i18n";
 import { redirects, routes, shellFor } from "../../../src/app/routes";
 
@@ -12,6 +12,8 @@ const EXPECTED = [
   { path: "/forgot-password", auth: false, shell: "public" },
   { path: "/verify-email", auth: false, shell: "public" },
   { path: "/reset-password", auth: false, shell: "public" },
+  { path: "/privacy", auth: false, shell: "session" },
+  { path: "/terms", auth: false, shell: "session" },
   { path: "/dashboard", auth: true, shell: "learning" },
   { path: "/dashboard/competencies", auth: true, shell: "learning" },
   { path: "/account", auth: true, shell: "learning" },

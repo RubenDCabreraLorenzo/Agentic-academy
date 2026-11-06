@@ -16,12 +16,12 @@ export interface RouteDef {
 
 type AuthPages = typeof import("../features/auth/pages");
 const authPage = (name: keyof AuthPages) => () => import("../features/auth/pages").then((m) => ({ default: m[name] }));
-const catalog = () => import("../features/catalog/CatalogPage");
+type LegalPages = typeof import("../features/legal/LegalPage");
+const legalPage = (name: keyof LegalPages) => () => import("../features/legal/LegalPage").then((m) => ({ default: m[name] }));
 
 export const routes: RouteDef[] = [
-  // Renders the catalog until the landing page exists (T075).
-  { path: "/", auth: false, shell: "session", titleKey: "meta.landing.title", load: catalog },
-  { path: "/curriculum", auth: false, shell: "session", titleKey: "meta.curriculum.title", load: catalog },
+  { path: "/", auth: false, shell: "session", titleKey: "meta.landing.title", load: () => import("../features/marketing/LandingPage") },
+  { path: "/curriculum", auth: false, shell: "session", titleKey: "meta.curriculum.title", load: () => import("../features/catalog/CatalogPage") },
   { path: "/paths/:pathId", auth: false, shell: "session", titleKey: "meta.path.title", load: () => import("../features/catalog/PathPage") },
   { path: "/sign-in", auth: false, shell: "public", titleKey: "meta.signIn.title", load: authPage("SignInPage") },
   { path: "/register", auth: false, shell: "public", titleKey: "meta.register.title", load: authPage("SignUpPage") },
@@ -30,6 +30,8 @@ export const routes: RouteDef[] = [
   // Frozen: the backend builds these two addresses into emails.
   { path: "/verify-email", auth: false, shell: "public", titleKey: "meta.verifyEmail.title", load: authPage("VerifyEmailPage") },
   { path: "/reset-password", auth: false, shell: "public", titleKey: "meta.resetPassword.title", load: authPage("ResetPasswordPage") },
+  { path: "/privacy", auth: false, shell: "session", titleKey: "meta.privacy.title", load: legalPage("PrivacyPage") },
+  { path: "/terms", auth: false, shell: "session", titleKey: "meta.terms.title", load: legalPage("TermsPage") },
   { path: "/dashboard", auth: true, shell: "learning", titleKey: "meta.dashboard.title", load: () => import("../features/dashboard/DashboardPage") },
   { path: "/dashboard/competencies", auth: true, shell: "learning", titleKey: "meta.competencies.title", load: () => import("../features/dashboard/CompetenciesPage") },
   { path: "/account", auth: true, shell: "learning", titleKey: "meta.account.title", load: authPage("AccountPage") },

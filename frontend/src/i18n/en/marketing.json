@@ -1,0 +1,117 @@
+{
+  "_claims": {
+    "_note": "Each factual statement and the claim register entry that supports it (spec, Claim Register). Numbers, titles and availability are never written here: they are read live.",
+    "hero.summary": "Code is evaluated automatically against tests (S001 FR-022); progress reflects demonstrated competencies, not content read (S001 FR-036)",
+    "methodology.steps.study.body": "Vendor-neutral foundations; vendor notes identified as such (Constitution VI, S001 FR-011)",
+    "methodology.steps.check.body": "Each module includes a knowledge check (S001 FR-007)",
+    "methodology.steps.build.body": "Each module includes at least one code challenge (S001 FR-008); evaluated with feedback per criterion (S001 FR-022); runs isolated, without network (S001 FR-022a)",
+    "methodology.steps.inspect.body": "Laboratory replays curated recordings; no language model is called (S001 FR-033); covers tools, patterns, failures and human approval (S001 FR-026 to FR-031)",
+    "challenges.intro": "Same entries as methodology.steps.build.body",
+    "lab.intro": "Laboratory covers tools, patterns, failures and human approval (S001 FR-026 to FR-031)",
+    "lab.disclosure": "Laboratory replays curated recordings; no language model is called (S001 FR-033)",
+    "lab.practice": "Practice only; not evidence (S001 FR-026 to FR-031)",
+    "competencies.intro": "Progress reflects demonstrated competencies (S001 FR-036); the list is published path data",
+    "closing.body": "Modules require an account (routes contract); progress reflects demonstrated competencies (S001 FR-036)"
+  },
+  "hero": {
+    "title": "Engineer agentic AI systems by building them.",
+    "summary": "Study the concepts, check your understanding and write code that is evaluated automatically against tests. Your progress reflects the competencies you demonstrate, not the content you read."
+  },
+  "actions": {
+    "register": "Create account",
+    "explore": "Explore the curriculum",
+    "progress": "Go to my progress",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "methodology": {
+    "title": "How you learn",
+    "steps": {
+      "study": {
+        "title": "Study",
+        "body": "Work through vendor-neutral foundations. Vendor-specific notes are identified as such."
+      },
+      "check": {
+        "title": "Check your understanding",
+        "body": "Each module includes a knowledge check on what it teaches."
+      },
+      "build": {
+        "title": "Build code",
+        "body": "Each module includes at least one code challenge. Your code runs isolated, without network, and is evaluated automatically against tests, with feedback per criterion."
+      },
+      "inspect": {
+        "title": "Inspect executions",
+        "body": "Replay curated recordings of agent executions, step by step: tools, patterns, failures and human approval. No language model is called."
+      }
+    }
+  },
+  "curriculum": {
+    "title": "Curriculum and paths",
+    "intro": "Every path in the published curriculum, in the recommended order.",
+    "competencyCount_one": "{{count}} competency",
+    "competencyCount_other": "{{count}} competencies"
+  },
+  "challenges": {
+    "title": "Code challenges",
+    "intro": "Each module includes at least one code challenge. Your code runs isolated, without network, and is evaluated automatically against tests, with feedback per criterion.",
+    "caption": "Excerpt from a published challenge: its title, evaluation criteria and part of its starter code.",
+    "criteria": "Evaluation criteria",
+    "code": "Starter code"
+  },
+  "lab": {
+    "title": "Laboratories",
+    "intro": "Follow how an agent uses tools, follows a pattern, fails and waits for human approval, step by step.",
+    "disclosure": "The laboratory replays curated recordings. No language model is called.",
+    "practice": "Laboratories are practice: they do not count as evidence of a competency.",
+    "caption": "Excerpt from a published recording: the task, one tool call with its permission, an authored explanation and the approval step.",
+    "task": "Task",
+    "toolCall": "Tool call",
+    "permission": "Permission",
+    "explanation": "Explanation",
+    "approval": "Approval"
+  },
+  "competencies": {
+    "title": "Skills and competencies",
+    "intro": "What the paths available today develop. Your progress follows the competencies you demonstrate.",
+    "empty": "No path is available yet."
+  },
+  "prerequisites": {
+    "title": "What you need to know already",
+    "intro": "What the first available path expects from you before you start.",
+    "viewPath": "View the path",
+    "empty": "No path is available yet."
+  },
+  "closing": {
+    "title": "Start building",
+    "body": "Modules, knowledge checks and code challenges are available with an account, and your progress follows the competencies you demonstrate."
+  },
+  "excerpts": {
+    "challenge": {
+      "sources": [
+        "content/en/paths/foundations-of-agentic-ai-engineering/modules/01-llm-foundations/challenges/apply-temperature/challenge.yaml",
+        "content/en/paths/foundations-of-agentic-ai-engineering/modules/01-llm-foundations/challenges/apply-temperature/starter/sampling.py"
+      ],
+      "quoted": {
+        "title": "Turn model scores into sampling probabilities",
+        "criteria": [
+          "Returns a probability for every token, and the probabilities sum to 1.",
+          "Lower temperature makes the most likely token more probable; higher temperature flattens the distribution.",
+          "Rejects invalid temperatures and empty input, and handles very large scores."
+        ],
+        "code": "def apply_temperature(scores: dict[str, float], temperature: float) -> dict[str, float]:\n    \"\"\"Return token -> probability after scaling scores by the temperature (softmax).\"\"\""
+      }
+    },
+    "lab": {
+      "sources": ["content/en/lab/prompt-injection-and-approval.json"],
+      "quoted": {
+        "title": "Prompt injection, invalid arguments and human approval",
+        "task": "Summarize a customer ticket and close it if it is resolved.",
+        "tool": "get_ticket",
+        "argument": "T-1042",
+        "permission": "read",
+        "explanation": "Tool results are data, not instructions",
+        "approval": "close_ticket is destructive: a human must approve before it runs."
+      }
+    }
+  }
+}

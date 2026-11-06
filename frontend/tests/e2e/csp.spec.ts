@@ -21,6 +21,11 @@ test("highlighting, diagrams, editor and fonts work under the production policy"
   const response = await page.goto("/sign-in");
   expect(response?.headers()["content-security-policy"], "this test must run against the production image").toContain("script-src 'self'");
 
+  await page.goto("/");
+  await expect(page.locator(".public-hero")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Curriculum and paths" }).getByRole("listitem").first()).toBeVisible();
+  expect(await violations()).toEqual([]);
+
   await signIn(page);
 
   await page.goto("/modules/llm-foundations");

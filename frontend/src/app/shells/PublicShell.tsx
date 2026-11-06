@@ -1,4 +1,4 @@
-/** Public shell: the contents of `AppFrame`'s slots. T078 adds the legal links to the footer. */
+/** Public shell's navigation. Its footer is in `PublicFooter`. */
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router";
 
@@ -17,9 +17,4 @@ export function PublicNav() {
       </NavLink>
     </>
   );
-}
-
-export function PublicFooter() {
-  const { t } = useTranslation();
-  return <>{t("app.footer")}</>;
 }
