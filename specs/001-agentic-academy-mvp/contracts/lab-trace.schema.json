@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-academy.local/schemas/lab-scenario.json",
+  "title": "Laboratory scenario with recorded execution traces",
+  "description": "Framework- and vendor-neutral format for curated laboratory recordings (spec FR-026..FR-033a, FR-027a). Private model reasoning MUST NOT appear in any field.",
+  "type": "object",
+  "required": ["id", "version", "lang", "last_reviewed", "title", "task", "objective", "tools", "variants"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "lang": { "type": "string" },
+    "last_reviewed": { "type": "string", "format": "date" },
+    "deprecation": {
+      "type": "object",
+      "required": ["reason", "since"],
+      "properties": {
+        "reason": { "type": "string" },
+        "replacement": { "type": "string" },
+        "since": { "type": "string", "format": "date" }
+      }
+    },
+    "title": { "type": "string" },
+    "task": { "type": "string" },
+    "objective": { "type": "string" },
+    "module_ids": { "type": "array", "items": { "type": "string" } },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "permission"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "permission": { "enum": ["read", "write", "destructive"] }
+        }
+      }
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/variant" }
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["left_variant", "right_variant"],
+        "properties": {
+          "left_variant": { "type": "string" },
+          "right_variant": { "type": "string" },
+          "explanation": { "type": "string" }
+        }
+      }
+    },
+    "failure_cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["variant_id", "element_id", "kind", "risk", "mitigation"],
+        "properties": {
+          "variant_id": { "type": "string" },
+          "element_id": { "type": "string" },
+          "kind": { "enum": ["tool_error", "invalid_tool_argument", "hallucination", "prompt_injection", "excessive_autonomy", "step_limit"] },
+          "risk": { "type": "string" },
+          "mitigation": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "variant": {
+      "type": "object",
+      "required": ["id", "label", "orchestration_pattern", "recorded_with", "elements"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "orchestration_pattern": { "enum": ["fixed_workflow", "agent_loop", "router", "plan_and_execute", "other"] },
+        "branches_from": {
+          "type": "object",
+          "description": "Used for approval branches: this variant continues another variant after an approval_request.",
+          "required": ["variant_id", "element_id", "decision"],
+          "properties": {
+            "variant_id": { "type": "string" },
+            "element_id": { "type": "string" },
+            "decision": { "enum": ["approved", "rejected"] }
+          }
+        },
+        "recorded_with": {
+          "type": "object",
+          "required": ["model", "framework", "date"],
+          "properties": {
+            "model": { "type": "string" },
+            "framework": { "type": "string" },
+            "date": { "type": "string", "format": "date" }
+          }
+        },
+        "initial_state": { "type": "object" },
+        "elements": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/element" }
+        }
+      }
+    },
+    "element": {
+      "type": "object",
+      "required": ["id", "seq", "kind"],
+      "properties": {
+        "id": { "type": "string" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "kind": { "enum": ["execution_event", "tool_call", "state_transition", "decision_summary"] },
+        "relative_ms": { "type": "integer", "minimum": 0 }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "kind": { "const": "execution_event" },
+            "event": { "enum": ["run_started", "model_call_issued", "model_response_received", "approval_request", "approval_granted", "approval_rejected", "step_limit_reached", "error", "run_ended"] },
+            "summary": { "type": "string" },
+            "payload": { "type": "object", "description": "Observable data only (e.g. messages sent, response text, token counts). No private reasoning." }
+          },
+          "required": ["event"]
+        },
+        {
+          "properties": {
+            "kind": { "const": "tool_call" },
+            "tool": { "type": "string" },
+            "arguments": { "type": "object" },
+            "result": {},
+            "error": { "type": "string" },
+            "permission": { "enum": ["read", "write", "destructive"] },
+            "approval": { "enum": ["not_required", "approved", "rejected", "pending"] }
+          },
+          "required": ["tool", "arguments", "permission", "approval"]
+        },
+        {
+          "properties": {
+            "kind": { "const": "state_transition" },
+            "before": { "type": "object" },
+            "after": { "type": "object" },
+            "changed_keys": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["before", "after"]
+        },
+        {
+          "properties": {
+            "kind": { "const": "decision_summary" },
+            "explains": { "type": "array", "items": { "type": "string" }, "description": "Ids of the elements this summary explains" },
+            "text": { "type": "string", "maxLength": 600 },
+            "author": { "type": "string" },
+            "reviewed_on": { "type": "string", "format": "date" },
+            "label": { "const": "educational_explanation" }
+          },
+          "required": ["explains", "text", "author", "reviewed_on", "label"]
+        }
+      ]
+    }
+  }
+}

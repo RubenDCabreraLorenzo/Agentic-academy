@@ -1,0 +1,521 @@
+openapi: 3.1.0
+info:
+  title: Agentic Academy API
+  version: 0.1.0
+  description: |
+    Public HTTP contract between the frontend and the backend for the MVP (spec 001).
+    Conventions:
+    - JSON over HTTPS; all paths under /api/v1.
+    - Authentication: opaque session cookie `aa_session` (HttpOnly, Secure, SameSite=Lax).
+    - State-changing requests require header `X-CSRF-Token` matching cookie `aa_csrf`.
+    - Errors use RFC 9457 problem details (`application/problem+json`) with a stable `code`.
+    - Content is addressed by stable ids; responses include `version` for traceability.
+    - Endpoints marked `security: []` are public (FR-045).
+servers:
+  - url: /api/v1
+security:
+  - session: []
+
+paths:
+  # ---------- Auth & account (FR-045, FR-045a, FR-046) ----------
+  /auth/sign-up:
+    post:
+      security: []
+      summary: Create an account and send a verification email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credentials' }
+      responses:
+        '202': { description: Account created (pending verification); response identical if email already exists }
+        '400': { $ref: '#/components/responses/Problem' }
+        '429': { $ref: '#/components/responses/Problem' }
+  /auth/verify-email:
+    post:
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [token], properties: { token: { type: string } } }
+      responses:
+        '204': { description: Email verified; account active }
+        '400': { $ref: '#/components/responses/Problem' }
+  /auth/sign-in:
+    post:
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credentials' }
+      responses:
+        '200':
+          description: Signed in; sets session and CSRF cookies
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Me' }
+        '401': { $ref: '#/components/responses/Problem' }
+        '403': { description: Email not verified (code `email_not_verified`) }
+        '429': { $ref: '#/components/responses/Problem' }
+  /auth/sign-out:
+    post:
+      responses:
+        '204': { description: Session revoked }
+  /auth/password-reset/request:
+    post:
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [email], properties: { email: { type: string, format: email } } }
+      responses:
+        '202': { description: Always accepted (no account enumeration) }
+  /auth/password-reset/confirm:
+    post:
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, new_password]
+              properties:
+                token: { type: string }
+                new_password: { type: string, minLength: 12, maxLength: 128 }
+      responses:
+        '204': { description: Password changed; all sessions revoked }
+        '400': { $ref: '#/components/responses/Problem' }
+  /me:
+    get:
+      responses:
+        '200':
+          description: Current learner
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Me' }
+        '401': { $ref: '#/components/responses/Problem' }
+    delete:
+      summary: Delete account, progress and personal data (irreversible)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [confirm], properties: { confirm: { const: DELETE } } }
+      responses:
+        '204': { description: Account deleted }
+
+  # ---------- Catalog & content (US1, US6; FR-001..FR-015) ----------
+  /catalog:
+    get:
+      security: []
+      summary: Curriculum roadmap and learning paths
+      responses:
+        '200':
+          description: Paths ordered by roadmap position
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/PathSummary' } }
+  /paths/{pathId}:
+    get:
+      security: []
+      parameters: [ { $ref: '#/components/parameters/PathId' } ]
+      responses:
+        '200':
+          description: Path overview (public); includes learner status when signed in
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PathDetail' }
+        '404': { $ref: '#/components/responses/Problem' }
+  /modules/{moduleId}:
+    get:
+      parameters: [ { $ref: '#/components/parameters/ModuleId' } ]
+      summary: Module content (requires account); records a content view
+      responses:
+        '200':
+          description: Module with lessons, references and missing prerequisites
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModuleDetail' }
+        '401': { $ref: '#/components/responses/Problem' }
+        '404': { $ref: '#/components/responses/Problem' }
+
+  # ---------- Knowledge checks (US2; FR-016..FR-020) ----------
+  /knowledge-checks/{checkId}/attempts:
+    post:
+      summary: Start (or resume) an attempt; questions returned without correct answers
+      parameters: [ { $ref: '#/components/parameters/CheckId' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [attempt_id], properties: { attempt_id: { type: string, format: uuid } } }
+      responses:
+        '201':
+          description: Attempt
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Attempt' }
+  /attempts/{attemptId}/answers/{questionId}:
+    put:
+      summary: Save an answer and get immediate feedback for that question
+      parameters:
+        - { name: attemptId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: questionId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Answer' }
+      responses:
+        '200':
+          description: Per-question feedback (FR-018)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QuestionFeedback' }
+        '409': { description: Attempt already submitted }
+  /attempts/{attemptId}/submit:
+    post:
+      parameters: [ { name: attemptId, in: path, required: true, schema: { type: string, format: uuid } } ]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { confirm_unanswered: { type: boolean, default: false } } }
+      responses:
+        '200':
+          description: Result; idempotent
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AttemptResult' }
+        '422': { description: Unanswered questions and confirm_unanswered=false (code `unanswered_questions`) }
+
+  # ---------- Challenges (US4; FR-021..FR-025) ----------
+  /challenges/{challengeId}:
+    get:
+      parameters: [ { $ref: '#/components/parameters/ChallengeId' } ]
+      responses:
+        '200':
+          description: Challenge, starter or saved workspace files, revealed hints, attempts summary
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChallengeDetail' }
+  /challenges/{challengeId}/workspace:
+    put:
+      summary: Autosave draft code
+      parameters: [ { $ref: '#/components/parameters/ChallengeId' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Files' }
+      responses:
+        '204': { description: Saved }
+        '413': { description: Workspace exceeds 256 KB }
+  /challenges/{challengeId}/hints:
+    post:
+      summary: Reveal the next hint
+      parameters: [ { $ref: '#/components/parameters/ChallengeId' } ]
+      responses:
+        '200':
+          description: Hint
+          content:
+            application/json:
+              schema: { type: object, properties: { index: { type: integer }, total: { type: integer }, markdown: { type: string } } }
+        '409': { description: No more hints }
+  /challenges/{challengeId}/submissions:
+    post:
+      summary: Queue a visible-test run or a graded submission
+      parameters: [ { $ref: '#/components/parameters/ChallengeId' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [submission_id, kind, files]
+              properties:
+                submission_id: { type: string, format: uuid, description: Idempotency key }
+                kind: { enum: [visible_run, submission] }
+                files: { $ref: '#/components/schemas/Files' }
+      responses:
+        '202':
+          description: Queued
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Submission' }
+        '429': { description: Too many runs in progress for this learner (max 1 concurrent) }
+    get:
+      summary: Previous submissions and their feedback (FR-023, FR-041)
+      parameters: [ { $ref: '#/components/parameters/ChallengeId' } ]
+      responses:
+        '200':
+          description: Submissions, newest first
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Submission' } }
+  /submissions/{submissionId}:
+    get:
+      summary: Poll status and results (queue position while queued)
+      parameters: [ { name: submissionId, in: path, required: true, schema: { type: string, format: uuid } } ]
+      responses:
+        '200':
+          description: Submission
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Submission' }
+
+  # ---------- Laboratory (US5; FR-026..FR-034) ----------
+  /lab/scenarios/{scenarioId}:
+    get:
+      summary: Scenario with all variant recordings (replayed client-side); records a lab visit
+      parameters: [ { name: scenarioId, in: path, required: true, schema: { type: string } } ]
+      responses:
+        '200':
+          description: Scenario document conforming to lab-trace.schema.json
+          content:
+            application/json:
+              schema: { $ref: './lab-trace.schema.json' }
+
+  # ---------- Progress (US3; FR-035..FR-044) ----------
+  /me/dashboard:
+    get:
+      responses:
+        '200':
+          description: Single-screen dashboard data (FR-038)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Dashboard' }
+  /me/competencies:
+    get:
+      parameters: [ { name: pathId, in: query, schema: { type: string } } ]
+      responses:
+        '200':
+          description: Competency view with evidence (FR-039)
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/CompetencyProgress' } }
+  /me/paths/{pathId}/progress:
+    delete:
+      summary: Reset progress of a path (irreversible, FR-043)
+      parameters: [ { $ref: '#/components/parameters/PathId' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [confirm], properties: { confirm: { const: RESET } } }
+      responses:
+        '204': { description: Progress reset }
+
+components:
+  securitySchemes:
+    session: { type: apiKey, in: cookie, name: aa_session }
+  parameters:
+    PathId: { name: pathId, in: path, required: true, schema: { type: string } }
+    ModuleId: { name: moduleId, in: path, required: true, schema: { type: string } }
+    CheckId: { name: checkId, in: path, required: true, schema: { type: string } }
+    ChallengeId: { name: challengeId, in: path, required: true, schema: { type: string } }
+  responses:
+    Problem:
+      description: Problem details
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      required: [type, title, status, code]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        code: { type: string }
+        detail: { type: string }
+    Credentials:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 12, maxLength: 128 }
+    Me:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        locale: { type: string, example: en }
+        email_verified: { type: boolean }
+    Level: { enum: [foundational, intermediate, advanced] }
+    Maturity: { enum: [established, emerging, experimental] }
+    Deprecation:
+      type: object
+      properties:
+        reason: { type: string }
+        replacement: { type: string }
+        since: { type: string, format: date }
+    ContentMeta:
+      type: object
+      required: [id, version, lang, last_reviewed]
+      properties:
+        id: { type: string }
+        version: { type: string }
+        lang: { type: string }
+        last_reviewed: { type: string, format: date }
+        deprecation: { $ref: '#/components/schemas/Deprecation' }
+    PathSummary:
+      allOf:
+        - $ref: '#/components/schemas/ContentMeta'
+        - type: object
+          properties:
+            title: { type: string }
+            summary: { type: string }
+            level: { $ref: '#/components/schemas/Level' }
+            status: { enum: [available, planned] }
+            order: { type: integer }
+            estimated_hours: { type: number }
+            prerequisite_paths: { type: array, items: { type: string } }
+            competencies: { type: array, items: { $ref: '#/components/schemas/Competency' } }
+    PathDetail:
+      allOf:
+        - $ref: '#/components/schemas/PathSummary'
+        - type: object
+          properties:
+            objectives: { type: array, items: { type: string } }
+            entry_prerequisites:
+              type: array
+              items: { type: object, properties: { label: { type: string }, resource_url: { type: string, format: uri } } }
+            modules:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: string }
+                  title: { type: string }
+                  order: { type: integer }
+                  status: { enum: [not_started, in_progress, completed], description: Present only when signed in }
+    Competency:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        level: { $ref: '#/components/schemas/Level' }
+    ModuleDetail:
+      allOf:
+        - $ref: '#/components/schemas/ContentMeta'
+        - type: object
+          properties:
+            path_id: { type: string }
+            title: { type: string }
+            objectives: { type: array, items: { type: object, properties: { id: { type: string }, statement: { type: string } } } }
+            missing_prerequisites:
+              type: array
+              description: FR-006, non-blocking
+              items: { type: object, properties: { id: { type: string }, title: { type: string }, taught_in_module: { type: string } } }
+            lessons:
+              type: array
+              items: { type: object, properties: { id: { type: string }, title: { type: string }, body_markdown: { type: string } } }
+            references: { type: array, items: { type: object, properties: { title: { type: string }, url: { type: string }, vendor: { type: string } } } }
+            knowledge_check_id: { type: string }
+            challenge_ids: { type: array, items: { type: string } }
+            lab_scenario_ids: { type: array, items: { type: string } }
+            previous_module_id: { type: [string, 'null'] }
+            next_module_id: { type: [string, 'null'] }
+    Attempt:
+      type: object
+      properties:
+        attempt_id: { type: string, format: uuid }
+        knowledge_check_id: { type: string }
+        version: { type: string }
+        pass_threshold: { type: number }
+        objectives: { type: array, items: { type: string } }
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              type: { enum: [single_choice, multiple_choice, ordering, matching] }
+              prompt_markdown: { type: string }
+              options: { type: array, items: { type: object, properties: { id: { type: string }, text: { type: string } } } }
+        saved_answers: { type: object, additionalProperties: { $ref: '#/components/schemas/Answer' } }
+    Answer:
+      type: object
+      properties:
+        selected: { type: array, items: { type: string }, description: Option ids (choice) or ordered ids (ordering) }
+        pairs: { type: object, additionalProperties: { type: string }, description: Matching left→right }
+    QuestionFeedback:
+      type: object
+      properties:
+        correct: { type: boolean }
+        explanation_markdown: { type: string }
+        lesson_link: { type: object, properties: { module_id: { type: string }, lesson_id: { type: string }, anchor: { type: string } } }
+    AttemptResult:
+      type: object
+      properties:
+        score: { type: number }
+        passed: { type: boolean }
+        best_score: { type: number }
+        weak_objectives: { type: array, items: { type: object, properties: { id: { type: string }, statement: { type: string }, lesson_link: { type: object } } } }
+        competencies_demonstrated: { type: array, items: { type: string } }
+    Files:
+      type: object
+      description: Map of relative path → UTF-8 content; total ≤ 256 KB
+      additionalProperties: { type: string }
+    ChallengeDetail:
+      allOf:
+        - $ref: '#/components/schemas/ContentMeta'
+        - type: object
+          properties:
+            scenario_markdown: { type: string }
+            problem_markdown: { type: string }
+            expected_outcome_markdown: { type: string }
+            instructions_markdown: { type: string }
+            criteria: { type: array, items: { type: object, properties: { id: { type: string }, description: { type: string }, mandatory: { type: boolean } } } }
+            competencies: { type: array, items: { $ref: '#/components/schemas/Competency' } }
+            files: { $ref: '#/components/schemas/Files' }
+            visible_tests: { $ref: '#/components/schemas/Files' }
+            hints_revealed: { type: array, items: { type: string } }
+            hints_total: { type: integer }
+            passed: { type: boolean }
+            reference_explanation_markdown: { type: [string, 'null'], description: Only when passed }
+    Submission:
+      type: object
+      properties:
+        submission_id: { type: string, format: uuid }
+        kind: { enum: [visible_run, submission] }
+        attempt_number: { type: [integer, 'null'] }
+        status: { enum: [queued, running, passed, failed, stopped, error] }
+        queue_position: { type: [integer, 'null'] }
+        stop_reason: { enum: [timeout, memory, output_limit, forbidden_operation, null] }
+        criteria_results:
+          type: array
+          items:
+            type: object
+            properties:
+              criterion_id: { type: string }
+              met: { type: boolean }
+              feedback_markdown: { type: string }
+              tests: { type: array, items: { type: object, properties: { id: { type: string }, outcome: { enum: [passed, failed, error, skipped] }, message: { type: string }, hidden: { type: boolean } } } }
+        output_excerpt: { type: string }
+        queued_at: { type: string, format: date-time }
+        finished_at: { type: [string, 'null'], format: date-time }
+    CompetencyProgress:
+      allOf:
+        - $ref: '#/components/schemas/Competency'
+        - type: object
+          properties:
+            status: { enum: [not_started, in_progress, demonstrated] }
+            demonstrated_at: { type: [string, 'null'], format: date-time }
+            evidence: { type: array, items: { type: object, properties: { type: { enum: [knowledge_check, challenge] }, id: { type: string }, version: { type: string } } } }
+    Dashboard:
+      type: object
+      properties:
+        active_path: { $ref: '#/components/schemas/PathSummary' }
+        competencies_demonstrated: { type: integer }
+        competencies_total: { type: integer }
+        modules: { type: array, items: { type: object, properties: { id: { type: string }, title: { type: string }, status: { enum: [not_started, in_progress, completed] } } } }
+        pending_objectives: { type: array, items: { type: object, properties: { id: { type: string }, statement: { type: string }, module_id: { type: string } } } }
+        next_step: { type: object, properties: { kind: { enum: [lesson, knowledge_check, challenge, next_path] }, target_id: { type: string }, label: { type: string } } }
+        continue: { type: [object, 'null'], properties: { module_id: { type: string }, lesson_id: { type: string } } }
+        path_completed: { type: boolean }
