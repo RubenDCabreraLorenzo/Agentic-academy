@@ -1,6 +1,6 @@
 /** Accessible inputs for the four question types (FR-016, NFR-001). */
 import { useTranslation } from "react-i18next";
-import { renderInline } from "../../../components/content/markdown";
+import { renderInline } from "../../../components/content/markdownParser";
 import type { Answer, Question } from "../types";
 
 interface Props {

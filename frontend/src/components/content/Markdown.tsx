@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { CodeBlock } from "./CodeBlock";
 import { DeprecationNotice, MaturityCallout, VendorNote, type DeprecationInfo, type Maturity } from "./Callouts";
 import { Diagram } from "./Diagram";
-import { parseLesson, type Segment } from "./markdown";
+import { parseLesson, type Segment } from "./markdownParser";
 
 function SegmentView({
   segment,

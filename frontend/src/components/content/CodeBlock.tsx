@@ -1,7 +1,7 @@
 /** Highlighted code with language label, copy action and annotations (FR-009). */
 import { useEffect, useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { extractAnnotations } from "./markdown";
+import { extractAnnotations } from "./markdownParser";
 
 const LANG_NAMES: Record<string, string> = { python: "Python", json: "JSON", bash: "Bash", text: "Text", yaml: "YAML", typescript: "TypeScript" };
 
