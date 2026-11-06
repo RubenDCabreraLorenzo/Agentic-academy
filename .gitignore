@@ -36,3 +36,4 @@ htmlcov/
 .runner-out/
 frontend/test-results/
 frontend/playwright-report/
+*.tsbuildinfo
