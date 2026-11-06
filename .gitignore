@@ -1,0 +1,21 @@
+# Claude Code: configuración y estado local (puede contener credenciales)
+.claude/settings.local.json
+.claude/*.local.*
+.claude/todos/
+.claude/shell-snapshots/
+
+# Entornos y dependencias
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+node_modules/
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
