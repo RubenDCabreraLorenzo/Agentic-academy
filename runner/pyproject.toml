@@ -1,0 +1,50 @@
+[project]
+name = "academy-runner"
+version = "0.1.0"
+description = "Agentic Academy submission runner: executes learner code in isolated sandboxes"
+requires-python = ">=3.13"
+dependencies = [
+  "psycopg[binary]>=3.2",
+  "docker>=7.1",
+  "pydantic>=2.8",
+  "pydantic-settings>=2.4",
+]
+
+[project.scripts]
+academy-runner = "academy_runner.main:main"
+
+[dependency-groups]
+dev = ["pytest>=8.3", "ruff>=0.6", "mypy>=1.11", "academy-sim"]
+
+[tool.uv.sources]
+academy-sim = { path = "sandbox-image", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/academy_runner"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "B"]
+
+[tool.mypy]
+python_version = "3.13"
+mypy_path = "src"
+packages = ["academy_runner"]
+strict = true
+ignore_missing_imports = true

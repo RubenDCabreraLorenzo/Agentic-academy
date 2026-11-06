@@ -1,0 +1,15 @@
+.git/
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+*.log
+.env
+.env.*
+!.env.example
+coverage/
+.runner-out/
+frontend/test-results/
+frontend/playwright-report/

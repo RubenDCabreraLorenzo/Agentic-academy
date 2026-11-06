@@ -1,0 +1,53 @@
+# Local development stack (quickstart.md). Production hosting is deliberately not defined here (R12).
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: academy
+      POSTGRES_PASSWORD: academy
+      POSTGRES_DB: academy
+    ports: ["5432:5432"]
+    volumes: [dbdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U academy -d academy"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["1025:1025", "8025:8025"]
+
+  api:
+    build: { context: ., dockerfile: backend/Dockerfile }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://academy:academy@db:5432/academy
+      SMTP_HOST: mailpit
+      CONTENT_DIR: /content
+    volumes: ["./dist/content:/content:ro"]
+    ports: ["8000:8000"]
+    depends_on: { db: { condition: service_healthy } }
+
+  runner:
+    build: { context: ., dockerfile: runner/Dockerfile }
+    env_file: .env
+    environment:
+      RUNNER_DATABASE_URL: postgresql+psycopg://academy_runner:runner@db:5432/academy
+      CONTENT_DIR: /content
+      RUNNER_OUT_DIR: /var/lib/academy-runner/out
+    volumes:
+      - "./dist/content:/content:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      # Same path on the host and in the runner container: the runner asks the host Docker daemon
+      # to bind-mount per-job directories from here into sandboxes (runner protocol §3).
+      - "/var/lib/academy-runner/out:/var/lib/academy-runner/out"
+    depends_on: { db: { condition: service_healthy } }
+
+  web:
+    build: { context: ., dockerfile: frontend/Dockerfile }
+    ports: ["5173:8080"]
+    depends_on: [api]
+
+volumes:
+  dbdata:

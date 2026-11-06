@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env: { POSTGRES_USER: academy, POSTGRES_PASSWORD: academy, POSTGRES_DB: academy }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U academy" --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://academy:academy@localhost:5432/academy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --project backend
+      - run: uv run --project backend ruff check backend
+      - run: uv run --project backend mypy --config-file backend/pyproject.toml
+        working-directory: .
+      - run: uv run --project backend pytest backend/tests
+      - name: Content validation (publication gate)
+        run: uv run --project backend academy content validate --run-solutions
+      - name: Content build
+        run: uv run --project backend academy content build --lang en --out dist/content
+
+  runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --project runner
+      - run: uv run --project runner ruff check runner
+      - run: uv run --project runner pytest runner/tests/unit runner/sandbox-image/academy_sim/tests
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: frontend/pnpm-lock.yaml }
+      - run: pnpm --dir frontend install --frozen-lockfile
+      - name: API client drift check
+        run: pnpm --dir frontend generate:api && git diff --exit-code frontend/src/api/schema.ts
+      - run: pnpm --dir frontend lint
+      - run: pnpm --dir frontend test
+      - run: pnpm --dir frontend build

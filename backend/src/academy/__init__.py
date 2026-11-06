@@ -1,0 +1,1 @@
+"""Agentic Academy backend."""

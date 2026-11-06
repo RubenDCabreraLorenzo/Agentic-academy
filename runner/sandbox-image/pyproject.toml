@@ -1,0 +1,18 @@
+[project]
+name = "academy-sim"
+version = "0.1.0"
+description = "Vendor-neutral model and tool doubles plus the sandbox test harness for Agentic Academy challenges"
+requires-python = ">=3.13"
+dependencies = ["pytest>=8.3"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["academy_sim"]
+exclude = ["academy_sim/tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["academy_sim/tests"]
+addopts = "-q"
