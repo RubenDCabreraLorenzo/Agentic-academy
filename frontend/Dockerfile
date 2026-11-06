@@ -1,5 +1,6 @@
 FROM node:22-slim AS build
-RUN corepack enable
+# Same major version as CI. Unpinned, Corepack takes the latest release, so builds would change without notice.
+RUN corepack enable && corepack prepare pnpm@10 --activate
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile

@@ -134,7 +134,7 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 - [X] T045 [US1] Move the challenge page in `frontend/src/features/challenge/ChallengePage.tsx`, keeping `#result`
 - [X] T046 [US1] Move the laboratory in `frontend/src/features/lab/LabPage.tsx` and `frontend/src/features/lab/CompareView.tsx`, keeping button names and labelled comparison cards
 - [X] T047 [US1] Delete `frontend/src/styles/legacy.css` and its layer; remove the exclusion in `frontend/tests/unit/design/no-raw-values.test.ts`; raise the lint rule to `error` in `frontend/eslint.config.js`; verify that inline styles remain only on the allow-list (SC-010; baseline 64)
-- [ ] T048 [US1] Run the full end-to-end suite and the build, then stop the development server and run the production test against `docker compose up --build api web`; record the new asset count, compared with the 344 baseline files, in the research note R4 of `specs/002-premium-product-experience/research.md`
+- [X] T048 [US1] Run the full end-to-end suite and the build, then stop the development server and run the production test against `docker compose up --build api web`; record the new asset count, compared with the 344 baseline files, in the research note R4 of `specs/002-premium-product-experience/research.md`
 
 **Checkpoint**: US1 can ship alone. The worst measured defects are gone, including production highlighting (FR-054).
 

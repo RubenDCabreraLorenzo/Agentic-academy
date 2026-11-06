@@ -48,6 +48,8 @@ No unknowns remain. Entries marked **Measured** were tested on 2026-11-06 agains
 - **Rationale (Measured)**: on all 11 code blocks in the published lessons, both engines give **identical output**. No security policy change is needed. A CSS-variable theme makes `tokens.css` the only source of colors and removes the operating-system dependency. Importing only five languages should also remove most of the current 344 build files, to be confirmed during implementation.
 - **Alternatives considered**: adding `'wasm-unsafe-eval'` (works, but weakens a security control to fix a styling concern); highlighting at content build (rejected in S001 R2: the build is Python, and lessons stay as Markdown).
 - **Follow-up**: the output comparison must be repeated if lessons add other languages.
+- **Result (Measured, T048)**: the build went from 344 asset files to **82**. The production test passes under the exact policy of `frontend/nginx.conf`: code highlighting, diagrams, editor and fonts work, with no policy violations and no external requests.
+- **Known limit of this check**: the API image does not start as built. `uv run` needs a home directory for its cache, and writes to a `.venv` owned by root, but the image's user has neither. This defect in `backend/Dockerfile` predates Spec 002, which does not change the backend. The test therefore ran with a temporary Compose override, kept out of the repository, that starts `.venv/bin/uvicorn` directly, so `docker compose up --build api web` from quickstart P10 does not work as written until that is fixed.
 
 ## R5. Code editor theme and accessibility
 
