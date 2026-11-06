@@ -295,18 +295,18 @@ explanations and human approval — without model calls.
 
 ### Tests for User Story 5
 
-- [ ] T101 [P] [US5] Write failing unit tests for the trace player state machine (step forward/back, pause, resume, restart, jump; approval branch selection; comparison counts and elements present in only one variant) in `frontend/tests/unit/lab/player.test.ts`
-- [ ] T102 [P] [US5] Write a failing end-to-end test for quickstart V5, asserting no network requests leave the application origin, in `frontend/tests/e2e/us5-lab.spec.ts`
+- [X] T101 [P] [US5] Write failing unit tests for the trace player state machine (step forward/back, pause, resume, restart, jump; approval branch selection; comparison counts and elements present in only one variant) in `frontend/tests/unit/lab/player.test.ts`
+- [X] T102 [P] [US5] Write a failing end-to-end test for quickstart V5, asserting no network requests leave the application origin, in `frontend/tests/e2e/us5-lab.spec.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T103 [P] [US5] Author scenario `research-agent-with-tools` (single agent, read tools, decision summaries labeled `educational_explanation`, `recorded_with`) in `content/en/lab/research-agent-with-tools.json`
-- [ ] T104 [P] [US5] Author scenario `workflow-vs-agent-loop` with variants `fixed_workflow` and `agent_loop` on the same task and a `comparisons` entry in `content/en/lab/workflow-vs-agent-loop.json`
-- [ ] T105 [P] [US5] Author scenario `prompt-injection-and-approval` with a prompt-injection failure case (risk + mitigation), an invalid-tool-argument failure case and a `destructive` tool preceded by `approval_request` with approved and rejected branch variants in `content/en/lab/prompt-injection-and-approval.json`
-- [ ] T106 [US5] Create migration `0005_lab_visit` (`account_id`, `scenario_id`, `variant_id`, `first_viewed_at`, `last_viewed_at`) and implement the model, service and route `GET /lab/scenarios/{scenarioId}` (records a visit; never evidence) in `backend/alembic/versions/0005_lab_visit.py` and `backend/src/academy/lab/`
-- [ ] T107 [US5] Implement the trace player state machine in `frontend/src/features/lab/player.ts`
-- [ ] T108 [US5] Implement the laboratory page (task, objective, tools with permissions, pattern; trace list with element-kind labels; state panel before/after; decision summaries visually marked "Educational explanation"; controls pause/resume/restart/jump; `aria-live` announcements; failure highlight with risk and mitigation; approval prompt choosing the approved or rejected branch) in `frontend/src/features/lab/LabPage.tsx`
-- [ ] T109 [US5] Implement the side-by-side comparison view (per variant: element count, tool-call count, final outcome; elements present in only one variant marked) in `frontend/src/features/lab/CompareView.tsx`
+- [X] T103 [P] [US5] Author scenario `research-agent-with-tools` (single agent, read tools, decision summaries labeled `educational_explanation`, `recorded_with`) in `content/en/lab/research-agent-with-tools.json`
+- [X] T104 [P] [US5] Author scenario `workflow-vs-agent-loop` with variants `fixed_workflow` and `agent_loop` on the same task and a `comparisons` entry in `content/en/lab/workflow-vs-agent-loop.json`
+- [X] T105 [P] [US5] Author scenario `prompt-injection-and-approval` with a prompt-injection failure case (risk + mitigation), an invalid-tool-argument failure case and a `destructive` tool preceded by `approval_request` with approved and rejected branch variants in `content/en/lab/prompt-injection-and-approval.json`
+- [X] T106 [US5] Create migration `0005_lab_visit` (`account_id`, `scenario_id`, `variant_id`, `first_viewed_at`, `last_viewed_at`) and implement the model, service and route `GET /lab/scenarios/{scenarioId}` (records a visit; never evidence) in `backend/alembic/versions/0005_lab_visit.py` and `backend/src/academy/lab/`
+- [X] T107 [US5] Implement the trace player state machine in `frontend/src/features/lab/player.ts`
+- [X] T108 [US5] Implement the laboratory page (task, objective, tools with permissions, pattern; trace list with element-kind labels; state panel before/after; decision summaries visually marked "Educational explanation"; controls pause/resume/restart/jump; `aria-live` announcements; failure highlight with risk and mitigation; approval prompt choosing the approved or rejected branch) in `frontend/src/features/lab/LabPage.tsx`
+- [X] T109 [US5] Implement the side-by-side comparison view (per variant: element count, tool-call count, final outcome; elements present in only one variant marked) in `frontend/src/features/lab/CompareView.tsx`
 - [ ] T110 [US5] Link lab scenarios from their modules (`lab_scenarios` in `module.yaml` of modules 02 and 03) and show them as guided practice on the module page in `frontend/src/features/module/ModulePage.tsx`
 
 **Checkpoint**: US5 works on its own.

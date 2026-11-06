@@ -1,0 +1,250 @@
+{
+  "id": "research-agent-with-tools",
+  "version": "1.0.0",
+  "lang": "en",
+  "last_reviewed": "2026-11-06",
+  "title": "A research agent with read-only tools",
+  "task": "Answer: \"What is the combined population of Lisbon and Porto?\" using a search tool and a calculator.",
+  "objective": "See how an agent loop alternates model calls and tool calls, and how state evolves until a stop condition is met.",
+  "module_ids": [],
+  "tools": [
+    {
+      "name": "search",
+      "description": "Searches a curated encyclopedia snapshot and returns short facts.",
+      "permission": "read"
+    },
+    {
+      "name": "calculator",
+      "description": "Evaluates an arithmetic expression.",
+      "permission": "read"
+    }
+  ],
+  "variants": [
+    {
+      "id": "agent-loop",
+      "label": "Agent loop",
+      "orchestration_pattern": "agent_loop",
+      "recorded_with": {
+        "model": "hand-authored illustrative trace (not a live model recording)",
+        "framework": "academy_sim ScriptedModel",
+        "date": "2026-11-06"
+      },
+      "initial_state": {
+        "step": 0,
+        "facts": [],
+        "answer": null
+      },
+      "elements": [
+        {
+          "id": "e1",
+          "seq": 0,
+          "kind": "execution_event",
+          "event": "run_started",
+          "summary": "The task is sent to the agent with two tools available.",
+          "payload": {
+            "max_steps": 6
+          }
+        },
+        {
+          "id": "e2",
+          "seq": 1,
+          "kind": "execution_event",
+          "event": "model_call_issued",
+          "summary": "Messages: system instructions + user question; tools: search, calculator."
+        },
+        {
+          "id": "e3",
+          "seq": 2,
+          "kind": "execution_event",
+          "event": "model_response_received",
+          "summary": "The model requests a tool call.",
+          "payload": {
+            "tool_calls": 1
+          }
+        },
+        {
+          "id": "e4",
+          "seq": 3,
+          "kind": "decision_summary",
+          "explains": [
+            "e3"
+          ],
+          "text": "The question needs two facts the model should not guess, so the agent asks the search tool instead of answering from memory.",
+          "author": "Agentic Academy content team",
+          "reviewed_on": "2026-11-06",
+          "label": "educational_explanation"
+        },
+        {
+          "id": "e5",
+          "seq": 4,
+          "kind": "tool_call",
+          "tool": "search",
+          "arguments": {
+            "query": "population of Lisbon"
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": {
+            "fact": "Lisbon municipality population: about 545,000 (2021 census)."
+          }
+        },
+        {
+          "id": "e6",
+          "seq": 5,
+          "kind": "state_transition",
+          "before": {
+            "step": 0,
+            "facts": [],
+            "answer": null
+          },
+          "after": {
+            "step": 1,
+            "facts": [
+              "Lisbon ≈ 545,000"
+            ],
+            "answer": null
+          },
+          "changed_keys": [
+            "facts",
+            "step"
+          ]
+        },
+        {
+          "id": "e7",
+          "seq": 6,
+          "kind": "execution_event",
+          "event": "model_call_issued",
+          "summary": "The tool result is appended to the conversation."
+        },
+        {
+          "id": "e8",
+          "seq": 7,
+          "kind": "execution_event",
+          "event": "model_response_received",
+          "summary": "The model requests another search.",
+          "payload": {
+            "tool_calls": 1
+          }
+        },
+        {
+          "id": "e9",
+          "seq": 8,
+          "kind": "tool_call",
+          "tool": "search",
+          "arguments": {
+            "query": "population of Porto"
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": {
+            "fact": "Porto municipality population: about 232,000 (2021 census)."
+          }
+        },
+        {
+          "id": "e10",
+          "seq": 9,
+          "kind": "state_transition",
+          "before": {
+            "step": 1,
+            "facts": [
+              "Lisbon ≈ 545,000"
+            ],
+            "answer": null
+          },
+          "after": {
+            "step": 2,
+            "facts": [
+              "Lisbon ≈ 545,000",
+              "Porto ≈ 232,000"
+            ],
+            "answer": null
+          },
+          "changed_keys": [
+            "facts",
+            "step"
+          ]
+        },
+        {
+          "id": "e11",
+          "seq": 10,
+          "kind": "decision_summary",
+          "explains": [
+            "e9",
+            "e10"
+          ],
+          "text": "With both facts in context, adding the numbers in a tool is more reliable than mental arithmetic by the model.",
+          "author": "Agentic Academy content team",
+          "reviewed_on": "2026-11-06",
+          "label": "educational_explanation"
+        },
+        {
+          "id": "e12",
+          "seq": 11,
+          "kind": "tool_call",
+          "tool": "calculator",
+          "arguments": {
+            "expression": "545000 + 232000"
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": 777000
+        },
+        {
+          "id": "e13",
+          "seq": 12,
+          "kind": "state_transition",
+          "before": {
+            "step": 2,
+            "facts": [
+              "Lisbon ≈ 545,000",
+              "Porto ≈ 232,000"
+            ],
+            "answer": null
+          },
+          "after": {
+            "step": 3,
+            "facts": [
+              "Lisbon ≈ 545,000",
+              "Porto ≈ 232,000"
+            ],
+            "answer": "About 777,000 (municipalities, 2021 census)."
+          },
+          "changed_keys": [
+            "answer",
+            "step"
+          ]
+        },
+        {
+          "id": "e14",
+          "seq": 13,
+          "kind": "execution_event",
+          "event": "model_response_received",
+          "summary": "The model returns a final answer and requests no more tools."
+        },
+        {
+          "id": "e15",
+          "seq": 14,
+          "kind": "decision_summary",
+          "explains": [
+            "e14"
+          ],
+          "text": "The loop stops because the model produced an answer without tool calls — the explicit stop condition — well before the 6-step limit.",
+          "author": "Agentic Academy content team",
+          "reviewed_on": "2026-11-06",
+          "label": "educational_explanation"
+        },
+        {
+          "id": "e16",
+          "seq": 15,
+          "kind": "execution_event",
+          "event": "run_ended",
+          "summary": "Final answer returned with its sources.",
+          "payload": {
+            "outcome": "answered",
+            "steps": 3
+          }
+        }
+      ]
+    }
+  ]
+}

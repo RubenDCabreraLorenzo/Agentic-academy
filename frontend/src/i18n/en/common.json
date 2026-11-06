@@ -254,5 +254,55 @@
       "in_progress": "In progress",
       "demonstrated": "Demonstrated"
     }
+  },
+  "lab": {
+    "replayNote": "This laboratory replays curated recordings. No language model is called while you explore.",
+    "task": "Task",
+    "objective": "Learning objective",
+    "pattern": "Orchestration pattern",
+    "recordedWith": "Recording: {{model}} · {{framework}} · {{date}}",
+    "tools": "Tools available to the agent",
+    "permission": {
+      "read": "read",
+      "write": "write",
+      "destructive": "destructive"
+    },
+    "approval": {
+      "approved": "approved",
+      "rejected": "rejected",
+      "pending": "pending",
+      "not_required": "no approval needed"
+    },
+    "variants": "Execution variants",
+    "controls": "Playback controls",
+    "back": "Back",
+    "forward": "Step",
+    "play": "Play",
+    "pause": "Pause",
+    "restart": "Restart",
+    "position": "Step {{n}} of {{total}}",
+    "kind": {
+      "execution_event": "Execution event",
+      "tool_call": "Tool call",
+      "state_transition": "State transition",
+      "decision_summary": "Decision summary"
+    },
+    "changed": "State changed: {{keys}}",
+    "educational": "Educational explanation",
+    "authoredBy": "Written by {{author}}, reviewed {{date}}. Not model output.",
+    "approvalTitle": "Human approval required",
+    "approve": "Approve",
+    "reject": "Reject",
+    "failure": "Failure case: {{kind}}",
+    "risk": "Risk",
+    "mitigation": "Mitigation",
+    "trace": "Execution trace",
+    "state": "Agent state at this step",
+    "compareTitle": "Compare executions",
+    "elements": "Steps",
+    "toolCalls": "Tool calls",
+    "outcome": "Outcome",
+    "onlyHere": "only in this execution",
+    "uniqueLegend": "{{count}} step(s) appear only in this execution (highlighted)."
   }
 }

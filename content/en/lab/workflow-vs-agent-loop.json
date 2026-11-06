@@ -1,0 +1,317 @@
+{
+  "id": "workflow-vs-agent-loop",
+  "version": "1.0.0",
+  "lang": "en",
+  "last_reviewed": "2026-11-06",
+  "title": "Fixed workflow versus agent loop",
+  "task": "Classify a support email and draft a reply using the matching template.",
+  "objective": "Compare a deterministic workflow with an autonomous loop on the same task: steps, tool calls, cost and predictability.",
+  "module_ids": [],
+  "tools": [
+    {
+      "name": "classify",
+      "description": "Returns one of: billing, outage, how_to.",
+      "permission": "read"
+    },
+    {
+      "name": "get_template",
+      "description": "Returns the reply template for a category.",
+      "permission": "read"
+    },
+    {
+      "name": "search_docs",
+      "description": "Searches help-center articles.",
+      "permission": "read"
+    }
+  ],
+  "variants": [
+    {
+      "id": "fixed-workflow",
+      "label": "Fixed workflow",
+      "orchestration_pattern": "fixed_workflow",
+      "recorded_with": {
+        "model": "hand-authored illustrative trace (not a live model recording)",
+        "framework": "academy_sim ScriptedModel",
+        "date": "2026-11-06"
+      },
+      "initial_state": {
+        "category": null,
+        "draft": null
+      },
+      "elements": [
+        {
+          "id": "w1",
+          "seq": 0,
+          "kind": "execution_event",
+          "event": "run_started",
+          "summary": "Code runs a fixed sequence: classify → template → draft."
+        },
+        {
+          "id": "w2",
+          "seq": 1,
+          "kind": "tool_call",
+          "tool": "classify",
+          "arguments": {
+            "text": "I was charged twice this month."
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": "billing"
+        },
+        {
+          "id": "w3",
+          "seq": 2,
+          "kind": "state_transition",
+          "before": {
+            "category": null,
+            "draft": null
+          },
+          "after": {
+            "category": "billing",
+            "draft": null
+          },
+          "changed_keys": [
+            "category"
+          ]
+        },
+        {
+          "id": "w4",
+          "seq": 3,
+          "kind": "tool_call",
+          "tool": "get_template",
+          "arguments": {
+            "category": "billing"
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": "Hi {name}, we are sorry about the duplicate charge..."
+        },
+        {
+          "id": "w5",
+          "seq": 4,
+          "kind": "execution_event",
+          "event": "model_call_issued",
+          "summary": "One model call fills the template with details from the email."
+        },
+        {
+          "id": "w6",
+          "seq": 5,
+          "kind": "execution_event",
+          "event": "model_response_received",
+          "summary": "Draft reply returned."
+        },
+        {
+          "id": "w7",
+          "seq": 6,
+          "kind": "state_transition",
+          "before": {
+            "category": "billing",
+            "draft": null
+          },
+          "after": {
+            "category": "billing",
+            "draft": "Hi Ana, we are sorry about the duplicate charge..."
+          },
+          "changed_keys": [
+            "draft"
+          ]
+        },
+        {
+          "id": "w8",
+          "seq": 7,
+          "kind": "decision_summary",
+          "explains": [
+            "w2",
+            "w4"
+          ],
+          "text": "The steps are known in advance, so code decides the order. The model is used only where language is needed: one call, predictable cost.",
+          "author": "Agentic Academy content team",
+          "reviewed_on": "2026-11-06",
+          "label": "educational_explanation"
+        },
+        {
+          "id": "w9",
+          "seq": 8,
+          "kind": "execution_event",
+          "event": "run_ended",
+          "summary": "Draft ready for human review.",
+          "payload": {
+            "outcome": "draft_ready",
+            "model_calls": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "agent-loop",
+      "label": "Agent loop",
+      "orchestration_pattern": "agent_loop",
+      "recorded_with": {
+        "model": "hand-authored illustrative trace (not a live model recording)",
+        "framework": "academy_sim ScriptedModel",
+        "date": "2026-11-06"
+      },
+      "initial_state": {
+        "category": null,
+        "draft": null
+      },
+      "elements": [
+        {
+          "id": "a1",
+          "seq": 0,
+          "kind": "execution_event",
+          "event": "run_started",
+          "summary": "The model decides which tools to use and in which order."
+        },
+        {
+          "id": "a2",
+          "seq": 1,
+          "kind": "execution_event",
+          "event": "model_call_issued",
+          "summary": "Model call 1."
+        },
+        {
+          "id": "a3",
+          "seq": 2,
+          "kind": "tool_call",
+          "tool": "search_docs",
+          "arguments": {
+            "query": "charged twice"
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": [
+            "Refunds for duplicate charges"
+          ]
+        },
+        {
+          "id": "a4",
+          "seq": 3,
+          "kind": "decision_summary",
+          "explains": [
+            "a3"
+          ],
+          "text": "Free to choose, the model explores the help center first — useful for open-ended questions, unnecessary for a known classification task.",
+          "author": "Agentic Academy content team",
+          "reviewed_on": "2026-11-06",
+          "label": "educational_explanation"
+        },
+        {
+          "id": "a5",
+          "seq": 4,
+          "kind": "execution_event",
+          "event": "model_call_issued",
+          "summary": "Model call 2."
+        },
+        {
+          "id": "a6",
+          "seq": 5,
+          "kind": "tool_call",
+          "tool": "classify",
+          "arguments": {
+            "text": "I was charged twice this month."
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": "billing"
+        },
+        {
+          "id": "a7",
+          "seq": 6,
+          "kind": "state_transition",
+          "before": {
+            "category": null,
+            "draft": null
+          },
+          "after": {
+            "category": "billing",
+            "draft": null
+          },
+          "changed_keys": [
+            "category"
+          ]
+        },
+        {
+          "id": "a8",
+          "seq": 7,
+          "kind": "execution_event",
+          "event": "model_call_issued",
+          "summary": "Model call 3."
+        },
+        {
+          "id": "a9",
+          "seq": 8,
+          "kind": "tool_call",
+          "tool": "get_template",
+          "arguments": {
+            "category": "billing"
+          },
+          "permission": "read",
+          "approval": "not_required",
+          "result": "Hi {name}, we are sorry about the duplicate charge..."
+        },
+        {
+          "id": "a10",
+          "seq": 9,
+          "kind": "execution_event",
+          "event": "model_call_issued",
+          "summary": "Model call 4."
+        },
+        {
+          "id": "a11",
+          "seq": 10,
+          "kind": "execution_event",
+          "event": "model_response_received",
+          "summary": "Draft reply returned."
+        },
+        {
+          "id": "a12",
+          "seq": 11,
+          "kind": "state_transition",
+          "before": {
+            "category": "billing",
+            "draft": null
+          },
+          "after": {
+            "category": "billing",
+            "draft": "Hi Ana, we are sorry about the duplicate charge..."
+          },
+          "changed_keys": [
+            "draft"
+          ]
+        },
+        {
+          "id": "a13",
+          "seq": 12,
+          "kind": "decision_summary",
+          "explains": [
+            "a1",
+            "a12"
+          ],
+          "text": "Same result, but four model calls and an extra tool call. The path can differ between runs, which makes cost and testing harder.",
+          "author": "Agentic Academy content team",
+          "reviewed_on": "2026-11-06",
+          "label": "educational_explanation"
+        },
+        {
+          "id": "a14",
+          "seq": 13,
+          "kind": "execution_event",
+          "event": "run_ended",
+          "summary": "Draft ready for human review.",
+          "payload": {
+            "outcome": "draft_ready",
+            "model_calls": 4
+          }
+        }
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "left_variant": "fixed-workflow",
+      "right_variant": "agent-loop",
+      "explanation": "Prefer a workflow when the steps are known; use an agent loop when the path genuinely depends on intermediate results."
+    }
+  ]
+}
