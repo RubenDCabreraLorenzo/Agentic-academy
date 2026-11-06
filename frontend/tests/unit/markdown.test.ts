@@ -1,4 +1,4 @@
-import { extractAnnotations, parseLesson, renderHtml } from "../../src/components/content/markdown";
+import { extractAnnotations, parseLesson, renderHtml } from "../../src/components/content/markdownParser";
 
 describe("parseLesson", () => {
   const source = [
