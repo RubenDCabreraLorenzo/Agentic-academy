@@ -8,6 +8,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-1) var(--space-2);
+  /* One line of controls, so that the header holds its height while the session is unknown. */
+  min-height: calc(2.5rem + 2 * var(--space-3));
   max-width: var(--layout-max);
   margin-inline: auto;
   padding: var(--space-3) var(--space-4);
@@ -44,10 +46,6 @@ main {
   max-width: var(--layout-max);
   margin-inline: auto;
   padding: var(--space-6) var(--space-4) var(--space-8);
-}
-
-main:focus {
-  outline: none;
 }
 
 .app-footer {

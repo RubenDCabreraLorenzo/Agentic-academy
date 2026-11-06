@@ -143,6 +143,13 @@ details > summary {
   border: 0;
 }
 
+/* Focus moved here by the application, as a starting point. These are not controls. */
+main:focus,
+h1[tabindex="-1"]:focus,
+section[tabindex="-1"]:focus {
+  outline: none;
+}
+
 .skip-link {
   position: absolute;
   top: 0;

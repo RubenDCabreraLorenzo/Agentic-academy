@@ -4,6 +4,7 @@ import { useEffect, useMemo, useReducer, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 import { get } from "../../api/client";
+import { usePageMeta } from "../../app/navigation/usePageMeta";
 import { ContentMeta } from "../../components/content/Callouts";
 import { ErrorState, Loading } from "../../components/states";
 import { Alert } from "../../components/ui/Alert";
@@ -70,8 +71,10 @@ function ElementBody({ e }: { e: TraceElement }) {
 }
 
 export default function LabPage() {
+  const { t } = useTranslation();
   const { scenarioId = "" } = useParams();
   const q = useQuery({ queryKey: ["lab", scenarioId], queryFn: () => get<Scenario>(`/lab/scenarios/${scenarioId}`) });
+  usePageMeta({ title: q.data?.title ?? t("meta.lab.title") });
   if (q.isLoading) return <Loading />;
   if (q.isError || !q.data) return <ErrorState onRetry={() => q.refetch()} />;
   return <Player scenario={q.data} />;

@@ -305,10 +305,6 @@
   margin-top: var(--space-3);
 }
 
-.page-header h1:focus {
-  outline: none;
-}
-
 @media (forced-colors: active) {
   .btn,
   .tab,

@@ -6,7 +6,10 @@ export function NotFound() {
   return (
     <section className="stack">
       <h1>{t("states.notFound")}</h1>
-      <Link to="/">{t("app.nav.catalog")}</Link>
+      <p className="row">
+        <Link to="/">{t("states.notFoundHome")}</Link>
+        <Link to="/curriculum">{t("app.nav.catalog")}</Link>
+      </p>
     </section>
   );
 }

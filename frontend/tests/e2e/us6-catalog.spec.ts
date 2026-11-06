@@ -2,7 +2,7 @@
 import { expect, expectNoCriticalA11yViolations, expectNoHorizontalScroll, test } from "./fixtures";
 
 test("visitor browses the catalog and inspects a planned path", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/curriculum");
   await expect(page.getByRole("heading", { level: 1, name: "Curriculum" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Foundational" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Foundations of Agentic AI Engineering", exact: true })).toBeVisible();

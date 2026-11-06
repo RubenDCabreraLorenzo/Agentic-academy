@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 import { get } from "../../api/client";
+import { usePageMeta } from "../../app/navigation/usePageMeta";
 import { useMe } from "../../app/session";
 import { ContentMeta } from "../../components/content/Callouts";
 import { ErrorState, Loading } from "../../components/states";
@@ -62,6 +63,7 @@ export default function PathPage() {
   const { pathId = "" } = useParams();
   const { data: me } = useMe();
   const q = useQuery({ queryKey: ["path", pathId, !!me], queryFn: () => get<PathDetail>(`/paths/${pathId}`) });
+  usePageMeta({ title: q.data?.title ?? t("meta.path.title") });
 
   if (q.isLoading) return <Loading />;
   if (q.isError || !q.data) return <ErrorState onRetry={() => q.refetch()} />;

@@ -31,12 +31,28 @@ function FormError({ message }: { message: string | null }) {
   );
 }
 
+function SignedInNotice({ title }: { title: string }) {
+  const { t } = useTranslation();
+  return (
+    <section className="stack reading">
+      <h1>{title}</h1>
+      <Alert tone="info" role="status">
+        <div className="stack">
+          <p>{t("auth.alreadySignedIn")}</p>
+          <LinkButton to="/dashboard">{t("auth.goToProgress")}</LinkButton>
+        </div>
+      </Alert>
+    </section>
+  );
+}
+
 function safeNext(next: string | null): string {
   return next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
 }
 
 export function SignUpPage() {
   const { t } = useTranslation();
+  const { data: me } = useMe();
   const navigate = useNavigate();
   const toMessage = useErrorMessage();
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +73,8 @@ export function SignUpPage() {
       setBusy(false);
     }
   };
+
+  if (me) return <SignedInNotice title={t("auth.signUpTitle")} />;
 
   return (
     <section className="stack">
@@ -131,6 +149,7 @@ export function VerifyEmailPage() {
 
 export function SignInPage() {
   const { t } = useTranslation();
+  const { data: me } = useMe();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [params] = useSearchParams();
@@ -153,10 +172,11 @@ export function SignInPage() {
       navigate(safeNext(params.get("next")), { replace: true });
     } catch (err) {
       setError(toMessage(err));
-    } finally {
-      setBusy(false);
+      setBusy(false); // On success it stays busy, so that the signed-in notice does not flash before the page changes.
     }
   };
+
+  if (me && !busy) return <SignedInNotice title={t("auth.signInTitle")} />;
 
   return (
     <section className="stack">
@@ -172,7 +192,7 @@ export function SignInPage() {
           <Link to="/forgot-password">{t("auth.forgot")}</Link>
         </p>
         <p>
-          {t("auth.noAccount")} <Link to="/sign-up">{t("auth.signUpSubmit")}</Link>
+          {t("auth.noAccount")} <Link to="/register">{t("auth.signUpSubmit")}</Link>
         </p>
       </form>
     </section>
@@ -277,6 +297,7 @@ export function AccountPage() {
     try {
       await del("/me", { confirm: "DELETE" });
       qc.clear();
+      qc.setQueryData(["me"], null);
       navigate("/", { replace: true });
     } catch (err) {
       setError(toMessage(err));

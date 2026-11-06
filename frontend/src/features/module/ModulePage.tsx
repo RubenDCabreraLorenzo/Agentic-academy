@@ -4,6 +4,8 @@ import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 import { get } from "../../api/client";
+import { useFragmentTarget } from "../../app/navigation/useFragmentTarget";
+import { usePageMeta } from "../../app/navigation/usePageMeta";
 import { ContentMeta } from "../../components/content/Callouts";
 import { ErrorState, Loading } from "../../components/states";
 import { Alert } from "../../components/ui/Alert";
@@ -18,6 +20,8 @@ export default function ModulePage() {
   const { moduleId = "" } = useParams();
   const q = useQuery({ queryKey: ["module", moduleId], queryFn: () => get<ModuleDetail>(`/modules/${moduleId}`) });
   const seen = useRef(new Set<string>());
+  usePageMeta({ title: q.data?.title ?? t("meta.module.title") });
+  useFragmentTarget(!!q.data);
 
   const onLessonVisible = useCallback(
     (lessonId: string) => {
@@ -79,7 +83,7 @@ export default function ModulePage() {
         <ol>
           {m.lessons.map((l) => (
             <li key={l.id}>
-              <a href={`#lesson-${l.id}`}>{l.title}</a>
+              <Link to={`#lesson-${l.id}`}>{l.title}</Link>
             </li>
           ))}
         </ol>

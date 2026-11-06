@@ -53,7 +53,7 @@ export default function DashboardPage() {
           <p className="measure">{t("dashboard.welcomeBody")}</p>
           <p className="row">
             <LinkButton to={`/paths/${d.active_path.id}`}>{t("dashboard.start", { path: d.active_path.title })}</LinkButton>
-            <Link to="/">{t("dashboard.exploreCurriculum")}</Link>
+            <Link to="/curriculum">{t("dashboard.exploreCurriculum")}</Link>
           </p>
         </Card>
       )}

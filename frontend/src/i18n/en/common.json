@@ -12,6 +12,64 @@
     },
     "footer": "Learn to engineer reliable AI agents."
   },
+  "meta": {
+    "default": {
+      "description": "Learn to engineer reliable AI agents."
+    },
+    "landing": {
+      "title": "Learn to engineer reliable AI agents",
+      "description": "Learn to engineer reliable AI agents."
+    },
+    "curriculum": {
+      "title": "Curriculum",
+      "description": "A progressive path from LLM foundations to production agents. Start with the foundations; later paths build on them."
+    },
+    "path": {
+      "title": "Learning path",
+      "description": "A learning path in the Agentic Academy curriculum."
+    },
+    "signIn": {
+      "title": "Sign in",
+      "description": "Sign in to continue learning with Agentic Academy."
+    },
+    "register": {
+      "title": "Create account",
+      "description": "Create your Agentic Academy account."
+    },
+    "checkEmail": {
+      "title": "Check your email"
+    },
+    "forgotPassword": {
+      "title": "Reset your password"
+    },
+    "verifyEmail": {
+      "title": "Verify your email"
+    },
+    "resetPassword": {
+      "title": "Choose a new password"
+    },
+    "dashboard": {
+      "title": "My progress"
+    },
+    "competencies": {
+      "title": "Competencies"
+    },
+    "account": {
+      "title": "Account"
+    },
+    "module": {
+      "title": "Module"
+    },
+    "knowledgeCheck": {
+      "title": "Knowledge check"
+    },
+    "challenge": {
+      "title": "Code challenge"
+    },
+    "lab": {
+      "title": "Laboratory"
+    }
+  },
   "ui": {
     "mainNav": "Main",
     "breadcrumb": "Breadcrumb"
@@ -23,7 +81,8 @@
     "retry": "Try again",
     "offline": "You are offline. Your work is kept on this device and will be sent when you reconnect.",
     "notFound": "We could not find this page.",
-    "empty": "Nothing here yet."
+    "empty": "Nothing here yet.",
+    "notFoundHome": "Go to the home page"
   },
   "auth": {
     "email": "Email",
@@ -61,7 +120,9 @@
       "weak_password": "Use a password of 12 to 128 characters.",
       "invalid_token": "This link is invalid or has expired.",
       "generic": "Something went wrong. Try again."
-    }
+    },
+    "alreadySignedIn": "You are already signed in.",
+    "goToProgress": "Go to my progress"
   },
   "content": {
     "copy": "Copy",

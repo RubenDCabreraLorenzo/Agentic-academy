@@ -80,6 +80,8 @@ No unknowns remain. Entries marked **Measured** were tested on 2026-11-06 agains
 - **Decision**: the protocols in the [routes contract](./contracts/routes-and-shells.md), inside `AppFrame`, with no data router.
 - **Rationale (Measured)**: lesson links fail because content arrives after navigation, and because the browser's own fragment handling has already run: page at 0, target at 3,387 px. Height changes from code and diagrams require re-positioning, and it must stop at the first user input so as not to fight the learner. `scroll-padding-top` covers WCAG 2.4.11.
 - **Alternatives considered**: moving to a data router for `ScrollRestoration` (a broad change to the application's entry for a narrow need; it also does not handle fragments in late content).
+- **Implementation note**: `AppFrame` must stay mounted when the shell changes. A session that expires on a learning page moves to the public shell, and remounting there would lose the warning and treat the move as a first load. So `PublicShell.tsx` and `LearningShell.tsx` provide the contents of its navigation and footer slots, rather than wrapping it.
+- **Finding (Measured, T065)**: under the development server, 10 of 25 module loads left a diagram on its placeholder for good, with no error, and 0 of 25 with the production image. `StrictMode` runs each effect twice, and the cancelled effect still started a Mermaid render with the same identifier. Not starting a render for a cancelled effect gave 0 of 25. This pattern predates Spec 002, and it explains a test failure in T031 first put down to recompilation.
 
 ## R10. Lesson view recording
 

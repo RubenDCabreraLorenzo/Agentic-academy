@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { ApiError, get, NetworkError, post, put } from "../../api/client";
 import { loadDraft, saveDraft } from "../../app/drafts";
+import { usePageMeta } from "../../app/navigation/usePageMeta";
 import { useMe } from "../../app/session";
 import { ContentMeta } from "../../components/content/Callouts";
 import { InlineMarkdown } from "../../components/content/Markdown";
@@ -81,6 +82,7 @@ export default function ChallengePage() {
   const learner = me?.id ?? "anon";
   const draftKey = `challenge:${challengeId}`;
   const q = useQuery({ queryKey: ["challenge", challengeId], queryFn: () => get<Challenge>(`/challenges/${challengeId}`) });
+  usePageMeta({ title: q.data?.title ?? t("meta.challenge.title") });
   const history = useQuery({
     queryKey: ["submissions", challengeId],
     queryFn: () => get<Submission[]>(`/challenges/${challengeId}/submissions`),
