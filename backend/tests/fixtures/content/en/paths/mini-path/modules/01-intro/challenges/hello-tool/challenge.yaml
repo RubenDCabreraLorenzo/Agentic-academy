@@ -1,0 +1,19 @@
+id: hello-tool
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Hello tool
+difficulty_rank: 1
+scenario: A support agent greets users.
+problem: Implement greet.
+expected_outcome: greet returns a greeting.
+instructions: Edit agent.py.
+criteria:
+  - id: greets
+    description: Returns a greeting
+    mandatory: true
+    tests: ["test_agent.py::test_greets"]
+    feedback: Return "Hello, <name>!".
+hints: [Look at the return value., Use an f-string.]
+reference_explanation: An f-string builds the greeting.
+competencies: [design-tools]

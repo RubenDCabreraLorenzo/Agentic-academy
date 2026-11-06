@@ -1,0 +1,34 @@
+id: foundations-of-agentic-ai-engineering
+version: 0.1.0
+lang: en
+last_reviewed: 2026-11-06
+title: Foundations of Agentic AI Engineering
+summary: >-
+  Build a solid, vendor-neutral foundation for engineering AI agents: how language models behave,
+  how agent loops work, how to design safe tools, how to manage state, and how to evaluate agents
+  and mitigate their risks. Every module ends with a code challenge evaluated automatically.
+level: foundational
+status: available
+order: 1
+objectives:
+  - Explain how language models generate output and where they fail.
+  - Implement a bounded agent loop and decide when a fixed workflow is the better design.
+  - Design tools that are safe to give to a model, with least privilege and human approval.
+  - Manage agent state deliberately instead of accumulating context.
+  - Evaluate agent behavior with traces and test doubles and mitigate agentic risks.
+entry_prerequisites:
+  - label: "Python: functions, classes, exceptions, packages and virtual environments"
+    resource_url: "https://docs.python.org/3/tutorial/"
+  - label: Calling HTTP/REST APIs and handling JSON
+    resource_url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+  - label: Basic command-line usage
+    resource_url: "https://www.gnu.org/software/bash/manual/bash.html"
+  - label: Basic git usage
+    resource_url: "https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control"
+prerequisite_paths: []
+# Modules are listed as they are published; planned order:
+# 01-llm-foundations, 02-agent-fundamentals, 03-tools-and-function-calling,
+# 04-memory-and-state, 05-evaluation-observability-and-risks.
+competencies: []
+estimated_hours: 15
+modules: []

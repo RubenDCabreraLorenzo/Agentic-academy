@@ -1,0 +1,29 @@
+{
+  "id": "demo-scenario", "version": "1.0.0", "lang": "en", "last_reviewed": "2026-11-06",
+  "title": "Demo", "task": "Delete a file safely", "objective": "See approval",
+  "module_ids": ["intro"],
+  "tools": [{"name": "delete_file", "description": "Deletes a file", "permission": "destructive"}],
+  "variants": [
+    {"id": "main", "label": "Main", "orchestration_pattern": "agent_loop",
+     "recorded_with": {"model": "example-model", "framework": "none", "date": "2026-11-01"},
+     "elements": [
+       {"id": "e1", "seq": 0, "kind": "execution_event", "event": "run_started"},
+       {"id": "e2", "seq": 1, "kind": "execution_event", "event": "approval_request"}
+     ]},
+    {"id": "approved", "label": "Approved", "orchestration_pattern": "agent_loop",
+     "branches_from": {"variant_id": "main", "element_id": "e2", "decision": "approved"},
+     "recorded_with": {"model": "example-model", "framework": "none", "date": "2026-11-01"},
+     "elements": [
+       {"id": "a1", "seq": 2, "kind": "execution_event", "event": "approval_granted"},
+       {"id": "a2", "seq": 3, "kind": "tool_call", "tool": "delete_file", "arguments": {"path": "x"}, "permission": "destructive", "approval": "approved", "result": "ok"},
+       {"id": "a3", "seq": 4, "kind": "decision_summary", "explains": ["a2"], "text": "The learner approved, so the tool ran.", "author": "team", "reviewed_on": "2026-11-02", "label": "educational_explanation"}
+     ]},
+    {"id": "rejected", "label": "Rejected", "orchestration_pattern": "agent_loop",
+     "branches_from": {"variant_id": "main", "element_id": "e2", "decision": "rejected"},
+     "recorded_with": {"model": "example-model", "framework": "none", "date": "2026-11-01"},
+     "elements": [
+       {"id": "r1", "seq": 2, "kind": "execution_event", "event": "approval_rejected"},
+       {"id": "r2", "seq": 3, "kind": "execution_event", "event": "run_ended"}
+     ]}
+  ]
+}

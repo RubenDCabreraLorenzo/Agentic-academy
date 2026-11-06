@@ -1,0 +1,46 @@
+id: intro-check
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+pass_threshold: 0.7
+questions:
+  - id: q1
+    type: single_choice
+    prompt: What is an agent loop?
+    explanation: It repeats model and tool steps.
+    objective_id: obj-loop
+    lesson_anchor: basics#agent-loop
+    options: [{ id: a, text: A loop }, { id: b, text: A list }]
+    correct: [a]
+  - id: q2
+    type: multiple_choice
+    prompt: Which are tools?
+    explanation: Search and calculator are tools.
+    objective_id: obj-tools
+    lesson_anchor: basics#tools
+    options: [{ id: a, text: Search }, { id: b, text: Calculator }, { id: c, text: Prompt }]
+    correct: [a, b]
+  - id: q3
+    type: ordering
+    prompt: Order the steps.
+    explanation: Model, tool, result.
+    objective_id: obj-loop
+    lesson_anchor: basics#agent-loop
+    items: [{ id: model, text: Model }, { id: tool, text: Tool }, { id: result, text: Result }]
+  - id: q4
+    type: matching
+    prompt: Match.
+    explanation: Read tools read, write tools write.
+    objective_id: obj-tools
+    lesson_anchor: basics#tools
+    left: [{ id: search, text: Search }, { id: delete, text: Delete }]
+    right: [{ id: read, text: Read }, { id: destructive, text: Destructive }]
+    pairs: { search: read, delete: destructive }
+  - id: q5
+    type: single_choice
+    prompt: Should destructive tools need approval?
+    explanation: Yes, human oversight.
+    objective_id: obj-tools
+    lesson_anchor: basics#tools
+    options: [{ id: approve, text: "Yes" }, { id: deny, text: "No" }]
+    correct: [approve]

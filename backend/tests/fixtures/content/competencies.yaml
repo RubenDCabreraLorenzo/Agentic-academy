@@ -1,0 +1,9 @@
+competencies:
+  - id: explain-agents
+    title: Explain agents
+    description: Explain what an agent loop is.
+    level: foundational
+  - id: design-tools
+    title: Design tools
+    description: Design a tool schema.
+    level: foundational

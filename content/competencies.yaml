@@ -1,0 +1,47 @@
+# Language-independent competency catalogue (data-model §1.1). Titles are English source text.
+competencies:
+  # Module 1 — LLM foundations
+  - id: explain-llm-mechanics
+    title: Explain how LLMs generate text
+    description: Explain tokens, context windows, sampling and why outputs are probabilistic.
+    level: foundational
+  - id: produce-structured-output
+    title: Request and validate structured output
+    description: Ask a model for structured output and validate it before using it.
+    level: foundational
+  - id: recognize-llm-limitations
+    title: Recognize LLM limitations
+    description: Identify hallucination, knowledge cut-offs and context limits, and mitigate them.
+    level: foundational
+  # Module 2 — Agent fundamentals
+  - id: implement-agent-loop
+    title: Implement an agent loop
+    description: Implement a bounded model–tool loop with explicit stopping conditions.
+    level: foundational
+  - id: choose-workflow-or-agent
+    title: Choose between a workflow and an agent
+    description: Decide when a fixed workflow is preferable to an autonomous agent and justify it.
+    level: foundational
+  # Module 3 — Tools and function calling
+  - id: design-tool-schemas
+    title: Design tool schemas
+    description: Design tool names, descriptions and argument schemas a model can use reliably.
+    level: foundational
+  - id: enforce-tool-safety
+    title: Enforce least privilege and human approval
+    description: Validate tool arguments, apply least privilege and require approval for destructive actions.
+    level: foundational
+  # Module 4 — Memory and state
+  - id: manage-agent-state
+    title: Manage agent state and memory
+    description: Keep conversation state, summarize history and persist only what is needed.
+    level: foundational
+  # Module 5 — Evaluation, observability and risks
+  - id: evaluate-agents-with-traces
+    title: Evaluate agents with traces and test doubles
+    description: Test agent behavior deterministically and evaluate it from execution traces.
+    level: foundational
+  - id: mitigate-agentic-risks
+    title: Mitigate agentic risks
+    description: Identify prompt injection, hallucination and excessive autonomy, and apply mitigations.
+    level: foundational

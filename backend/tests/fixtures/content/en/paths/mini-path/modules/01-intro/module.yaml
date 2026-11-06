@@ -1,0 +1,14 @@
+id: intro
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Intro
+summary: Intro module.
+order: 1
+objectives:
+  - { id: obj-loop, statement: Explain the agent loop, competencies: [explain-agents] }
+  - { id: obj-tools, statement: Design a tool, competencies: [design-tools] }
+competencies: [explain-agents, design-tools]
+lab_scenarios: [demo-scenario]
+references:
+  - { title: Python docs, url: "https://docs.python.org/3/" }

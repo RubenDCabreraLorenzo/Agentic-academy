@@ -1,0 +1,15 @@
+id: mini-path
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Mini path
+summary: A minimal valid path for validator tests.
+level: foundational
+status: available
+order: 1
+objectives: [Understand agents]
+entry_prerequisites:
+  - { label: Python, resource_url: "https://docs.python.org/3/tutorial/" }
+competencies: [explain-agents, design-tools]
+estimated_hours: 1
+modules: [intro]
