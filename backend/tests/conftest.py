@@ -19,6 +19,10 @@ os.environ.setdefault("SESSION_SECRET", "x" * 40)
 os.environ.setdefault("COOKIE_SECURE", "false")
 os.environ.setdefault("RUNNER_DB_PASSWORD", "runner")
 
+# Sample course content, including learner-facing test files that must not be collected. Declared
+# here because a pytest ``--ignore`` option would be relative to the directory pytest is run from.
+collect_ignore = ["fixtures"]
+
 BACKEND = Path(__file__).resolve().parents[1]
 ADMIN_URL = os.environ.get(
     "TEST_DATABASE_URL", "postgresql+psycopg://academy:academy@localhost:5432/academy"

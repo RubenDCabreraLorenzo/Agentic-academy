@@ -45,7 +45,7 @@ packages = ["src/academy"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-q --ignore=tests/fixtures"
+addopts = "-q"
 
 [tool.ruff]
 line-length = 100
@@ -65,7 +65,7 @@ max-line-length = 120
 
 [tool.mypy]
 python_version = "3.13"
-mypy_path = "src"
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 packages = ["academy"]
 plugins = ["pydantic.mypy"]
 ignore_missing_imports = true
