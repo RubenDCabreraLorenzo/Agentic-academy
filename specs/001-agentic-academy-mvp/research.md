@@ -91,7 +91,8 @@ evaluated against the constitution: educational value, technical suitability and
 - **Decision**: A separate **runner** service consumes submission jobs from the PostgreSQL queue and
   executes each submission in a fresh, ephemeral OCI container running under the **gVisor**
   (`runsc`) runtime, with:
-  - no network (`--network none`), read-only root filesystem, a small `tmpfs` work directory;
+  - no network (`--network none`), read-only root filesystem, a small `tmpfs` for `/tmp` and a
+    per-job result directory on a fixed-size host tmpfs (`/out`, readable after the container exits);
   - non-root user, all Linux capabilities dropped, `no-new-privileges`, default seccomp profile;
   - limits: 1 vCPU, 256 MB memory, 64 PIDs, 10 s wall-clock per job, 64 KB captured output;
   - a pinned, minimal sandbox image containing Python 3.13, pytest and the `academy_sim` package

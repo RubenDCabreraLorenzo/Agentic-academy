@@ -34,6 +34,7 @@ Copy `.env.example` to `.env`. Development defaults need no real secrets.
 | `RUNNER_RUNTIME` | runner | `runsc` | must be `runsc` |
 | `RUNNER_SANDBOX_IMAGE` | runner | `academy-sandbox:dev` | pinned digest `academy-sandbox@sha256:…` |
 | `RUNNER_CONCURRENCY` | runner | `2` | sized by load (research R10) |
+| `RUNNER_OUT_DIR` | runner | `./.runner-out` (plain directory) | a fixed-size tmpfs on the runner host, size = concurrency × 2 MB (runner protocol §3) |
 | `RATE_LIMIT_ENABLED` | api | `true` | must be `true` |
 
 **Development-only security exceptions** (each refused at start-up when `APP_ENV=production`, and
@@ -42,6 +43,7 @@ logged as a warning otherwise):
 - `RUNNER_RUNTIME=runc` — plain containers for machines without gVisor (e.g. macOS). Sandbox
   security results are not valid under this setting.
 - `RUNNER_SANDBOX_IMAGE` without a digest.
+- `RUNNER_OUT_DIR` not on a tmpfs (the runner checks the mount type at start-up).
 - `EMAIL_BACKEND=console` — prints verification and reset links to the API log.
 - `RATE_LIMIT_ENABLED=false` — only for load tests.
 

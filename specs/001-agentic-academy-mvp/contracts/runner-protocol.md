@@ -12,7 +12,10 @@ Decision record: [research R6, R7](../research.md). Review: [architecture-review
 | **API host** (trusted) | Full database role, session secrets, SMTP credentials, content bundle | Execution of learner code; reference solutions |
 | **PostgreSQL** (trusted) | All learner data | — |
 | **Runner host** (trusted, exposed) | Docker/gVisor daemon, content bundles (challenge tests by version), a database role limited to the runner functions in §1 | API secrets, SMTP credentials, direct table access, learner identity (account ids, emails), reference solutions |
-| **Sandbox container** (untrusted) | Learner files, the challenge's tests, `academy_sim` | Network, environment secrets, database, other submissions, reference solutions |
+| **Sandbox container** (untrusted) | Learner files, the tests of the one challenge being evaluated, `academy_sim`, its own `/out` directory | Network, environment secrets, database, other submissions, reference solutions, the rest of the content bundle |
+
+Everything produced inside the sandbox — stdout, stderr and `/out/result.json` — is written by a
+process that also runs learner code, so the runner treats it as **untrusted input** (§5, §8.2).
 
 The runner host is treated as *trusted but exposed*: a sandbox escape is assumed to compromise it,
 so it holds nothing beyond what is needed to execute and report jobs.
@@ -48,12 +51,18 @@ only a `submission` can complete a challenge and count as an attempt. The MVP ha
 ```text
 /work/                        # read-only bind mount, rebuilt for every job
 ├── submission/               # learner files
-├── tests/                    # the challenge's tests, taken from the content bundle of the
-│                             # submission's bundle_version (never from learner input)
+├── tests/                    # only the tests of this challenge, copied from the content bundle
+│                             # of the submission's bundle_version (never from learner input)
 └── manifest.json             # test ids expected, limits (no secrets)
-/out/                         # writable tmpfs (1 MB) — result file only
+/out/                         # writable per-job directory (see §3), result file only
 /tmp/                         # writable tmpfs (16 MB)
 ```
+
+- Learner files are rejected before execution (job `failed`, reason "invalid submission files")
+  when a path is absolute, contains `..`, or uses a reserved name that could shadow the harness:
+  `conftest.py`, `sitecustomize.py`, `usercustomize.py`, `pytest.py`, `pytest/`, `_pytest/`,
+  `academy_sim*`, `*.pth`. This blocks accidental and trivial shadowing; it does not make the harness
+  tamper-proof (§8.2).
 
 - Reference solutions are **never** mounted in any learner run; they are used only by the content
   validator (content-schema rule 7).
@@ -66,7 +75,11 @@ only a `submission` can complete a challenge and count as an attempt. The MVP ha
 - Image: `academy-sandbox@sha256:<pinned digest>` with Python 3.13, pytest, `academy_sim`; no other
   packages; rebuilt and re-pinned through normal review.
 - Runtime: gVisor `runsc`; `--network none`; `--read-only`; `--tmpfs /tmp:size=16m`;
-  `--tmpfs /out:size=1m`; `--user 65534:65534`; `--cap-drop ALL`;
+  `/out` bind-mounted from a fresh, empty per-job directory owned by `65534` inside a fixed-size
+  host tmpfs dedicated to the runner (e.g. `/var/lib/academy-runner/out`, provisioned on the runner
+  host; total size = concurrency × 2 MB), removed after the result is read — an in-container
+  `--tmpfs` would be discarded when the container exits, before the runner can read it;
+  `--user 65534:65534`; `--cap-drop ALL`;
   `--security-opt no-new-privileges`; `--pids-limit 64`; `--memory 256m --memory-swap 256m`;
   `--cpus 1`; `--ulimit nofile=64`; labels `academy.submission=<id>`, `academy.worker=<id>`,
   `academy.deadline=<epoch>`.
@@ -89,7 +102,10 @@ only a `submission` can complete a challenge and count as an attempt. The MVP ha
 
 ## 5. Result
 
-The harness writes `/out/result.json`; the runner never parses stdout as a result.
+The harness writes `/out/result.json`; the runner never parses stdout as a result. Learner code
+can also write or overwrite this file (same process, same user), so the file is untrusted input:
+validation below rejects malformed or inconsistent results, but **cannot detect a forged result
+that reports the exact expected test ids as passed**. This is the residual risk accepted in D1.
 
 ```json
 {
@@ -104,7 +120,8 @@ The harness writes `/out/result.json`; the runner never parses stdout as a resul
 
 The runner **validates** the result before accepting it:
 
-1. The file exists, is valid JSON ≤ 1 MB, and matches the schema above.
+1. The file is a regular file (opened with `O_NOFOLLOW`; symlinks, directories and other file
+   types are rejected), is ≤ 1 MB, is valid JSON and matches the schema above.
 2. The set of test ids equals exactly the expected set from `manifest.json` (no missing, extra or
    duplicated ids); otherwise the job is `failed` with reason "test harness integrity check
    failed".
