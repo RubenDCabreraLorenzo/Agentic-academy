@@ -67,7 +67,7 @@ The automated scan only assists: the human review remains the gate.
 
 ## Legal and publisher files
 
-Owner-supplied files live in `frontend/src/legal/en/`. None exists yet, and none may be generated.
+Owner-supplied files live in `frontend/src/legal/en/`. None may be generated. `privacy.md` and `terms.md` currently hold lorem ipsum, at the owner's request; `publisher.json` does not exist.
 
 | File | Effect when present | When absent |
 |------|---------------------|-------------|
@@ -82,4 +82,4 @@ Owner-supplied files live in `frontend/src/legal/en/`. None exists yet, and none
 
 ## Public launch gate (SC-019)
 
-The release checklist for opening public registration MUST confirm: `privacy.md`, `terms.md` and `publisher.json` exist; links appear in the footer and on `/register`; `VITE_PUBLIC_ORIGIN` is set; and the subject-matter review (S001 T121) is complete.
+The release checklist for opening public registration MUST confirm: `privacy.md`, `terms.md` and `publisher.json` exist; `privacy.md` and `terms.md` hold the owner's real text, with no lorem ipsum left; links appear in the footer and on `/register`; `VITE_PUBLIC_ORIGIN` is set; and the subject-matter review (S001 T121) is complete.

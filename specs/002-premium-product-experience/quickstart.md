@@ -48,7 +48,7 @@ How to prove the feature works. Commands become runnable as the corresponding ta
 5. Block `/api/v1/catalog`, and reload.
 6. Sign in, and open `/`.
 
-**Expected**: all sections are present; numbers match; each statement has an entry and nothing forbidden appears; laboratory copy says recordings are replayed and no model is called; step 5 affects only the data sections and offers a retry; step 6 offers "Go to my progress" with no redirect; there are no legal links, as no legal files exist.
+**Expected**: all sections are present; numbers match; each statement has an entry and nothing forbidden appears; laboratory copy says recordings are replayed and no model is called; step 5 affects only the data sections and offers a retry; step 6 offers "Go to my progress" with no redirect; legal links match the files present: today privacy and terms, whose text is lorem ipsum until the owner replaces it, and no publisher details.
 
 ### P3 — Routes and redirects (spec Route Map)
 
@@ -59,7 +59,7 @@ How to prove the feature works. Commands become runnable as the corresponding ta
 5. Open `/privacy`, and an unknown address.
 6. From each shell, follow every navigation link, and sign out.
 
-**Expected**: step 1 lands on `/register?x=1`; both email links work; return after sign-in works; both step 5 pages show "not found", with links to `/` and `/curriculum`; "Curriculum" goes to `/curriculum`; sign-out lands on `/`.
+**Expected**: step 1 lands on `/register?x=1`; both email links work; return after sign-in works; `/privacy` shows its text, or "not found" if its file is absent, and the unknown address shows "not found", with links to `/` and `/curriculum`; "Curriculum" goes to `/curriculum`; sign-out lands on `/`.
 
 ### P4 — Accessibility walkthrough (US4, SC-002)
 

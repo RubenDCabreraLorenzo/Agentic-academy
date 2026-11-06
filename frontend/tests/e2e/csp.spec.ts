@@ -26,6 +26,10 @@ test("highlighting, diagrams, editor and fonts work under the production policy"
   await expect(page.getByRole("region", { name: "Curriculum and paths" }).getByRole("listitem").first()).toBeVisible();
   expect(await violations()).toEqual([]);
 
+  await page.goto("/privacy");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 20_000 });
+  expect(await violations()).toEqual([]);
+
   await signIn(page);
 
   await page.goto("/modules/llm-foundations");

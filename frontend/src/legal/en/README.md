@@ -1,6 +1,8 @@
 # Legal and publisher files
 
-Only the owner supplies these files. Do not generate, infer or draft their contents, and do not add placeholders.
+Only the owner supplies these files. Do not generate, infer or draft their contents.
+
+**`privacy.md` and `terms.md` currently hold lorem ipsum, at the owner's request. Replace it with the real text before public launch.**
 
 | File | Effect when present | When absent |
 |------|---------------------|-------------|

@@ -1,4 +1,6 @@
 /** Quickstart P2 (US2): the landing page, live data and what it must not claim. */
+import { existsSync } from "node:fs";
+import path_ from "node:path";
 import { expect, expectNoHorizontalScroll, expectNoSeriousA11yViolations, signIn, test } from "../fixtures";
 
 interface Path {
@@ -125,17 +127,29 @@ test("a signed-in learner stays on the page and is offered their progress", asyn
   await expect(page.getByRole("region", { name: "Start building" }).getByRole("link", { name: "Go to my progress" })).toBeVisible();
 });
 
-test("no legal links or legal pages exist until the owner supplies them", async ({ page }) => {
-  for (const path of ["/", "/register"]) {
+for (const [file, path, name] of [
+  ["privacy.md", "/privacy", "Privacy notice"],
+  ["terms.md", "/terms", "Terms"],
+] as const) {
+  test(`${name}: its link and page exist only with its file`, async ({ page }) => {
+    const present = existsSync(path_.resolve(import.meta.dirname, "../../../src/legal/en", file));
+    for (const where of ["/", "/register"]) {
+      await page.goto(where);
+      await expect(page.getByRole("contentinfo")).toBeVisible();
+      const link = page.getByRole("main").or(page.getByRole("contentinfo")).getByRole("link", { name, exact: true });
+      await expect(link.first()).toBeVisible({ visible: present });
+      if (present) await expect(link.first()).toHaveAttribute("href", path);
+    }
     await page.goto(path);
-    await expect(page.getByRole("contentinfo")).toBeVisible();
-    await expect(page.getByRole("link", { name: /privacy|terms/i })).toHaveCount(0);
-  }
-  for (const path of ["/privacy", "/terms"]) {
-    await page.goto(path);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("We could not find this page.");
-    await expect(page).toHaveTitle("We could not find this page. · Agentic Academy");
-  }
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(present ? name : "We could not find this page.");
+    await expect(page).toHaveTitle(`${present ? name : "We could not find this page."} · Agentic Academy`);
+  });
+}
+
+test("no publisher details are shown without their file", async ({ page }) => {
+  test.skip(existsSync(path_.resolve(import.meta.dirname, "../../../src/legal/en/publisher.json")), "the file exists");
+  await page.goto("/");
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Contact" })).toHaveCount(0);
 });
 
 test("the footer identifies the product and links to its entry points", async ({ page }) => {

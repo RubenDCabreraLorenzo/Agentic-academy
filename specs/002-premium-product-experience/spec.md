@@ -34,6 +34,10 @@ semantics, runner security, content format or content governance. WCAG 2.2 AA is
   it? → A: Pages for owner-supplied privacy and terms text, plus publisher identity and contact details
   in the footer. Development can finish with the links hidden, but public launch is blocked until the
   owner supplies them (FR-022, FR-022a, SC-019).
+- Q: May the legal pages hold temporary text during development? → A: Yes, decided by the owner on
+  2026-11-06. `privacy.md` and `terms.md` hold lorem ipsum, supplied at the owner's request, so that the
+  links and pages can be seen. It MUST be replaced with the owner's real text before public launch
+  (SC-019). `publisher.json` stays absent: no publisher identity is invented.
 
 ## Glossary
 
@@ -657,7 +661,7 @@ No data entities change. New presentation-only items are the **design tokens**, 
 
 **Public launch gate** (does not block completing this specification's implementation)
 
-- **SC-019**: Public registration does not open until the owner has supplied the privacy notice, terms, publisher identity and contact details, and all are
+- **SC-019**: Public registration does not open until the owner has supplied the real privacy notice and terms, replacing any temporary text, and the publisher identity and contact details, and all are
   published and linked (baseline: none exist).
 
 ## Regression Risks
