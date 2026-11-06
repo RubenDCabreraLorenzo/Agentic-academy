@@ -457,7 +457,7 @@ both approval branches, and verify that no request leaves the application origin
   in-app navigation.
 - **FR-027**: Each lesson MUST have unique identifiers, and existing link formats MUST keep working.
 - **FR-028**: Lesson views MUST be recorded for a lesson of any height at any supported width, without changing the data recorded
-  or the request sent, and only for lessons the learner has scrolled to.
+  or the request sent, and only for lessons the learner has actually reached, whether by scrolling or by following a link.
 - **FR-029**: Long prose MUST use a reading measure whose median line is 65–75 characters, and no line may exceed 90 (S001 NFR-012).
   Code, diagrams and tables MAY use a wider column.
 - **FR-030**: The dashboard MUST keep all data of S001 FR-038 and FR-040 and, for a learner with progress, MUST show active path,

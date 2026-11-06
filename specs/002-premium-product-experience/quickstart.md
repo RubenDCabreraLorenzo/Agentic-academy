@@ -9,7 +9,7 @@ How to prove the feature works. Commands become runnable as the corresponding ta
 | Tool | Notes |
 |------|-------|
 | Everything in Spec 001's quickstart | Database, mail catcher, content build, sandbox image |
-| Docker | Also for the production check and for visual references |
+| Docker | Also for the production check |
 | A person with a screen reader | For P4; NVDA with Firefox and VoiceOver with Safari |
 
 **Windows**: the runner works only in its container, because `os.O_NOFOLLOW` does not exist there. Set `RUNNER_RUNTIME=runc` in `.env`, start it with `docker compose up -d --build --no-deps runner`, and use `E2E_START_RUNNER=0` for end-to-end runs. If something else listens on `[::1]:8000`, start Vite with `API_URL=http://127.0.0.1:8000`.

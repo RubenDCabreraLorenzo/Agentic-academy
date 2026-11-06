@@ -73,7 +73,7 @@ No NEEDS CLARIFICATION remains: the owner answered Q1–Q3 on 2026-11-06.
 specs/002-premium-product-experience/
 ├── spec.md
 ├── plan.md              # This file
-├── research.md          # Decisions R0–R19, with measurements
+├── research.md          # Decisions R0–R20, with measurements
 ├── data-model.md        # Frontend-only models; no persisted data changes
 ├── quickstart.md        # Validation scenarios P1–P12
 ├── contracts/
