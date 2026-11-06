@@ -1,0 +1,19 @@
+id: agent-evaluation-and-observability
+version: 0.1.0
+lang: en
+last_reviewed: '2026-11-06'
+title: Agent evaluation and observability
+summary: Measure agent quality with datasets and traces, detect regressions, and operate
+  agents with useful telemetry.
+level: intermediate
+status: planned
+order: 6
+objectives:
+- Create evaluation datasets, metrics and regression checks for agents.
+entry_prerequisites: []
+prerequisite_paths:
+- foundations-of-agentic-ai-engineering
+competencies:
+- build-agent-evaluations
+estimated_hours: 10
+modules: []

@@ -12,5 +12,5 @@ export default function globalSetup() {
   const run = (args: string[]) => execFileSync("uv", ["run", "--project", "backend", ...args], { cwd: root, env, stdio: "inherit" });
   run(["alembic", "-c", "backend/alembic.ini", "upgrade", "head"]);
   run(["academy", "content", "build", "--root", "content", "--lang", "en", "--out", "dist/content"]);
-  run(["academy", "dev", "seed"]);
+  run(["academy", "dev", "seed", "--reset"]);
 }

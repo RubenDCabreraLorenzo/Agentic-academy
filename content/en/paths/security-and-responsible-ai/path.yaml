@@ -1,0 +1,19 @@
+id: security-and-responsible-ai
+version: 0.1.0
+lang: en
+last_reviewed: '2026-11-06'
+title: Security and responsible AI
+summary: 'Threat-model agents: prompt injection, data exfiltration, excessive autonomy,
+  privacy and human oversight.'
+level: intermediate
+status: planned
+order: 7
+objectives:
+- Identify agentic threats and design controls and oversight.
+entry_prerequisites: []
+prerequisite_paths:
+- foundations-of-agentic-ai-engineering
+competencies:
+- threat-model-agents
+estimated_hours: 10
+modules: []

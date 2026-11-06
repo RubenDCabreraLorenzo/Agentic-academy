@@ -65,11 +65,14 @@ def get_sender() -> EmailSender:
     global _sender
     if _sender is None:
         s = get_settings()
-        _sender = {
-            "smtp": SmtpSender,
-            "console": lambda _s: ConsoleSender(),
-            "memory": lambda _s: MemorySender(),
-        }[s.email_backend](s)
+        sender: EmailSender
+        if s.email_backend == "smtp":
+            sender = SmtpSender(s)
+        elif s.email_backend == "console":
+            sender = ConsoleSender()
+        else:
+            sender = MemorySender()
+        _sender = sender
     return _sender
 
 

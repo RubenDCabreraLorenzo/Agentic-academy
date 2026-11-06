@@ -320,7 +320,7 @@ def _branch_prefix(variants: dict[str, Any], v: dict[str, Any]) -> list[dict[str
     origin = v.get("branches_from")
     if not isinstance(origin, dict):
         return []
-    parent = variants.get(origin.get("variant_id"))
+    parent = variants.get(str(origin.get("variant_id")))
     if parent is None or parent is v:
         return []
     out: list[dict[str, Any]] = [*_branch_prefix(variants, parent)]

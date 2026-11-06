@@ -1,0 +1,21 @@
+id: agent-orchestration-and-workflows
+version: 0.1.0
+lang: en
+last_reviewed: '2026-11-06'
+title: Agent orchestration and workflows
+summary: 'Compose agents and deterministic workflows: routing, planning, parallel
+  steps, retries and human checkpoints.'
+level: intermediate
+status: planned
+order: 2
+objectives:
+- Choose and implement routing, plan-and-execute and parallel patterns.
+- Design retries, timeouts, compensation and human checkpoints.
+entry_prerequisites: []
+prerequisite_paths:
+- foundations-of-agentic-ai-engineering
+competencies:
+- design-orchestration-patterns
+- handle-workflow-failures
+estimated_hours: 12
+modules: []

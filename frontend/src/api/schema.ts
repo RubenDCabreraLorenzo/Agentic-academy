@@ -438,7 +438,10 @@ export interface paths {
         /** Module content (requires account); records a content view */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Records a lesson view for "continue where you left off" */
+                    lesson?: string;
+                };
                 header?: never;
                 path: {
                     moduleId: components["parameters"]["ModuleId"];
@@ -585,7 +588,7 @@ export interface paths {
                         "application/json": components["schemas"]["QuestionFeedback"];
                     };
                 };
-                /** @description Attempt already submitted */
+                /** @description Attempt already submitted (code `attempt_submitted`) or question already answered in this attempt (code `already_answered`); answers are locked once feedback is shown */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -1168,6 +1171,23 @@ export interface components {
             lab_scenario_ids?: string[];
             previous_module_id?: string | null;
             next_module_id?: string | null;
+            path_title?: string;
+            summary?: string;
+            /** @enum {unknown} */
+            status?: "not_started" | "in_progress" | "completed";
+            objectives_demonstrated?: boolean;
+            competencies?: components["schemas"]["Competency"][];
+            challenges?: {
+                id?: string;
+                title?: string;
+            }[];
+            lab_scenarios?: {
+                id?: string;
+                title?: string;
+            }[];
+            deprecations?: {
+                [key: string]: components["schemas"]["Deprecation"];
+            };
         };
         Attempt: {
             /** Format: uuid */
@@ -1185,7 +1205,27 @@ export interface components {
                     id?: string;
                     text?: string;
                 }[];
+                /** @description Ordering items (shuffled) */
+                items?: {
+                    id?: string;
+                    text?: string;
+                }[];
+                left?: {
+                    id?: string;
+                    text?: string;
+                }[];
+                /** @description Shuffled */
+                right?: {
+                    id?: string;
+                    text?: string;
+                }[];
             }[];
+            module_id?: string;
+            /** @enum {unknown} */
+            status?: "in_progress" | "submitted";
+            feedback?: {
+                [key: string]: components["schemas"]["QuestionFeedback"];
+            };
             saved_answers?: {
                 [key: string]: components["schemas"]["Answer"];
             };

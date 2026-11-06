@@ -117,18 +117,18 @@ used by every story
 - [X] T036 Implement the auth service: sign-up (no account enumeration), single-use tokens (verify 24 h, reset 1 h), sign-in, sign-out (current session), reset confirm (revoke all sessions), delete account with body `confirm: "DELETE"` hard-deleting the account and all cascaded rows in one transaction, in `backend/src/academy/auth/service.py`
 - [X] T037 Implement auth routes `/auth/sign-up`, `/auth/verify-email`, `/auth/sign-in`, `/auth/sign-out`, `/auth/password-reset/request`, `/auth/password-reset/confirm`, `GET /me`, `DELETE /me` and the `current_learner` dependency in `backend/src/academy/auth/router.py` and `backend/src/academy/auth/dependencies.py`
 - [X] T038 [P] Implement `academy maintenance purge-unverified` deleting accounts with `status=pending_verification` older than 30 days in `backend/src/academy/auth/maintenance.py`
-- [X] T039 [P] Implement `academy dev seed` creating a verified learner `demo@academy.local` (refused when `APP_ENV=production`) in `backend/src/academy/shared/seed.py`
+- [X] T039 [P] Implement `academy dev seed` creating a verified learner `demo@example.com` (refused when `APP_ENV=production`) in `backend/src/academy/shared/seed.py`
 
 ### Frontend shell
 
-- [ ] T040 Implement routing, layout (header with progress entry point, skip link, consistent module navigation slot), error boundary and route-level code splitting in `frontend/src/app/`
-- [ ] T041 [P] Implement shared state components `Loading`, `EmptyState`, `ErrorState` (with retry), `OfflineBanner` (FR-052) in `frontend/src/components/states/`
-- [ ] T042 [P] Configure react-i18next with `en` resources and `Intl` date/number helpers using the active locale in `frontend/src/i18n/index.ts` and `frontend/src/i18n/en/common.json`
-- [ ] T043 Implement `generate:api` (openapi-typescript from `specs/001-agentic-academy-mvp/contracts/openapi.yaml` into `frontend/src/api/schema.ts`) and a typed fetch client that sends credentials, adds `X-CSRF-Token` from the `aa_csrf` cookie, parses problem details and emits a re-authentication event on 401 in `frontend/src/api/client.ts`
-- [ ] T044 [P] Implement a local draft store (localStorage wrapped in try/catch) that keeps unsent answers and code per learner and item and replays them after re-authentication (FR-045b) in `frontend/src/app/drafts.ts`
-- [ ] T045 [P] Implement content rendering components: `Markdown` (markdown-it → DOMPurify-sanitized HTML, heading anchors), `CodeBlock` (Shiki, language label, copy button, annotations, internal horizontal scroll at 360 px), `Diagram` (Mermaid rendered client-side with the `alt` text exposed to assistive technology), `MaturityBadge`, `VendorNote`, `DeprecationNotice` in `frontend/src/components/content/`
-- [ ] T046 Implement auth pages: sign up, check-your-email, verify, sign in, forgot password, reset password, account settings with irreversible-deletion confirmation in `frontend/src/features/auth/`
-- [ ] T047 [P] Configure Playwright (Chromium, desktop and 360 px projects, `--trace off` by default) with an axe helper failing on critical violations and a fixture that signs in the seeded learner in `frontend/playwright.config.ts` and `frontend/tests/e2e/fixtures.ts`
+- [X] T040 Implement routing, layout (header with progress entry point, skip link, consistent module navigation slot), error boundary and route-level code splitting in `frontend/src/app/`
+- [X] T041 [P] Implement shared state components `Loading`, `EmptyState`, `ErrorState` (with retry), `OfflineBanner` (FR-052) in `frontend/src/components/states/`
+- [X] T042 [P] Configure react-i18next with `en` resources and `Intl` date/number helpers using the active locale in `frontend/src/i18n/index.ts` and `frontend/src/i18n/en/common.json`
+- [X] T043 Implement `generate:api` (openapi-typescript from `specs/001-agentic-academy-mvp/contracts/openapi.yaml` into `frontend/src/api/schema.ts`) and a typed fetch client that sends credentials, adds `X-CSRF-Token` from the `aa_csrf` cookie, parses problem details and emits a re-authentication event on 401 in `frontend/src/api/client.ts`
+- [X] T044 [P] Implement a local draft store (localStorage wrapped in try/catch) that keeps unsent answers and code per learner and item and replays them after re-authentication (FR-045b) in `frontend/src/app/drafts.ts`
+- [X] T045 [P] Implement content rendering components: `Markdown` (markdown-it → DOMPurify-sanitized HTML, heading anchors), `CodeBlock` (Shiki, language label, copy button, annotations, internal horizontal scroll at 360 px), `Diagram` (Mermaid rendered client-side with the `alt` text exposed to assistive technology), `MaturityBadge`, `VendorNote`, `DeprecationNotice` in `frontend/src/components/content/`
+- [X] T046 Implement auth pages: sign up, check-your-email, verify, sign in, forgot password, reset password, account settings with irreversible-deletion confirmation in `frontend/src/features/auth/`
+- [X] T047 [P] Configure Playwright (Chromium, desktop and 360 px projects, `--trace off` by default) with an axe helper failing on critical violations and a fixture that signs in the seeded learner in `frontend/playwright.config.ts` and `frontend/tests/e2e/fixtures.ts`
 
 **Checkpoint**: Foundation ready — content validates and builds, learners can create accounts and
 sign in, the frontend shell renders.
@@ -146,18 +146,18 @@ present and readable at desktop and 360 px widths, without challenges, laborator
 
 ### Tests for User Story 1
 
-- [ ] T048 [P] [US1] Write failing integration tests for `GET /paths/{pathId}` (public, module list; module `status` only when signed in) and `GET /modules/{moduleId}` (401 when signed out, records a ContentView, returns `missing_prerequisites`, `previous_module_id`, `next_module_id`) in `backend/tests/integration/catalog/test_module_api.py`
-- [ ] T049 [P] [US1] Write a failing end-to-end test for quickstart V1 steps 2–4 (sign in, path overview, Module 1 elements, 360 px no horizontal page scroll, axe clean) in `frontend/tests/e2e/us1-study-module.spec.ts`
+- [X] T048 [P] [US1] Write failing integration tests for `GET /paths/{pathId}` (public, module list; module `status` only when signed in) and `GET /modules/{moduleId}` (401 when signed out, records a ContentView, returns `missing_prerequisites`, `previous_module_id`, `next_module_id`) in `backend/tests/integration/catalog/test_module_api.py`
+- [X] T049 [P] [US1] Write a failing end-to-end test for quickstart V1 steps 2–4 (sign in, path overview, Module 1 elements, 360 px no horizontal page scroll, axe clean) in `frontend/tests/e2e/us1-study-module.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T050 [US1] Create migration `0002_content_view` for `content_view` (`account_id`, `content_type` enum `module | lesson`, `content_id`, `content_version`, `first_viewed_at`, `last_viewed_at`; PK `(account_id, content_type, content_id)`) in `backend/alembic/versions/0002_content_view.py`
-- [ ] T051 [P] [US1] Implement the ContentView model and `record_view` / `last_position` (derived from the most recent `last_viewed_at`, replacing a stored LastPosition table per architecture-review §2.4) in `backend/src/academy/progress/views.py`
-- [ ] T052 [US1] Implement the catalog service: path detail, module detail with lessons, references, previous/next module, and non-blocking `missing_prerequisites` (FR-006) computed from the progress derivation in `backend/src/academy/catalog/service.py`
-- [ ] T053 [US1] Implement routes `GET /paths/{pathId}` (public) and `GET /modules/{moduleId}` (requires account) per openapi.yaml in `backend/src/academy/catalog/router.py`
-- [ ] T054 [P] [US1] Implement the path overview page (title, level, objectives, entry-prerequisite self-assessment checklist stored only locally and never counted as evidence per FR-003b, expected competencies, estimated effort, ordered modules) in `frontend/src/features/catalog/PathPage.tsx`
-- [ ] T055 [US1] Implement the module page (objectives, prerequisite warning with links, lessons rendered with T045 components, references with vendor labels, previous/next/back-to-path navigation, reading mode with ≤ 90 characters per line and no unrelated elements per NFR-012) in `frontend/src/features/module/ModulePage.tsx` and `frontend/src/features/module/LessonView.tsx`
-- [ ] T056 [US1] Author Module 1 "LLM foundations" in `content/en/paths/foundations-of-agentic-ai-engineering/modules/01-llm-foundations/` with `module.yaml`, lessons covering tokens, context windows, sampling, structured output and limitations (hallucination) with "why" explanations, maturity labels, vendor notes with limitations, ≥ 2 Python code examples, ≥ 1 Mermaid diagram with alt text and reference links; plus `knowledge-check.yaml` (≥ 5 questions across the four types, each with explanation, objective and lesson anchor) and one challenge (`challenge.yaml`, `starter/`, `tests/` using `academy_sim` — all visible to the learner, D2 —, `solution/` for validation only, `difficulty_rank: 1`, ≥ 2 hints) passing `academy content validate --run-solutions`
+- [X] T050 [US1] Create migration `0002_content_view` for `content_view` (`account_id`, `content_type` enum `module | lesson`, `content_id`, `content_version`, `first_viewed_at`, `last_viewed_at`; PK `(account_id, content_type, content_id)`) in `backend/alembic/versions/0002_content_view.py`
+- [X] T051 [P] [US1] Implement the ContentView model and `record_view` / `last_position` (derived from the most recent `last_viewed_at`, replacing a stored LastPosition table per architecture-review §2.4) in `backend/src/academy/progress/views.py`
+- [X] T052 [US1] Implement the catalog service: path detail, module detail with lessons, references, previous/next module, and non-blocking `missing_prerequisites` (FR-006) computed from the progress derivation in `backend/src/academy/catalog/service.py`
+- [X] T053 [US1] Implement routes `GET /paths/{pathId}` (public) and `GET /modules/{moduleId}` (requires account) per openapi.yaml in `backend/src/academy/catalog/router.py`
+- [X] T054 [P] [US1] Implement the path overview page (title, level, objectives, entry-prerequisite self-assessment checklist stored only locally and never counted as evidence per FR-003b, expected competencies, estimated effort, ordered modules) in `frontend/src/features/catalog/PathPage.tsx`
+- [X] T055 [US1] Implement the module page (objectives, prerequisite warning with links, lessons rendered with T045 components, references with vendor labels, previous/next/back-to-path navigation, reading mode with ≤ 90 characters per line and no unrelated elements per NFR-012) in `frontend/src/features/module/ModulePage.tsx` and `frontend/src/features/module/LessonView.tsx`
+- [X] T056 [US1] Author Module 1 "LLM foundations" in `content/en/paths/foundations-of-agentic-ai-engineering/modules/01-llm-foundations/` with `module.yaml`, lessons covering tokens, context windows, sampling, structured output and limitations (hallucination) with "why" explanations, maturity labels, vendor notes with limitations, ≥ 2 Python code examples, ≥ 1 Mermaid diagram with alt text and reference links; plus `knowledge-check.yaml` (≥ 5 questions across the four types, each with explanation, objective and lesson anchor) and one challenge (`challenge.yaml`, `starter/`, `tests/` using `academy_sim` — all visible to the learner, D2 —, `solution/` for validation only, `difficulty_rank: 1`, ≥ 2 hints) passing `academy content validate --run-solutions`
 
 **Checkpoint**: US1 works on its own.
 
@@ -173,21 +173,21 @@ retry, pass; a network interruption does not duplicate results.
 
 ### Tests for User Story 2
 
-- [ ] T057 [P] [US2] Write failing unit tests for scoring (0/1 per question; multiple choice = all and only correct options; ordering = exact order; matching = all pairs; score = correct/total; passed ⇔ score ≥ threshold of the attempt's version; per-objective ratios) in `backend/tests/unit/assessments/test_scoring.py`
-- [ ] T058 [P] [US2] Write failing integration tests for start/resume attempt (idempotent `attempt_id`), save answer with feedback, submit (422 `unanswered_questions` unless `confirm_unanswered`), idempotent re-submit, best score, attempt history and scoring against the version the attempt started on after a newer bundle is published in `backend/tests/integration/assessments/test_attempts.py`
-- [ ] T059 [P] [US2] Write a failing end-to-end test for quickstart V2 in `frontend/tests/e2e/us2-knowledge-check.spec.ts`
+- [X] T057 [P] [US2] Write failing unit tests for scoring (0/1 per question; multiple choice = all and only correct options; ordering = exact order; matching = all pairs; score = correct/total; passed ⇔ score ≥ threshold of the attempt's version; per-objective ratios) in `backend/tests/unit/assessments/test_scoring.py`
+- [X] T058 [P] [US2] Write failing integration tests for start/resume attempt (idempotent `attempt_id`), save answer with feedback, submit (422 `unanswered_questions` unless `confirm_unanswered`), idempotent re-submit, best score, attempt history and scoring against the version the attempt started on after a newer bundle is published in `backend/tests/integration/assessments/test_attempts.py`
+- [X] T059 [P] [US2] Write a failing end-to-end test for quickstart V2 in `frontend/tests/e2e/us2-knowledge-check.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T060 [US2] Create migration `0003_assessment_attempt` (`id` UUID PK client-provided, `account_id`, `knowledge_check_id`, `content_version`, `bundle_version`, `status` enum `in_progress | submitted`, `answers` JSONB, `question_order` JSONB, `score` numeric(4,3), `passed` bool, `per_objective` JSONB, `started_at`, `submitted_at`) in `backend/alembic/versions/0003_assessment_attempt.py`
-- [ ] T061 [P] [US2] Implement the AssessmentAttempt model in `backend/src/academy/assessments/models.py`
-- [ ] T062 [P] [US2] Implement pure scoring functions in `backend/src/academy/assessments/scoring.py`
-- [ ] T063 [US2] Implement the assessment service (start or resume with randomized `question_order` and pinned `bundle_version`; questions returned without correct answers; save answer returning `correct`, `explanation_markdown`, `lesson_link`; submit; best score; history; weak objectives) in `backend/src/academy/assessments/service.py`
-- [ ] T064 [US2] Implement routes `POST /knowledge-checks/{checkId}/attempts`, `GET /knowledge-checks/{checkId}/attempts/history`, `PUT /attempts/{attemptId}/answers/{questionId}`, `POST /attempts/{attemptId}/submit` in `backend/src/academy/assessments/router.py`
-- [ ] T065 [US2] Implement the progress derivation module with objective status (demonstrated ⇔ the module's knowledge check passed in any version), and module status `not_started | in_progress | completed` where completed requires the knowledge check AND all module challenges passed (FR-037; never relaxed), in `backend/src/academy/progress/derivation.py` with unit tests in `backend/tests/unit/progress/test_derivation.py`
-- [ ] T066 [P] [US2] Implement accessible question components (single choice radio group, multiple choice checkboxes, ordering with move-up/move-down buttons, matching with selects) in `frontend/src/features/knowledge-check/questions/`
-- [ ] T067 [US2] Implement the knowledge check flow (intro with question count, threshold and objectives; per-question feedback with lesson link; unanswered-question confirmation; result with weak objectives and retry; best score; draft replay via T044) in `frontend/src/features/knowledge-check/KnowledgeCheckPage.tsx`
-- [ ] T068 [US2] Show the knowledge-check entry and module status on the module page, with the label "In progress — challenge available in a later release" while no challenge evaluation is enabled (feature flag `challenges_enabled` from `/health`), in `frontend/src/features/module/ModuleStatus.tsx`
+- [X] T060 [US2] Create migration `0003_assessment_attempt` (`id` UUID PK client-provided, `account_id`, `knowledge_check_id`, `content_version`, `bundle_version`, `status` enum `in_progress | submitted`, `answers` JSONB, `question_order` JSONB, `score` numeric(4,3), `passed` bool, `per_objective` JSONB, `started_at`, `submitted_at`) in `backend/alembic/versions/0003_assessment_attempt.py`
+- [X] T061 [P] [US2] Implement the AssessmentAttempt model in `backend/src/academy/assessments/models.py`
+- [X] T062 [P] [US2] Implement pure scoring functions in `backend/src/academy/assessments/scoring.py`
+- [X] T063 [US2] Implement the assessment service (start or resume with randomized `question_order` and pinned `bundle_version`; questions returned without correct answers; save answer returning `correct`, `explanation_markdown`, `lesson_link`; submit; best score; history; weak objectives) in `backend/src/academy/assessments/service.py`
+- [X] T064 [US2] Implement routes `POST /knowledge-checks/{checkId}/attempts`, `GET /knowledge-checks/{checkId}/attempts/history`, `PUT /attempts/{attemptId}/answers/{questionId}`, `POST /attempts/{attemptId}/submit` in `backend/src/academy/assessments/router.py`
+- [X] T065 [US2] Implement the progress derivation module with objective status (demonstrated ⇔ the module's knowledge check passed in any version), and module status `not_started | in_progress | completed` where completed requires the knowledge check AND all module challenges passed (FR-037; never relaxed), in `backend/src/academy/progress/derivation.py` with unit tests in `backend/tests/unit/progress/test_derivation.py`
+- [X] T066 [P] [US2] Implement accessible question components (single choice radio group, multiple choice checkboxes, ordering with move-up/move-down buttons, matching with selects) in `frontend/src/features/knowledge-check/questions/`
+- [X] T067 [US2] Implement the knowledge check flow (intro with question count, threshold and objectives; per-question feedback with lesson link; unanswered-question confirmation; result with weak objectives and retry; best score; draft replay via T044) in `frontend/src/features/knowledge-check/KnowledgeCheckPage.tsx`
+- [X] T068 [US2] Show the knowledge-check entry and module status on the module page, with the label "In progress — challenge available in a later release" while no challenge evaluation is enabled (feature flag `challenges_enabled` from `/health`), in `frontend/src/features/module/ModuleStatus.tsx`
 
 **Checkpoint**: US1 + US2 work; no competency is shown as demonstrated.
 
@@ -203,14 +203,14 @@ competencies and availability; planned paths cannot be started.
 
 ### Tests for User Story 6
 
-- [ ] T069 [P] [US6] Write failing integration tests for `GET /catalog` (public, ordered by `order`, includes planned paths) in `backend/tests/integration/catalog/test_catalog_api.py`
+- [X] T069 [P] [US6] Write failing integration tests for `GET /catalog` (public, ordered by `order`, includes planned paths) in `backend/tests/integration/catalog/test_catalog_api.py`
 
 ### Implementation for User Story 6
 
-- [ ] T070 [P] [US6] Author planned paths (status `planned`, level, summary, prerequisite paths, competencies) for: orchestration and workflows, multi-agent architectures, MCP, RAG and knowledge integration, evaluation and observability, security and responsible AI, production deployment (FR-002) in `content/en/paths/<path-id>/path.yaml`
-- [ ] T071 [US6] Implement `list_catalog` and route `GET /catalog` in `backend/src/academy/catalog/service.py` and `backend/src/academy/catalog/router.py`
-- [ ] T072 [US6] Implement the public catalog/roadmap page (grouped by level, roadmap order, "Not yet available" badge, planned paths inspectable but not startable, missing prerequisites shown for signed-in learners) and make it the landing route in `frontend/src/features/catalog/CatalogPage.tsx`
-- [ ] T073 [US6] Extend the e2e test with quickstart V1 step 1 in `frontend/tests/e2e/us6-catalog.spec.ts`
+- [X] T070 [P] [US6] Author planned paths (status `planned`, level, summary, prerequisite paths, competencies) for: orchestration and workflows, multi-agent architectures, MCP, RAG and knowledge integration, evaluation and observability, security and responsible AI, production deployment (FR-002) in `content/en/paths/<path-id>/path.yaml`
+- [X] T071 [US6] Implement `list_catalog` and route `GET /catalog` in `backend/src/academy/catalog/service.py` and `backend/src/academy/catalog/router.py`
+- [X] T072 [US6] Implement the public catalog/roadmap page (grouped by level, roadmap order, "Not yet available" badge, planned paths inspectable but not startable, missing prerequisites shown for signed-in learners) and make it the landing route in `frontend/src/features/catalog/CatalogPage.tsx`
+- [X] T073 [US6] Extend the e2e test with quickstart V1 step 1 in `frontend/tests/e2e/us6-catalog.spec.ts`
 
 **Checkpoint (Increment 1 exit)**: quickstart V1, V2, V7.1, V7.5 pass; Module 1 content complete.
 

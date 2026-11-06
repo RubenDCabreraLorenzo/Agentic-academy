@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test as base, type Page } from "@playwright/test";
 
-export const DEMO = { email: "demo@academy.local", password: "demo-password-123" };
+export const DEMO = { email: "demo@example.com", password: "demo-password-123" };
 
 export async function signIn(page: Page) {
   await page.goto("/sign-in");

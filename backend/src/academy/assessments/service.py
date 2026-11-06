@@ -138,14 +138,21 @@ def start_attempt(
         answers={},
         question_order=order,
     )
-    db.add(attempt)
     try:
-        db.flush()
-    except IntegrityError as exc:  # concurrent start from another tab
-        db.rollback()
-        raise ProblemError(
-            409, "conflict", "An attempt is already in progress; reload to resume"
-        ) from exc
+        with db.begin_nested():  # savepoint: a concurrent start (second tab) must not fail
+            db.add(attempt)
+            db.flush()
+    except IntegrityError:
+        concurrent = db.scalar(
+            select(AssessmentAttempt).where(
+                AssessmentAttempt.account_id == account_id,
+                AssessmentAttempt.knowledge_check_id == check_id,
+                AssessmentAttempt.status == "in_progress",
+            )
+        )
+        if concurrent is None:
+            raise ProblemError(409, "conflict", "Could not start the attempt; try again") from None
+        return _attempt_view(concurrent)
     return _attempt_view(attempt)
 
 

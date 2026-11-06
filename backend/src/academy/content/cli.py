@@ -8,12 +8,13 @@ import sys
 from pathlib import Path
 
 from academy.content.build import build
+from academy.content.loader import Issue
 from academy.content.solutions import check_solutions
 from academy.content.validate import validate
 
 
-def _report(issues: list[object], as_json: bool) -> None:
-    rows = [i.as_dict() for i in issues]  # type: ignore[attr-defined]
+def _report(issues: list[Issue], as_json: bool) -> None:
+    rows = [i.as_dict() for i in issues]
     if as_json:
         print(json.dumps({"ok": not rows, "issues": rows}, indent=2))
         return

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -30,19 +29,24 @@ class Bundle:
         return str(self.data["bundle_version"])
 
     def path(self, path_id: str) -> dict[str, Any] | None:
-        return self.data["paths"].get(path_id)
+        item: dict[str, Any] | None = self.data["paths"].get(path_id)
+        return item
 
     def module(self, module_id: str) -> dict[str, Any] | None:
-        return self.data["modules"].get(module_id)
+        item: dict[str, Any] | None = self.data["modules"].get(module_id)
+        return item
 
     def knowledge_check(self, check_id: str) -> dict[str, Any] | None:
-        return self.data["knowledge_checks"].get(check_id)
+        item: dict[str, Any] | None = self.data["knowledge_checks"].get(check_id)
+        return item
 
     def challenge(self, challenge_id: str) -> dict[str, Any] | None:
-        return self.data["challenges"].get(challenge_id)
+        item: dict[str, Any] | None = self.data["challenges"].get(challenge_id)
+        return item
 
     def lab_scenario(self, scenario_id: str) -> dict[str, Any] | None:
-        return self.data["lab_scenarios"].get(scenario_id)
+        item: dict[str, Any] | None = self.data["lab_scenarios"].get(scenario_id)
+        return item
 
     @property
     def competencies(self) -> dict[str, dict[str, Any]]:
@@ -85,15 +89,25 @@ class Registry:
 
 
 _override: Registry | None = None
+_cache: tuple[tuple[str, ...], Registry] | None = None
 
 
-@lru_cache
-def _loaded() -> Registry:
-    return Registry.load(get_settings().content_dir)
+def _bundle_files(content_dir: Path) -> tuple[str, ...]:
+    if not content_dir.is_dir():
+        return ()
+    return tuple(sorted(str(p) for p in content_dir.glob(f"*/{BUNDLE_PREFIX}*.json")))
 
 
 def get_registry() -> Registry:
-    return _override if _override is not None else _loaded()
+    """Bundles are immutable, so the registry is reloaded only when new bundle files appear."""
+    global _cache
+    if _override is not None:
+        return _override
+    content_dir = get_settings().content_dir
+    files = _bundle_files(content_dir)
+    if _cache is None or _cache[0] != files:
+        _cache = (files, Registry.load(content_dir))
+    return _cache[1]
 
 
 def set_registry(registry: Registry | None) -> None:

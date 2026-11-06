@@ -83,6 +83,12 @@ def install_error_handlers(app: FastAPI) -> None:
             400, "invalid_request", "Invalid request", "Invalid fields: " + ", ".join(fields)
         )
 
+    from academy.content.registry import ContentUnavailableError
+
+    @app.exception_handler(ContentUnavailableError)
+    async def _content(_: Request, exc: ContentUnavailableError) -> JSONResponse:
+        return problem_response(503, "content_unavailable", "Learning content is not available yet")
+
     @app.exception_handler(Exception)
     async def _unexpected(_: Request, exc: Exception) -> JSONResponse:
         import logging

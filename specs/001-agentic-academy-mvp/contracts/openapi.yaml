@@ -149,7 +149,9 @@ paths:
         '404': { $ref: '#/components/responses/Problem' }
   /modules/{moduleId}:
     get:
-      parameters: [ { $ref: '#/components/parameters/ModuleId' } ]
+      parameters:
+        - { $ref: '#/components/parameters/ModuleId' }
+        - { name: lesson, in: query, required: false, schema: { type: string }, description: Records a lesson view for "continue where you left off" }
       summary: Module content (requires account); records a content view
       responses:
         '200':
@@ -203,7 +205,7 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/QuestionFeedback' }
-        '409': { description: Attempt already submitted }
+        '409': { description: "Attempt already submitted (code `attempt_submitted`) or question already answered in this attempt (code `already_answered`); answers are locked once feedback is shown" }
   /attempts/{attemptId}/submit:
     post:
       parameters: [ { name: attemptId, in: path, required: true, schema: { type: string, format: uuid } } ]
@@ -449,6 +451,14 @@ components:
             lab_scenario_ids: { type: array, items: { type: string } }
             previous_module_id: { type: [string, 'null'] }
             next_module_id: { type: [string, 'null'] }
+            path_title: { type: string }
+            summary: { type: string }
+            status: { enum: [not_started, in_progress, completed] }
+            objectives_demonstrated: { type: boolean }
+            competencies: { type: array, items: { $ref: '#/components/schemas/Competency' } }
+            challenges: { type: array, items: { type: object, properties: { id: { type: string }, title: { type: string } } } }
+            lab_scenarios: { type: array, items: { type: object, properties: { id: { type: string }, title: { type: string } } } }
+            deprecations: { type: object, additionalProperties: { $ref: '#/components/schemas/Deprecation' } }
     Attempt:
       type: object
       properties:
@@ -466,6 +476,12 @@ components:
               type: { enum: [single_choice, multiple_choice, ordering, matching] }
               prompt_markdown: { type: string }
               options: { type: array, items: { type: object, properties: { id: { type: string }, text: { type: string } } } }
+              items: { type: array, description: Ordering items (shuffled), items: { type: object, properties: { id: { type: string }, text: { type: string } } } }
+              left: { type: array, items: { type: object, properties: { id: { type: string }, text: { type: string } } } }
+              right: { type: array, description: Shuffled, items: { type: object, properties: { id: { type: string }, text: { type: string } } } }
+        module_id: { type: string }
+        status: { enum: [in_progress, submitted] }
+        feedback: { type: object, additionalProperties: { $ref: '#/components/schemas/QuestionFeedback' } }
         saved_answers: { type: object, additionalProperties: { $ref: '#/components/schemas/Answer' } }
     Answer:
       type: object

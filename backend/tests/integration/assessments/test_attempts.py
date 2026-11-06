@@ -128,3 +128,12 @@ def test_other_learners_cannot_touch_attempt(client: TestClient, outbox: list, b
     sign_up_and_in(client, outbox)
     r = client.put(f"/api/v1/attempts/{attempt['attempt_id']}/answers/q1", json={"selected": ["a"]}, headers=csrf(client))
     assert r.status_code == 404
+
+
+def test_concurrent_start_resumes_same_attempt(client: TestClient, outbox: list, bundles: Path) -> None:
+    sign_up_and_in(client, outbox)
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(4) as pool:
+        results = list(pool.map(lambda _: start(client), range(4)))
+    assert len({r["attempt_id"] for r in results}) == 1

@@ -15,7 +15,8 @@ def main(argv: list[str] | None = None) -> int:
 
     dev = sub.add_parser("dev", help="development helpers")
     dsub = dev.add_subparsers(dest="dev_cmd", required=True)
-    dsub.add_parser("seed", help="create a verified demo learner (not in production)")
+    seed_p = dsub.add_parser("seed", help="create a verified demo learner (not in production)")
+    seed_p.add_argument("--reset", action="store_true", help="delete the demo learner and its progress first")
 
     maint = sub.add_parser("maintenance", help="maintenance jobs")
     msub = maint.add_subparsers(dest="maint_cmd", required=True)
@@ -27,7 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "dev":
         from academy.shared.seed import seed
 
-        return seed()
+        return seed(reset=args.reset)
     if args.cmd == "maintenance":
         from academy.auth.maintenance import purge_unverified
 

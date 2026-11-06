@@ -1,5 +1,5 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from "vite";
+
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 // The SPA and the API share one origin (research R2): in development Vite proxies /api to the

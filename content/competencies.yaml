@@ -45,3 +45,36 @@ competencies:
     title: Mitigate agentic risks
     description: Identify prompt injection, hallucination and excessive autonomy, and apply mitigations.
     level: foundational
+  # Planned paths (roadmap, FR-002)
+  - id: design-orchestration-patterns
+    title: Design orchestration patterns
+    description: Choose and implement routing, plan-and-execute and parallel patterns.
+    level: intermediate
+  - id: handle-workflow-failures
+    title: Handle failures in workflows
+    description: Design retries, timeouts, compensation and human checkpoints.
+    level: intermediate
+  - id: design-multi-agent-systems
+    title: Design multi-agent systems
+    description: Decide when to split work across agents and design their coordination.
+    level: advanced
+  - id: build-mcp-integrations
+    title: Build MCP integrations
+    description: Implement and consume MCP servers with least-privilege permissions.
+    level: intermediate
+  - id: ground-agents-with-retrieval
+    title: Ground agents with retrieval
+    description: Design retrieval pipelines and make agents cite their sources.
+    level: intermediate
+  - id: build-agent-evaluations
+    title: Build agent evaluations
+    description: Create evaluation datasets, metrics and regression checks for agents.
+    level: intermediate
+  - id: threat-model-agents
+    title: Threat-model agents
+    description: Identify agentic threats and design controls and oversight.
+    level: intermediate
+  - id: operate-agents-in-production
+    title: Operate agents in production
+    description: Deploy, monitor and evolve agents under cost, latency and reliability targets.
+    level: advanced

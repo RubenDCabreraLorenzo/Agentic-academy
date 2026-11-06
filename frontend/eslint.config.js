@@ -12,4 +12,5 @@ export default tseslint.config(
     plugins: { "react-hooks": reactHooks },
     rules: { ...reactHooks.configs.recommended.rules },
   },
+  { files: ["tests/e2e/**/*.ts"], rules: { "react-hooks/rules-of-hooks": "off" } },
 );

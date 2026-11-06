@@ -1,0 +1,19 @@
+id: multi-agent-architectures
+version: 0.1.0
+lang: en
+last_reviewed: '2026-11-06'
+title: Multi-agent architectures
+summary: When several agents are better than one, how they coordinate, and how to
+  keep multi-agent systems observable and safe.
+level: advanced
+status: planned
+order: 3
+objectives:
+- Decide when to split work across agents and design their coordination.
+entry_prerequisites: []
+prerequisite_paths:
+- agent-orchestration-and-workflows
+competencies:
+- design-multi-agent-systems
+estimated_hours: 12
+modules: []

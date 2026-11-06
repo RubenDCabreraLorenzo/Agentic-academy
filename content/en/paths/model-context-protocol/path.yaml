@@ -1,0 +1,19 @@
+id: model-context-protocol
+version: 0.1.0
+lang: en
+last_reviewed: '2026-11-06'
+title: Model Context Protocol (MCP)
+summary: Expose and consume tools, resources and prompts through MCP, with clear permissions
+  and trust boundaries.
+level: intermediate
+status: planned
+order: 4
+objectives:
+- Implement and consume MCP servers with least-privilege permissions.
+entry_prerequisites: []
+prerequisite_paths:
+- foundations-of-agentic-ai-engineering
+competencies:
+- build-mcp-integrations
+estimated_hours: 8
+modules: []

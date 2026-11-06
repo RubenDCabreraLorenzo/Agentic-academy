@@ -1,0 +1,20 @@
+id: production-deployment
+version: 0.1.0
+lang: en
+last_reviewed: '2026-11-06'
+title: Production deployment
+summary: 'Run agents in production: cost and latency budgets, rollout strategies,
+  monitoring and incident response.'
+level: advanced
+status: planned
+order: 8
+objectives:
+- Deploy, monitor and evolve agents under cost, latency and reliability targets.
+entry_prerequisites: []
+prerequisite_paths:
+- agent-evaluation-and-observability
+- security-and-responsible-ai
+competencies:
+- operate-agents-in-production
+estimated_hours: 10
+modules: []

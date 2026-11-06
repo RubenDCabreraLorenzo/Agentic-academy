@@ -1,0 +1,19 @@
+id: rag-and-knowledge-integration
+version: 0.1.0
+lang: en
+last_reviewed: '2026-11-06'
+title: RAG and knowledge integration
+summary: 'Ground agents in your own knowledge: retrieval, chunking, citations and
+  evaluating retrieval quality.'
+level: intermediate
+status: planned
+order: 5
+objectives:
+- Design retrieval pipelines and make agents cite their sources.
+entry_prerequisites: []
+prerequisite_paths:
+- foundations-of-agentic-ai-engineering
+competencies:
+- ground-agents-with-retrieval
+estimated_hours: 12
+modules: []

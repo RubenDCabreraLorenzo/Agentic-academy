@@ -61,7 +61,7 @@ uv run --project backend academy content build --lang en --out dist/content
 docker build -t academy-sandbox:dev runner/sandbox-image
 pnpm --dir frontend install
 pnpm --dir frontend generate:api              # client from contracts/openapi.yaml; CI fails on drift
-uv run --project backend academy dev seed     # optional: verified demo learner demo@academy.local
+uv run --project backend academy dev seed     # optional: verified demo learner demo@example.com
 ```
 
 ## Run
