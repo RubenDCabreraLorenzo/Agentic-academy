@@ -47,7 +47,7 @@ Each surface of the code highlighter is mapped from these through its own prefix
 
 **Space**: `--space-1` (4 px) through `--space-9` (96 px), following the spec's scale. **Radius**: `--radius-control`, `--radius-surface`, `--radius-full`.
 
-**Elevation**: `--shadow-overlay`. **Motion**: `--motion-fast` (120 ms), `--motion-base` (200 ms). **Layout**: `--layout-max` (1200 px), `--measure-prose` (70ch), `--header-offset` (scroll offset of fixed elements).
+**Elevation**: `--shadow-overlay`. **Motion**: `--motion-fast` (120 ms), `--motion-base` (200 ms). **Layout**: `--layout-max` (1200 px), `--measure-prose` (50ch), `--measure-wide` (46rem), `--header-offset` (scroll offset of fixed elements).
 
 ## Required pairings
 
@@ -71,7 +71,8 @@ The contrast test (see below) MUST cover at least these:
 6. Gradients and decorative effects are allowed only in `.public-hero` and `.public-showcase` (FR-010), never behind body text, code or forms.
 7. Motion uses only `--motion-*`, and only on `transform`, `opacity` and color properties. Under `prefers-reduced-motion: reduce`, durations become 0 and `scroll-behavior` is `auto`.
 8. Under `forced-colors: active`, focus, boundaries and statuses stay visible, using system colors where borders would otherwise vanish.
-9. No rule may depend on `prefers-color-scheme`. The dark identity is unconditional (FR-003). `index.html` sets `color-scheme: dark` and the canvas color before stylesheets load.
+9. `--measure-prose` applies to prose elements only (paragraphs, lists, headings, callout text). Code, diagrams and tables use `--measure-wide`, so that code does not scroll needlessly. `ch` follows the width of the font's zero, so this value MUST be measured again if the family changes (research R20).
+10. No rule may depend on `prefers-color-scheme`. The dark identity is unconditional (FR-003). `index.html` sets `color-scheme: dark` and the canvas color before stylesheets load.
 
 ## Typography
 

@@ -51,7 +51,7 @@ description: "Task list for the Premium Product Experience"
 - [ ] T002 [P] Write ADR 0007 from research R1, R2, R3, R4 and R7 (plain CSS with cascade layers, no UI library, self-hosted fonts, JavaScript regex engine for highlighting with the measured evidence and the reason `wasm-unsafe-eval` was rejected, dark only) in `docs/adr/0007-frontend-design-system.md`
 - [ ] T003 Change `frontend/playwright.config.ts` to keep the `desktop` and `mobile-360` projects with `testIgnore` for `**/csp.spec.ts` and `**/visual.spec.ts`; add a `production` project with `testMatch: "**/csp.spec.ts"` and `baseURL` from `PROD_BASE_URL` (default `http://localhost:5173`), and a `visual` project with `testMatch: "**/visual.spec.ts"`; do not start `webServer` when `PLAYWRIGHT_NO_SERVERS=1`
 - [ ] T004 Update scripts in `frontend/package.json`: `e2e` runs only `--project=desktop --project=mobile-360`; add `e2e:production` (`PLAYWRIGHT_NO_SERVERS=1 playwright test --project=production`) and `visual` (`playwright test --project=visual`)
-- [ ] T005 Add an `e2e` job in `.github/workflows/ci.yml`, based on the backend job's PostgreSQL service: install uv and pnpm; `uv sync --project backend` and `--project runner`; `docker build -t academy-sandbox:dev runner/sandbox-image`; `pnpm --dir frontend install --frozen-lockfile`; `pnpm --dir frontend exec playwright install --with-deps chromium`; then `pnpm --dir frontend e2e` with `RUNNER_RUNTIME=runc`. Comment that `runc` proves behavior and not sandbox security. Set `continue-on-error: true` until T137
+- [ ] T005 Add an `e2e` job in `.github/workflows/ci.yml`, on `runs-on: ubuntu-24.04` (pinned, because visual references depend on it), based on the backend job's PostgreSQL service: install uv and pnpm; `uv sync --project backend` and `--project runner`; `docker build -t academy-sandbox:dev runner/sandbox-image`; `pnpm --dir frontend install --frozen-lockfile`; `pnpm --dir frontend exec playwright install --with-deps chromium`; then `pnpm --dir frontend e2e` with `RUNNER_RUNTIME=runc`. Comment that `runc` proves behavior and not sandbox security. Set `continue-on-error: true` until T137
 
 **Checkpoint**: The existing suite still gives 15 passed and 3 skipped locally, and the CI job has run.
 
@@ -76,12 +76,12 @@ description: "Task list for the Premium Product Experience"
 - [ ] T011 Move `frontend/src/styles.css` to `frontend/src/styles/legacy.css` unchanged, and create `frontend/src/styles/index.css` declaring `@layer legacy, reset, tokens, base, layout, components, content, screens;` and importing each file into its layer; `legacy` is the lowest layer, and is temporary; update the import in `frontend/src/main.tsx`
 - [ ] T012 Create `frontend/src/styles/tokens.css` with every token named in the tokens contract, using the values in the spec's "Design Token Contract" and the contract's syntax table, plus `@font-face` rules for Geist and Geist Mono pointing at the package's Latin variable files (`font-display: swap`; italic loaded only when used) and fallback metric overrides, until T006 passes
 - [ ] T013 [P] Create `frontend/src/styles/reset.css` and `frontend/src/styles/base.css`: element defaults, type scale, links, `:focus-visible` per rule 3 of the tokens contract, `html { scroll-padding-top: var(--header-offset) }`, `prefers-reduced-motion` (rule 7) and `forced-colors` (rule 8)
-- [ ] T014 [P] Create `frontend/src/styles/layout.css` with the page container (`--layout-max`), `.reading` column (`--measure-prose`, 65–75 characters) and grid helpers, plus empty, layered `frontend/src/styles/components.css`, `frontend/src/styles/content.css` and `frontend/src/styles/screens.css`
+- [ ] T014 [P] Create `frontend/src/styles/layout.css` with the page container (`--layout-max`), `.reading` column (`--measure-wide`), with `--measure-prose` applied to prose elements only per rule 9 of the tokens contract, and grid helpers, plus empty, layered `frontend/src/styles/components.css`, `frontend/src/styles/content.css` and `frontend/src/styles/screens.css`
 - [ ] T015 Set `color-scheme: dark` and the canvas color in a small inline `style`, and add `<meta name="color-scheme" content="dark">` and `<meta name="theme-color">`, in `frontend/index.html`, until the canvas check in T007 passes
 
 ### Shared components
 
-- [ ] T016 [P] Create `Icon` with an inline SVG set (check, cross, warning, info, external link, arrows, menu, and the four trace kinds), decorative by default with `aria-hidden`, in `frontend/src/components/ui/Icon.tsx`
+- [ ] T016 [P] Create `Icon` with an inline SVG set (check, cross, warning, info, external link, arrows, and the four trace kinds), decorative by default with `aria-hidden`, in `frontend/src/components/ui/Icon.tsx`
 - [ ] T017 [P] Create `Button` and `LinkButton` (variants `primary`, `secondary`, `ghost`, `danger`; native `button` or router link; hover, active, focus and disabled states; at least 24 × 24 px, with primary actions 44 px tall on touch widths) in `frontend/src/components/ui/Button.tsx`
 - [ ] T018 [P] Create `Field` (label, optional hint, error linked through `aria-describedby`, `aria-invalid`), keeping accessible names equal to the label text, in `frontend/src/components/ui/Field.tsx`
 - [ ] T019 [P] Create `Alert` (tones `info`, `success`, `warning`, `danger`, always with icon and text; `role` passed by the caller) and `Badge` (same tones; never interactive) in `frontend/src/components/ui/Alert.tsx` and `frontend/src/components/ui/Badge.tsx`
@@ -109,7 +109,7 @@ description: "Task list for the Premium Product Experience"
 
 - [ ] T029 [P] [US1] Add `expectNoSeriousA11yViolations` (fails on critical and serious findings) to `frontend/tests/e2e/fixtures.ts`, keeping the existing helper
 - [ ] T030 [P] [US1] Write a failing end-to-end test: with `colorScheme` light and dark, a module, a challenge and the dashboard render the same canvas, code and editor backgrounds; plain code in the editor has at least 4.5:1; the module and challenge pass `expectNoSeriousA11yViolations` (baseline: 13 findings); control states are distinct, in `frontend/tests/e2e/premium/us1-visual-system.spec.ts`
-- [ ] T031 [P] [US1] Write a failing test for the production project: listen for `securitypolicyviolation` through an init script; sign in; assert that `figure.code-block .shiki` exists on a lesson, `.diagram svg` renders, the editor works, fonts come from the origin, and no violation occurred, in `frontend/tests/e2e/csp.spec.ts`
+- [ ] T031 [P] [US1] Write a failing test for the production project: listen for `securitypolicyviolation` through an init script; sign in; assert that `figure.code-block .shiki` exists on a lesson, `.diagram svg` renders, the editor works, fonts come from the origin, and no violation occurred, in `frontend/tests/e2e/csp.spec.ts`; it runs against the nginx image on port 5173, so the development server must be stopped first
 - [ ] T032 [P] [US1] Write a failing unit test: the highlighter returns output using `--code-` variables with no WebAssembly engine, for each of the five languages, in `frontend/tests/unit/content/highlighter.test.ts`
 
 ### Content components
@@ -134,7 +134,7 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 - [ ] T045 [US1] Move the challenge page in `frontend/src/features/challenge/ChallengePage.tsx`, keeping `#result`
 - [ ] T046 [US1] Move the laboratory in `frontend/src/features/lab/LabPage.tsx` and `frontend/src/features/lab/CompareView.tsx`, keeping button names and labelled comparison cards
 - [ ] T047 [US1] Delete `frontend/src/styles/legacy.css` and its layer; remove the exclusion in `frontend/tests/unit/design/no-raw-values.test.ts`; raise the lint rule to `error` in `frontend/eslint.config.js`; verify that inline styles remain only on the allow-list (SC-010; baseline 64)
-- [ ] T048 [US1] Run the full end-to-end suite, the production test against `docker compose up --build api web` and the build; record the new asset count, compared with the 344 baseline files, in the research note R4 of `specs/002-premium-product-experience/research.md`
+- [ ] T048 [US1] Run the full end-to-end suite and the build, then stop the development server and run the production test against `docker compose up --build api web`; record the new asset count, compared with the 344 baseline files, in the research note R4 of `specs/002-premium-product-experience/research.md`
 
 **Checkpoint**: US1 can ship alone. The worst measured defects are gone, including production highlighting (FR-054).
 
@@ -148,19 +148,19 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 
 ### Tests
 
-- [ ] T049 [P] [US4] Write a failing unit test for the route table: paths and shells equal the routes contract, titles are unique, and `/verify-email` and `/reset-password` are present, in `frontend/tests/unit/navigation/routes.test.ts`
-- [ ] T050 [P] [US4] Write a failing end-to-end test: `/sign-up?x=1` redirects to `/register?x=1`; after in-app navigation the title changes and focus is on the `h1`; scroll resets, but back navigation does not force it; skip link, offline notice and session-expiry warning exist in each shell; a signed-in learner does not see "Sign in" flash; not-found links to `/` and `/curriculum`; `/sign-in?next=` still returns; sign-out lands on `/`, in `frontend/tests/e2e/premium/us4-navigation.spec.ts`
+- [ ] T049 [P] [US4] Write a failing unit test for the route table in `frontend/tests/unit/navigation/routes.test.ts`, listing the expected routes in one array: paths and shells equal the routes contract, except `/privacy`, `/terms` and `/knowledge-checks/:checkId/history`, which T077 and T099 add to the array; titles are unique, with the `/sign-up` redirect exempt; and `/verify-email` and `/reset-password` are present
+- [ ] T050 [P] [US4] Write a failing end-to-end test: `/sign-up?x=1` redirects to `/register?x=1`; after in-app navigation the title changes and focus is on the `h1`; scroll resets, but back navigation does not force it; skip link, offline notice and session-expiry warning exist in each shell; a signed-in learner does not see "Sign in" flash; every navigation link and "Sign out" stay visible at 360 px; not-found links to `/` and `/curriculum`; `/sign-in?next=` still returns; sign-out lands on `/`, in `frontend/tests/e2e/premium/us4-navigation.spec.ts`
 - [ ] T051 [P] [US3] Write a failing end-to-end test: "Review in the lesson" and a direct `#lesson-…` load bring the section into view, unobscured and focused, and it stays there after code and diagrams render; an unknown fragment raises no error; no identifier repeats on the module page, in `frontend/tests/e2e/premium/us3-lesson-links.spec.ts`
 - [ ] T052 [US4] Change `frontend/tests/e2e/us6-catalog.spec.ts` to open `/curriculum` rather than `/`, as recorded in the spec's conflicts table
 
 ### Implementation
 
-- [ ] T053 [US4] Extend `RouteDef` with `shell` (`public` | `learning` | `session`) and `titleKey` per data-model §2, and add all routes from the routes contract, except `/privacy` and `/terms` (T077), and with `/` temporarily rendering the catalog until T075, in `frontend/src/app/routes.ts`
+- [ ] T053 [US4] Extend `RouteDef` with `shell` (`public` | `learning` | `session`) and `titleKey` per data-model §2, and add all routes from the routes contract, except `/privacy` and `/terms` (T077) and `/knowledge-checks/:checkId/history` (T099), and with `/` temporarily rendering the catalog until T075, in `frontend/src/app/routes.ts`
 - [ ] T054 [US4] Add document titles (`meta.*`) and descriptions in `frontend/src/i18n/en/common.json`
 - [ ] T055 [US4] Create `AppFrame` (skip link, `main#main`, offline notice, session-expiry warning and sign-in link, footer slot, `RouteFocus`), moving this behavior out of `Layout.tsx`, in `frontend/src/app/shells/AppFrame.tsx`
 - [ ] T056 [US4] Create `RouteFocus` per the navigation protocol: on PUSH or REPLACE with no fragment, scroll to top and, after the `h1` exists or after 3 s using `main`, focus it; never on first load; leave POP to the browser, in `frontend/src/app/navigation/RouteFocus.tsx`
-- [ ] T057 [P] [US4] Create `PublicShell` (brand, Curriculum, Sign in, Create account; full footer slot) in `frontend/src/app/shells/PublicShell.tsx`
-- [ ] T058 [P] [US4] Create `LearningShell` (brand, My progress, Curriculum, Account, and "Sign out" kept as a `button`; minimal footer; no marketing content) in `frontend/src/app/shells/LearningShell.tsx`
+- [ ] T057 [P] [US4] Create `PublicShell` (brand, Curriculum, Sign in, Create account, wrapping at narrow widths with no collapsed menu; full footer slot) in `frontend/src/app/shells/PublicShell.tsx`
+- [ ] T058 [P] [US4] Create `LearningShell` (brand, My progress, Curriculum, Account, and "Sign out" kept as a visible `button`, wrapping at narrow widths with no collapsed menu; footer with the product name, to which T078 adds legal links; no marketing content) in `frontend/src/app/shells/LearningShell.tsx`
 - [ ] T059 [US4] Rework `frontend/src/app/App.tsx` to resolve shells, including `session` from `useMe` with navigation held empty and its space kept while the session is unknown; make authentication pages lazy; add `Navigate replace` from `/sign-up` to `/register` keeping the query string; delete `frontend/src/app/Layout.tsx`
 - [ ] T060 [US4] Apply the link changes in the contract's "Link destinations that change" table (except evidence and laboratory links, T100 and T122) in `frontend/src/app/shells/PublicShell.tsx`, `frontend/src/app/NotFound.tsx`, `frontend/src/features/dashboard/DashboardPage.tsx` and `frontend/src/features/auth/pages.tsx`
 - [ ] T061 [US4] Add the notice with a link to `/dashboard` for signed-in learners on `/sign-in` and `/register`, in `frontend/src/features/auth/pages.tsx`
@@ -195,8 +195,8 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 - [ ] T074 [P] [US2] Create curriculum, competencies and prerequisites sections, using the same query keys as the catalog and path pages, the first `status: "available"` path, and the fallbacks in the contract's table, in `frontend/src/features/marketing/CurriculumSection.tsx`, `frontend/src/features/marketing/CompetenciesSection.tsx` and `frontend/src/features/marketing/PrerequisitesSection.tsx`
 - [ ] T075 [US2] Create the challenge and laboratory showcases with static markup and text alternatives, assemble `frontend/src/features/marketing/LandingPage.tsx` (with `frontend/src/features/marketing/ChallengeShowcase.tsx` and `frontend/src/features/marketing/LabShowcase.tsx`), and point `/` to it in `frontend/src/app/routes.ts`
 - [ ] T076 [US2] Add `.public-hero` and `.public-showcase`, full-width sections and responsive rules, using only tokens and gradients only in those two classes, in `frontend/src/styles/screens.css`
-- [ ] T077 [US2] Create build-time availability through `import.meta.glob` over `frontend/src/legal/en/*`, and `LegalPage` (renders through `Markdown`, loaded only on those routes; not found when absent), add `/privacy` and `/terms` to `frontend/src/app/routes.ts`, in `frontend/src/features/legal/availability.ts` and `frontend/src/features/legal/LegalPage.tsx`; add `frontend/src/legal/en/README.md` stating that only the owner supplies these files
-- [ ] T078 [US2] Create the footer per FR-022 and FR-022a (product name; curriculum, registration and sign-in links; publisher, contact and legal links only when available) in `frontend/src/app/shells/PublicFooter.tsx`, and add legal links to registration, with no acceptance recorded, in `frontend/src/features/auth/pages.tsx`
+- [ ] T077 [US2] Create build-time availability through `import.meta.glob` over `frontend/src/legal/en/*`, and `LegalPage` (renders through `Markdown`, loaded only on those routes; not found when absent), add `/privacy` and `/terms` to `frontend/src/app/routes.ts` and to the expected array in `frontend/tests/unit/navigation/routes.test.ts`, in `frontend/src/features/legal/availability.ts` and `frontend/src/features/legal/LegalPage.tsx`; add `frontend/src/legal/en/README.md` stating that only the owner supplies these files
+- [ ] T078 [US2] Create the footer per FR-022 and FR-022a (product name; curriculum, registration and sign-in links; publisher, contact and legal links only when available) in `frontend/src/app/shells/PublicFooter.tsx`; add privacy, terms and contact, only when available, to the footer in `frontend/src/app/shells/LearningShell.tsx`; and add legal links to registration, with no acceptance recorded, in `frontend/src/features/auth/pages.tsx`
 - [ ] T079 [US2] Add default title and description, `og:*` and `twitter:card` tags and a `<noscript>` message in `frontend/index.html`; add a small Vite HTML transform that fills `og:image` and `og:url` from `VITE_PUBLIC_ORIGIN`, and omits them when unset, in `frontend/vite.config.ts`; add the build argument in `frontend/Dockerfile`
 - [ ] T080 [P] [US2] Add the favicon and a 1200 × 630 share image with only the product name and a claim from the register, in `frontend/public/`
 - [ ] T081 [US2] Run `pnpm --dir frontend size` and record the measured landing size against the 190 KB estimate in `specs/002-premium-product-experience/research.md`
@@ -233,7 +233,7 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 
 ### Tests for User Story 3
 
-- [ ] T086 [P] [US3] Write a failing end-to-end test at 360 × 780: scrolling through the Module 1 lesson that measures about 3,786 px sends `?lesson=` once and "Continue" returns to it; prose lines are 65–75 characters at 1440 px; contents show the current lesson with `aria-current="location"`; wide code scrolls in its own region, with no page scroll; lesson headings are `h2` with `h3` subsections, in `frontend/tests/e2e/premium/us3-reading.spec.ts`
+- [ ] T086 [P] [US3] Write a failing end-to-end test at 360 × 780: scrolling through the Module 1 lesson that measures about 3,786 px sends `?lesson=` once and "Continue" returns to it; at 1440 px, the median prose line is 65–75 characters, no line exceeds 90, and code uses the wider column; lessons never reached by scrolling send no `?lesson=` request; contents show the current lesson with `aria-current="location"`; wide code scrolls in its own region, with no page scroll; lesson headings are `h2` with `h3` subsections, in `frontend/tests/e2e/premium/us3-reading.spec.ts`
 - [ ] T087 [P] [US3] Add failing unit tests that lesson headings render one level lower and tables are wrapped in a keyboard-scrollable region, in `frontend/tests/unit/markdown.test.ts`
 
 ### Implementation for User Story 3
@@ -242,7 +242,7 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 - [ ] T089 [US3] Replace the 25% visibility rule with a central viewport band (for example `rootMargin: "-40% 0px -40% 0px"`, threshold 0), reporting the current lesson and sending the same request once, in `frontend/src/features/module/LessonView.tsx`
 - [ ] T090 [US3] Create module contents: all lessons, practice, adjacent modules and path overview, and current lesson from T089, without per-lesson completion marks, in `frontend/src/features/module/ModuleContents.tsx`
 - [ ] T091 [US3] Redesign `frontend/src/features/module/ModulePage.tsx` with a reading column and contents: sticky side rail at 1200 px or wider, and a compact sticky bar below that only when the viewport is at least 500 px tall; set `--header-offset` accordingly; keep all current sections and link names; no promotional content
-- [ ] T092 [US3] Add module layout, keeping 65–75 characters per line (FR-029), in `frontend/src/styles/screens.css`
+- [ ] T092 [US3] Add module layout, keeping the prose measure and the wider column for code, diagrams and tables (FR-029), in `frontend/src/styles/screens.css`
 
 **Checkpoint**: Reading works at every width, including the long lesson.
 
@@ -256,16 +256,16 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 
 ### Tests for User Story 6
 
-- [ ] T093 [P] [US6] Write a failing end-to-end test: for a learner with progress, active path, competency progress, next step and "Continue" are in the viewport at 1280 × 800; the new-learner state; a knowledge-check evidence link opens the review with no `POST …/attempts`; reset and deletion keep typed confirmation, Escape cancels and focus returns, in `frontend/tests/e2e/premium/us6-dashboard.spec.ts`
+- [ ] T093 [P] [US6] Write a failing end-to-end test: for a learner with progress, active path, competency progress, next step, "Continue" and the summary of completed and pending modules are in the viewport at 1280 × 800; the new-learner state; a knowledge-check evidence link opens the review with no `POST …/attempts`; reset and deletion keep typed confirmation, Escape cancels and focus returns, in `frontend/tests/e2e/premium/us6-dashboard.spec.ts`
 - [ ] T094 [P] [US6] Write failing component tests for the review page: date, version, score, passed state, and per-question result, explanation and lesson link; the empty state; no call to start an attempt, in `frontend/tests/unit/knowledge-check/HistoryPage.test.tsx`
 
 ### Implementation for User Story 6
 
-- [ ] T095 [US6] Redesign `frontend/src/features/dashboard/DashboardPage.tsx`, keeping all fields of FR-030 and the listed headings and links; progress expresses demonstrated competencies only
+- [ ] T095 [US6] Redesign `frontend/src/features/dashboard/DashboardPage.tsx`, keeping all fields of FR-030 and the listed headings and links, with a summary of completed and pending modules from `modules` near the top and the full list below it; progress expresses demonstrated competencies only
 - [ ] T096 [US6] Redesign `frontend/src/features/dashboard/PathCompletion.tsx` with no certificate or credential implied, and `frontend/src/features/dashboard/CompetenciesPage.tsx` with a keyboard-scrollable table at narrow widths
 - [ ] T097 [US6] Move path reset onto `ConfirmDialog`, keeping "RESET" and its warning, in `frontend/src/features/dashboard/ResetPathDialog.tsx`
 - [ ] T098 [US6] Move account deletion onto `ConfirmDialog`, keeping "DELETE" and its warning, in `frontend/src/features/auth/pages.tsx`
-- [ ] T099 [US6] Create the read-only review at `/knowledge-checks/:checkId/history`, from `GET /knowledge-checks/{id}/attempts/history`, numbering questions because the endpoint returns no prompts, and never starting an attempt, in `frontend/src/features/knowledge-check/HistoryPage.tsx`; add the route in `frontend/src/app/routes.ts`
+- [ ] T099 [US6] Create the read-only review at `/knowledge-checks/:checkId/history`, from `GET /knowledge-checks/{id}/attempts/history`, numbering questions because the endpoint returns no prompts, and never starting an attempt, in `frontend/src/features/knowledge-check/HistoryPage.tsx`; add the route in `frontend/src/app/routes.ts` and to the expected array in `frontend/tests/unit/navigation/routes.test.ts`
 - [ ] T100 [US6] Point knowledge-check evidence links to the review in `frontend/src/features/dashboard/CompetenciesPage.tsx` and `frontend/src/features/dashboard/PathCompletion.tsx`, and show `check.history` from the result view in `frontend/src/features/knowledge-check/KnowledgeCheckPage.tsx`
 - [ ] T101 [US6] Add dashboard layout in `frontend/src/styles/screens.css`
 
@@ -341,14 +341,14 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 - [ ] T124 [P] [US4] Write a responsive test: no horizontal page scroll on every route at 320, 360, 768, 1024, 1440 and 2560 CSS px, and at 640 px width as a stand-in for 200% zoom of 1280 px, excepting code, tables and traces, in `frontend/tests/e2e/premium/responsive.spec.ts`
 - [ ] T125 [P] [US4] Write a test with `reducedMotion: "reduce"` and `forcedColors: "active"`: no running non-essential animation; focus, control boundaries and statuses are perceivable, in `frontend/tests/e2e/premium/preferences.spec.ts`
 - [ ] T126 [P] [US4] Write a test that interactive targets measure at least 24 × 24 CSS px on key screens, and that a focused element is not hidden by a sticky bar, in `frontend/tests/e2e/premium/targets.spec.ts`
-- [ ] T127 [P] [US4] Write component tests for loading, empty, error and success on each view in data-model §8 that lacks one, in `frontend/tests/unit/states/views.test.tsx`
+- [ ] T127 [P] [US4] Write component tests for loading, empty, error and success on each view in data-model §8 that lacks one, in `frontend/tests/unit/states/views.test.tsx`, and end-to-end tests for the spec's edge cases in `frontend/tests/e2e/premium/edge-cases.spec.ts`: JavaScript disabled shows the product name and message; a catalog that is empty or only planned implies no available content; long unbroken titles, identifiers and emails do not break layouts; font requests that fail leave text visible; a diagram that fails to render leaves its source and text alternative readable
 - [ ] T128 [US4] Fix every finding from T123–T127 in the affected files under `frontend/src/`, recording anything intentionally left open in `docs/accessibility/audit-premium.md`
 
 ### Visual references
 
-- [ ] T129 [US4] Write visual tests for each route at 360, 768 and 1280 px and the states in data-model §8, using the seeded learner and disabled animation, in `frontend/tests/e2e/visual.spec.ts`
-- [ ] T130 [US4] Generate references in `mcr.microsoft.com/playwright:v1.63.0-noble` only, store them in `frontend/tests/e2e/visual.spec.ts-snapshots/`, and document the update command in `specs/002-premium-product-experience/quickstart.md`
-- [ ] T131 [US4] (human) Review and approve every visual reference, including the typeface choice, confirming or changing it in `frontend/src/styles/tokens.css`, and record the decision in `docs/adr/0007-frontend-design-system.md`
+- [ ] T129 [US4] Write visual tests for each route at 360, 768 and 1280 px and the states in data-model §8, using the seeded learner and disabled animation, in `frontend/tests/e2e/visual.spec.ts`, and run them in the `e2e` job in `.github/workflows/ci.yml`
+- [ ] T130 [US4] Create a manual (`workflow_dispatch`) workflow on `ubuntu-24.04`, with the `e2e` job's setup, that runs `pnpm --dir frontend visual --update-snapshots` and uploads the references as an artifact, in `.github/workflows/visual-references.yml`; run it, and commit the approved files to `frontend/tests/e2e/visual.spec.ts-snapshots/`, documenting the process in `specs/002-premium-product-experience/quickstart.md`
+- [ ] T131 [US4] (human) Review and approve every visual reference, including the typeface choice, confirming or changing it in `frontend/src/styles/tokens.css` (a new family requires measuring `--measure-prose` again, research R20), and record the decision in `docs/adr/0007-frontend-design-system.md`
 
 ### Manual audit
 
@@ -362,7 +362,7 @@ For each task: use shared components, remove all inline `style`, remove legacy c
 ## Phase 12: Polish & Cross-Cutting Concerns
 
 - [ ] T134 (human) Review every public statement against the claim register, and record the result (SC-006) in `docs/content-review/public-claims.md`
-- [ ] T135 Run the performance test and the size check (SC-012, SC-013), compare with the baseline (module 1,168 ms p95, feedback 140 ms p95) and record the results in `docs/performance/premium.md`
+- [ ] T135 Extend `frontend/tests/e2e/perf.spec.ts` to measure the landing page (readable < 2 s p95) and to assert that text stays visible while a font response is delayed; run it with the size check (SC-012, SC-013), compare with the baseline (module 1,168 ms p95, feedback 140 ms p95) and record the results in `docs/performance/premium.md`
 - [ ] T136 Verify that `git diff --stat claude/gifted-davinci-t1hlbh -- backend runner content specs/001-agentic-academy-mvp frontend/nginx.conf` is empty (SC-005), and that all Spec 001 V1–V7 pass, with V1 step 1 replaced (FR-052, SC-004), recording the result in `docs/performance/premium.md`
 - [ ] T137 Remove `continue-on-error` from the `e2e` job in `.github/workflows/ci.yml`, once it has been stable for several runs
 - [ ] T138 (human) Run moderated testing with at least 5 target developers (quickstart P12; SC-014–SC-018), recording results and whether to revisit dark only in `docs/usability/premium.md`

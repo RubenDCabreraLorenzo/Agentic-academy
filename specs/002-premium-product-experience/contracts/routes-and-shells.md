@@ -35,10 +35,11 @@ All three are built on one `AppFrame`, which owns behavior that MUST exist every
 | Shell | Navigation | Footer | Width | Marketing content |
 |-------|-----------|--------|-------|-------------------|
 | Public | Brand, Curriculum, Sign in, Create account | Full (FR-022) | Sections may be full width | Allowed |
-| Learning | Brand, My progress, Curriculum, Account, Sign out | Minimal | Up to `--layout-max` | **Forbidden** (FR-024) |
+| Learning | Brand, My progress, Curriculum, Account, Sign out | Product name; privacy, terms and contact when available (FR-022a) | Up to `--layout-max` | **Forbidden** (FR-024) |
 
 - While the session is unknown, session-dependent navigation stays empty and keeps its space, so that signed-in learners do not see "Sign in" flash, as they do today.
-- "Sign out" stays a `button` named "Sign out" (test fixture).
+- Neither shell uses a collapsed menu. At narrow widths the navigation wraps onto more lines, and every link stays visible. The shell header is not sticky, so wrapping takes no reading space.
+- "Sign out" stays a visible `button` named "Sign out" at every width (test fixture).
 - A failed or "not signed in" session check never shows an error on a public page.
 
 ## Link destinations that change

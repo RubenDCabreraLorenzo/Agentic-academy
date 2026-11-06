@@ -198,8 +198,8 @@ reading width, code and diagram behavior at desktop and 360 px, with no flows ch
 
 1. **Given** a link to a lesson section, **When** it is followed, either directly or inside the
    application, **Then** that section is visible, unobscured, and receives focus.
-2. **Given** lesson prose on a wide screen, **When** it is read, **Then** lines stay between 65 and 75
-   characters and never exceed 90 (S001 NFR-012).
+2. **Given** lesson prose on a wide screen, **When** it is read, **Then** the median line is between 65
+   and 75 characters, and no line exceeds 90 (S001 NFR-012).
 3. **Given** a long module, **When** the learner scrolls, **Then** they can identify the current lesson
    and reach any other lesson, the practice section and the adjacent modules without returning to the
    top.
@@ -288,8 +288,8 @@ state, competency evidence and account screens.
 **Acceptance Scenarios**:
 
 1. **Given** a learner with progress, **When** they open the dashboard, **Then** the active path,
-   competencies demonstrated out of total, next step and "Continue" are visible together without
-   scrolling at 1280 × 800.
+   competencies demonstrated out of total, next step, "Continue" and a summary of completed and
+   pending modules are visible together without scrolling at 1280 × 800.
 2. **Given** a new learner, **When** they open the dashboard, **Then** a welcome state explains that
    progress reflects what they demonstrate and invites them to start.
 3. **Given** progress figures, **When** they are shown, **Then** they express demonstrated competencies,
@@ -442,7 +442,8 @@ both approval branches, and verify that no request leaves the application origin
   supplies them, it MUST also show the publisher identity and contact details and link to the privacy notice and terms.
 - **FR-022a**: `/privacy` and `/terms` MUST present owner-supplied text. That text and the publisher details MUST NOT be generated,
   inferred or filled with placeholders. Until supplied, their links MUST stay hidden and those routes MUST show the not-found
-  page. When supplied, registration MUST also link to both, with no acceptance being recorded.
+  page. When supplied, registration MUST also link to both, with no acceptance being recorded,
+  and the learning shell's footer MUST link to both and show the contact details.
 
 #### Authenticated learning experience
 
@@ -455,11 +456,12 @@ both approval branches, and verify that no request leaves the application origin
 - **FR-026**: Links to a lesson section MUST bring that section into view, unobscured and focused, on direct load and on
   in-app navigation.
 - **FR-027**: Each lesson MUST have unique identifiers, and existing link formats MUST keep working.
-- **FR-028**: Lesson views MUST be recorded for a lesson of any height at any supported width, without changing what is
-  recorded or sent.
-- **FR-029**: Long prose MUST use a reading measure of 65–75 characters and MUST never exceed 90 (S001 NFR-012).
+- **FR-028**: Lesson views MUST be recorded for a lesson of any height at any supported width, without changing the data recorded
+  or the request sent, and only for lessons the learner has scrolled to.
+- **FR-029**: Long prose MUST use a reading measure whose median line is 65–75 characters, and no line may exceed 90 (S001 NFR-012).
+  Code, diagrams and tables MAY use a wider column.
 - **FR-030**: The dashboard MUST keep all data of S001 FR-038 and FR-040 and, for a learner with progress, MUST show active path,
-  competency progress, next step and "Continue" together at 1280 × 800. Progress MUST express demonstrated competencies only.
+  competency progress, next step, "Continue" and a summary of completed and pending modules together at 1280 × 800. Progress MUST express demonstrated competencies only.
 - **FR-031**: Competency evidence MUST open a review of the recorded result rather than starting or resuming an attempt, using
   existing attempt history (S001 FR-041).
 - **FR-032**: Knowledge-check presentation MUST keep question order, immediate feedback, answer locking, threshold,
@@ -694,7 +696,7 @@ Spec 001 is not modified. Where they differ, this specification takes precedence
 | Search value | S001 R2 sees little value in search visibility and defers pre-rendering | Marketing-first public site, without crawler-readable content in this release | **Compatible**; pre-rendering stays deferred, to be reconsidered before public deployment |
 | Minimum width | S001 NFR-002: 360 px | 320 CSS px to meet WCAG reflow | **Strengthened**; 360 px remains tested |
 | Audit gate | S001 SC-007: no critical issues | No critical or serious issues, plus manual audit | **Strengthened** |
-| Constitution I | "Every feature MUST contribute directly to a measurable learning outcome" | A marketing page is indirect | **Flagged for owner**: this specification justifies it by the route to the first lesson (SC-015) and by honest prerequisites; the owner may prefer a constitution amendment |
+| Constitution I | Version 1.0.0 required every feature to contribute directly to a measurable learning outcome | A marketing page is indirect | **Resolved** by constitution 1.1.0, which allows public orientation surfaces under conditions: accurate information (FR-015, SC-006), a measurable route to the first lesson (SC-015), and no promotion in the learning environment (FR-024) |
 
 ### Spec 001 gaps found during inspection
 

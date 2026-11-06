@@ -83,7 +83,8 @@ No unknowns remain. Entries marked **Measured** were tested on 2026-11-06 agains
 
 - **Decision**: report when the lesson crosses a band at the center of the viewport.
 - **Rationale (Measured)**: the 25% rule can never fire when a lesson is taller than four viewports. At 360 × 780, one of the 11 lessons is 3,786 px against a limit of 3,120 px, and larger type would add more. No lesson exceeds it at 1280 × 800 today. The API request stays identical.
-- **Alternatives considered**: a lower threshold (only moves the limit); a sentinel at the heading (would count a lesson as viewed on a quick scroll past).
+- **Trade-off**: a lesson crossed during a quick scroll is still recorded. This is also true today once 25% becomes visible, and it does not count as evidence (S001 FR-036). It can move "Continue", as it can today.
+- **Alternatives considered**: a lower threshold (only moves the limit); a sentinel at the heading (would not also give the "current lesson" that the module contents need, so two observers would be required).
 
 ## R11. Heading structure in lessons
 
@@ -106,9 +107,10 @@ No unknowns remain. Entries marked **Measured** were tested on 2026-11-06 agains
 
 ## R14. Visual references
 
-- **Decision**: Playwright screenshot comparison in its official Linux container (`mcr.microsoft.com/playwright:v1.63.0-noble`, matching the pinned version), with references stored in the repository and updated only on explicit approval (SC-011).
-- **Rationale**: font rendering differs between systems, so references must come from one environment. Playwright is already a dependency. Fixed test data: the seeded learner, with progress reset, and animations disabled.
-- **Alternatives considered**: hosted visual review services (external; adds an account and sends screenshots to a third party).
+- **Decision**: Playwright screenshot comparison on a pinned CI runner (`ubuntu-24.04`), reusing the end-to-end job's setup. A manual workflow generates references and publishes them as a build artifact. A person reviews them and commits them to the repository (SC-011). The `e2e` job compares against them. They are not generated or compared on developer machines.
+- **Rationale**: font rendering differs between systems, so references must come from one environment. The runner already has what the suite needs: `uv` for its preparation, and the application at `localhost` with `COOKIE_SECURE=false`. Playwright is already a dependency. Fixed test data: the seeded learner, with progress reset, and animations disabled.
+- **Alternatives considered**: the official Playwright container (it has no `uv`, which the suite's preparation needs, and from a container the application is not at `localhost`, so the `Secure` session cookie is rejected over HTTP unless the stack is reconfigured); hosted visual review services (external; adds an account and sends screenshots to a third party).
+- **Limitation**: minutes of CI per run, and references must be regenerated if the pinned runner image changes font rendering.
 
 ## R15. Search and share metadata
 
@@ -135,3 +137,22 @@ No unknowns remain. Entries marked **Measured** were tested on 2026-11-06 agains
 
 - **Decision**: clamp `jump` in the player, using `maxReachableIndex`, with unit tests for both branches.
 - **Rationale (Measured from code)**: `reduce` clamps `jump` only to the last element, so a stepper offering every step could bypass human approval (S001 FR-030). The current interface hides this by showing only steps already reached.
+
+## R20. Reading measure
+
+- **Decision**: `--measure-prose: 50ch` on prose elements only, and `--measure-wide: 46rem` for code, diagrams and tables. The requirement applies to the median line, with 90 characters as a hard limit.
+- **Rationale (Measured)**: with real lesson text in Geist Variable, at 1440 px wide:
+
+| Measure | Lines measured | Characters: min | Median | Max |
+|---------|----------------|-----------------|--------|-----|
+| 70ch (first sample; 5 lines) | 5 | 93 | 98 | 100 |
+| 58ch | 32 | 71 | 80 | 86 |
+| 54ch | 35 | 65 | 75 | 83 |
+| 52ch | 35 | 66 | 73 | 83 |
+| **50ch** | 36 | 59 | **69** | 78 |
+| 48ch | 42 | 59 | 67 | 74 |
+| 46ch | 45 | 55 | 63 | 69 |
+
+  `ch` is the width of the zero, which is wide in Geist, so 70ch would exceed the 90-character limit of S001 NFR-012. Font size does not change the result, since `ch` scales with it (at 50ch: identical at 1.0625 rem and 1.125 rem). Unjustified text always varies by line, so a strict 65–75 per line cannot be met with any value.
+- **Alternatives considered**: a fixed width in `rem` (would not follow font size); justified text (rivers of space, and worse for people with dyslexia).
+- **Follow-up**: measure again if the family changes (T131).

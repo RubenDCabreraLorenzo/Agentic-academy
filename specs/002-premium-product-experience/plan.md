@@ -51,7 +51,7 @@ No NEEDS CLARIFICATION remains: the owner answered Q1–Q3 on 2026-11-06.
 
 | Principle / Standard | How the plan complies | Pre | Post |
 |----------------------|-----------------------|-----|------|
-| I. Learning First | Learning shell has no marketing (FR-024); reading comfort, working lesson links and honest progress are priorities; decoration is limited (FR-010). **The landing page is indirect**: see the note below | ⚠️ | ⚠️ |
+| I. Learning First (v1.1.0) | Learning shell has no marketing (FR-024); reading comfort, working lesson links and honest progress are priorities; decoration is limited (FR-010). The landing page is a public orientation surface and meets the three conditions: accurate information (FR-015, SC-006), a measurable route to the first lesson (SC-015) and no promotion in the learning environment (FR-024) | ✅ | ✅ |
 | II. Hands-on Learning | Challenges and laboratories are central in public content; their behavior is frozen | ✅ | ✅ |
 | III. Progressive Complexity | Curriculum order, prerequisites and levels stay visible; planned paths cannot look available | ✅ | ✅ |
 | IV. Engineering Excellence | Explicit [contracts](./contracts/); tests before implementation; gates for tokens, claims and production behavior; defects found are recorded, not silently absorbed; ADR planned | ✅ | ✅ |
@@ -63,9 +63,7 @@ No NEEDS CLARIFICATION remains: the owner answered Q1–Q3 on 2026-11-06.
 | Educational Content Governance | Content untouched; showcase excerpts checked against source; "Last reviewed" is not promoted | ✅ | ✅ |
 | Governance | Conflicts identified in the spec before implementation | ✅ | ✅ |
 
-**Note on Principle I**: it says "Every feature MUST contribute directly to a measurable learning outcome", and a marketing page does so only indirectly. Justification: the landing page is the route to the first lesson (SC-015), and it states real prerequisites and objectives so that learners self-select correctly. This was raised in the spec, and the owner proceeded to planning without objection on 2026-11-06. The owner may still prefer to amend the constitution, which would be a MINOR version change.
-
-**Result**: PASS, with that note. Post-design: no new conflict.
+**Result**: PASS against constitution 1.1.0. The owner chose to amend Principle I on 2026-11-06, after analysis flagged the landing page as a conflict with 1.0.0. Post-design: no new conflict.
 
 ## Project Structure
 
@@ -121,7 +119,8 @@ frontend/
 ├── playwright.config.ts          # CHANGED: production and visual projects
 └── Dockerfile                    # CHANGED: build argument VITE_PUBLIC_ORIGIN
 
-.github/workflows/ci.yml          # CHANGED: end-to-end job
+.github/workflows/ci.yml          # CHANGED: end-to-end job, including visual comparison
+.github/workflows/visual-references.yml  # NEW: manual generation of visual references
 docs/adr/0007-*.md                # NEW: frontend design system and highlighting engine
 docs/accessibility/audit-premium.md  # NEW: manual and automated audit results
 
@@ -159,4 +158,4 @@ The spec lists regression risks R-01 to R-19. These are the planning risks.
 
 ## Complexity Tracking
 
-No constitution violation requires justification, other than the note on Principle I above.
+No constitution violation requires justification.
