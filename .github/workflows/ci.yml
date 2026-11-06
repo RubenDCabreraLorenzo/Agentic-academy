@@ -55,3 +55,33 @@ jobs:
       - run: pnpm --dir frontend lint
       - run: pnpm --dir frontend test
       - run: pnpm --dir frontend build
+
+  e2e:
+    # Pinned because visual references depend on the runner image's font rendering (research R14).
+    runs-on: ubuntu-24.04
+    # Advisory until the suite proves stable here (T137): it has never run in CI before.
+    continue-on-error: true
+    services:
+      postgres:
+        image: postgres:17
+        env: { POSTGRES_USER: academy, POSTGRES_PASSWORD: academy, POSTGRES_DB: academy }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U academy" --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      # runc proves behavior, not sandbox security: GitHub's runners have no gVisor, and the security
+      # suite stays separate (runner protocol section 8).
+      RUNNER_RUNTIME: runc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: frontend/pnpm-lock.yaml }
+      - run: uv sync --project backend
+      - run: uv sync --project runner
+      - run: docker build -t academy-sandbox:dev runner/sandbox-image
+      - run: pnpm --dir frontend install --frozen-lockfile
+      - run: pnpm --dir frontend exec playwright install --with-deps chromium
+      - run: pnpm --dir frontend e2e
