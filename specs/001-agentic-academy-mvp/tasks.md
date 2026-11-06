@@ -354,13 +354,13 @@ strictly higher `difficulty_rank`, passing `academy content validate --run-solut
 
 ## Phase 11: Polish & Cross-Cutting Concerns (Hardening)
 
-- [ ] T122 [P] Add security headers (strict Content-Security-Policy without inline scripts, `X-Content-Type-Options`, `Referrer-Policy`, `frame-ancestors 'none'`) in `frontend/Dockerfile` web-server config and `backend/src/academy/main.py`
+- [X] T122 [P] Add security headers (strict Content-Security-Policy without inline scripts, `X-Content-Type-Options`, `Referrer-Policy`, `frame-ancestors 'none'`) in `frontend/Dockerfile` web-server config and `backend/src/academy/main.py`
 - [ ] T123 [P] Run an accessibility audit of all learner screens at WCAG 2.2 AA (automated axe plus a manual keyboard and screen-reader pass) and record results in `docs/accessibility/audit-mvp.md` (SC-007)
-- [ ] T124 [P] Measure NFR-003 (module page readable < 2 s p95, knowledge-check feedback < 1 s p95) with a Playwright performance script in `frontend/tests/e2e/perf.spec.ts`, and SC-012 with `runner/tests/load/submit_burst.py --n 10`; record results in `docs/performance/mvp.md`
-- [ ] T125 [P] Verify SC-008: with the runner stopped and with SMTP unavailable, lessons, knowledge checks and dashboard keep working, in `frontend/tests/e2e/resilience.spec.ts`
-- [ ] T126 Prepare the runner-host hardening checklist (dedicated host, gVisor version pinning and monthly update, no secrets beyond `RUNNER_DATABASE_URL`, Docker socket exposure, reaper enabled, fixed-size tmpfs for `RUNNER_OUT_DIR`), the trust-boundary description copied from runner-protocol §0, the known isolation limitations from runner-protocol §8 including the accepted D1 tampering risk (evaluation is not tamper-proof; revisit before any certificate), and the external penetration-test scope in `docs/security/runner-host.md`
-- [ ] T127 [P] Update the repository `README.md` with the stack, commands and links to the quickstart and ADRs
-- [ ] T128 Run every scenario in quickstart.md (V1–V7) from a clean environment and fix any drift between docs and behavior in `specs/001-agentic-academy-mvp/quickstart.md`
+- [X] T124 [P] Measure NFR-003 (module page readable < 2 s p95, knowledge-check feedback < 1 s p95) with a Playwright performance script in `frontend/tests/e2e/perf.spec.ts`, and SC-012 with `runner/tests/load/submit_burst.py --n 10`; record results in `docs/performance/mvp.md`
+- [X] T125 [P] Verify SC-008: with the runner stopped and with SMTP unavailable, lessons, knowledge checks and dashboard keep working, in `frontend/tests/e2e/resilience.spec.ts`
+- [X] T126 Prepare the runner-host hardening checklist (dedicated host, gVisor version pinning and monthly update, no secrets beyond `RUNNER_DATABASE_URL`, Docker socket exposure, reaper enabled, fixed-size tmpfs for `RUNNER_OUT_DIR`), the trust-boundary description copied from runner-protocol §0, the known isolation limitations from runner-protocol §8 including the accepted D1 tampering risk (evaluation is not tamper-proof; revisit before any certificate), and the external penetration-test scope in `docs/security/runner-host.md`
+- [X] T127 [P] Update the repository `README.md` with the stack, commands and links to the quickstart and ADRs
+- [X] T128 Run every scenario in quickstart.md (V1–V7) from a clean environment and fix any drift between docs and behavior in `specs/001-agentic-academy-mvp/quickstart.md`
 
 ---
 

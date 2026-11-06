@@ -59,10 +59,11 @@ uv sync --project runner
 uv run --project backend alembic upgrade head # creates schema, runner role and runner functions
 uv run --project backend academy content validate
 uv run --project backend academy content build --lang en --out dist/content
-docker build -t academy-sandbox:dev runner/sandbox-image
+docker build -t academy-sandbox:dev runner/sandbox-image   # behind a TLS-intercepting proxy add: --secret id=pip_ca,src=<ca-bundle.crt>
+sudo mkdir -p /var/lib/academy-runner/out && sudo mount -t tmpfs -o size=8m,mode=0700 tmpfs /var/lib/academy-runner/out   # RUNNER_OUT_DIR
 pnpm --dir frontend install
 pnpm --dir frontend generate:api              # client from contracts/openapi.yaml; CI fails on drift
-uv run --project backend academy dev seed     # optional: verified demo learner demo@example.com
+uv run --project backend academy dev seed     # optional: verified demo learner demo@example.com / demo-password-123 (--reset recreates it)
 ```
 
 ## Run
@@ -76,8 +77,8 @@ docker compose up --build api runner web
 Option B — processes on the host (faster reloads):
 
 ```bash
-uv run --project backend uvicorn academy.main:app --reload --port 8000
-uv run --project runner academy-runner
+CHALLENGES_ENABLED=true uv run --project backend uvicorn academy.main:create_app --factory --reload --port 8000
+RUNNER_OUT_DIR=/var/lib/academy-runner/out uv run --project runner academy-runner   # RUNNER_RUNTIME=runc on machines without gVisor (development only)
 pnpm --dir frontend dev
 ```
 
@@ -100,7 +101,8 @@ it runs only on a dedicated host in production (runner protocol §0).
 | Runner unit (lease, fencing, result validation) | `uv run --project runner pytest tests/unit` | runner protocol §1, §5, §6 |
 | Sandbox security suite | `uv run --project runner pytest tests/security` (requires `RUNNER_RUNTIME=runsc`) | FR-022a, SC-011 |
 | Frontend unit | `pnpm --dir frontend test` | components, i18n |
-| End-to-end + accessibility | `pnpm --dir frontend e2e` (with the stack from "Run" up and seeded) | user stories below, NFR-001, SC-007 |
+| End-to-end + accessibility | `pnpm --dir frontend e2e` (starts API, Vite and the runner itself; set `RUNNER_RUNTIME=runc RUNNER_OUT_DIR=/var/lib/academy-runner/out` without gVisor) | user stories below, NFR-001, SC-007, SC-008 |
+| Performance | `pnpm --dir frontend exec playwright test perf --project=desktop` | NFR-003 |
 | Load | `uv run --project backend python runner/tests/load/submit_burst.py --n 10` | NFR-006a, SC-012 |
 
 ## Validation scenarios (map to spec user stories)

@@ -17,7 +17,12 @@ export default function globalSetup() {
   run(["academy", "content", "build", "--root", "content", "--lang", "en", "--out", "dist/content"]);
   run(["academy", "dev", "seed", "--reset"]);
 
-  if (process.env.E2E_START_RUNNER !== "0") {
+  if (process.env.E2E_START_RUNNER !== "0") startRunner();
+}
+
+/** Starts the runner detached and records its process group (also used by the resilience test). */
+export function startRunner() {
+  {
     // The runner evaluates challenge code (US4). RUNNER_RUNTIME defaults to runsc; machines without
     // gVisor may set RUNNER_RUNTIME=runc (development exception, not valid security evidence).
     execFileSync("mkdir", ["-p", path.join(root, "frontend/test-results")]);

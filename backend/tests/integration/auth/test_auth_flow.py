@@ -103,3 +103,17 @@ def test_security_headers(client: TestClient) -> None:
     assert r.headers["x-content-type-options"] == "nosniff"
     body = r.json()
     assert body["database"] == "ok" and body["evaluation"] == "unavailable"
+
+
+def test_sign_up_survives_email_outage(client: TestClient) -> None:
+    """SC-008: an unavailable SMTP server does not break the request; the failure is logged only."""
+    from academy.auth import email as mail
+
+    class Broken:
+        def send(self, email):  # type: ignore[no-untyped-def]
+            raise ConnectionRefusedError("smtp down")
+
+    mail.set_sender(Broken())
+    r = client.post("/api/v1/auth/sign-up", json={"email": "outage@example.com", "password": PASSWORD})
+    assert r.status_code == 202
+    assert client.get("/api/v1/catalog").status_code in {200, 503}
