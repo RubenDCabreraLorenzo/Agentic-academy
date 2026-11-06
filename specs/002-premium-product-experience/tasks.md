@@ -29,7 +29,7 @@ description: "Task list for the Premium Product Experience"
 
 ## Global rules for every task
 
-- **Frontend only.** Do not change `backend/`, `runner/`, `content/`, `specs/001-agentic-academy-mvp/` or `frontend/nginx.conf` (FR-053, SC-005). If a task seems to need one of them, stop and raise it.
+- **Frontend only.** Do not change `backend/`, `runner/`, `content/`, `specs/001-agentic-academy-mvp/` or `frontend/nginx.conf` (FR-053, SC-005). The one exception, already made, is the start command in `backend/Dockerfile`. If a task seems to need one of them, stop and raise it.
 - Follow the contracts exactly: [design tokens](./contracts/design-tokens.md), [routes and shells](./contracts/routes-and-shells.md), [UI components](./contracts/ui-components.md), [public content](./contracts/public-content.md).
 - Colors, spacing, type, radii and motion come only from tokens. No raw color outside `frontend/src/styles/tokens.css`. No JSX `style`, except data-driven custom properties on the allow-list.
 - Every user-visible string, including accessible names, goes through react-i18next (S001 FR-055).

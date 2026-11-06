@@ -56,6 +56,28 @@ jobs:
       - run: pnpm --dir frontend test
       - run: pnpm --dir frontend build
 
+  images:
+    # Development runs the API outside Docker, so only this notices an image that does not start.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: cp .env.example .env
+      - run: python3 scripts/dev_secrets.py
+      - run: uv sync --project backend
+      - run: docker compose up -d --wait db
+      - run: uv run --project backend alembic -c backend/alembic.ini upgrade head
+      - run: uv run --project backend academy content build --lang en --out dist/content
+      - run: docker compose up -d --build --no-deps api web
+      - name: The API answers through nginx
+        run: |
+          health=$(curl -sf --retry 30 --retry-delay 2 --retry-all-errors --max-time 5 http://localhost:5173/api/v1/health)
+          echo "$health"
+          echo "$health" | grep -q '"database":"ok"'
+      - name: Container logs
+        if: failure()
+        run: docker compose logs api web
+
   e2e:
     # Pinned because visual references depend on the runner image's font rendering (research R14).
     runs-on: ubuntu-24.04

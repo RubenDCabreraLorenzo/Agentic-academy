@@ -38,6 +38,10 @@ semantics, runner security, content format or content governance. WCAG 2.2 AA is
   2026-11-06. `privacy.md` and `terms.md` hold lorem ipsum, supplied at the owner's request, so that the
   links and pages can be seen. It MUST be replaced with the owner's real text before public launch
   (SC-019). `publisher.json` stays absent: no publisher identity is invented.
+- Q: May this initiative fix the API image, which does not start? → A: Yes, as one exception decided by
+  the owner on 2026-11-06. Only the start command in `backend/Dockerfile` changes, because the production
+  check (quickstart P10) depends on that image. Application code, API contracts, the schema and the
+  runner stay untouched, and FR-053 and SC-005 continue to apply to everything else.
 
 ## Glossary
 
@@ -633,7 +637,7 @@ No data entities change. New presentation-only items are the **design tokens**, 
   4.43 and 1.48).
 - **SC-004**: All Spec 001 validation scenarios V1–V7 pass, and every existing automated test passes; test edits are limited to the route and copy
   changes this specification records.
-- **SC-005**: A review of the delivered change shows 0 modifications to API contracts, database migrations, backend, runner and content.
+- **SC-005**: A review of the delivered change shows 0 modifications to API contracts, database migrations, backend, runner and content, apart from the start command in `backend/Dockerfile` (see Clarifications).
 - **SC-006**: 100% of factual statements on public pages match the claim register, and an audit finds 0 forbidden items.
 - **SC-007**: 100% of lesson links reach their target, visible and focused (baseline: 0%).
 - **SC-008**: 100% of routes have a unique title, and in-app navigation moves focus to the defined starting point (baseline: 0%).
