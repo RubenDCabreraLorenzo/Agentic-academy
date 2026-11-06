@@ -60,7 +60,9 @@ A build fails (non-zero exit, machine-readable report) when any rule is violated
 4. Modules flagged `multi_agent: true` come after all single-agent modules (FR-005).
 5. Every module has ≥ 1 objective, ≥ 1 lesson, ≥ 1 code example, ≥ 1 diagram with alt text,
    ≥ 1 reference, exactly 1 knowledge check (≥ 5 questions) and ≥ 1 challenge (FR-007, FR-008, FR-016).
-6. Every question and every challenge criterion maps to an objective/competency (FR-044).
+6. Every question and every challenge criterion maps to an objective/competency (FR-044), and every
+   module competency is covered by at least one of the module's challenges, so a knowledge check
+   alone can never demonstrate a competency (FR-036).
 7. Challenge `difficulty_rank` strictly increases along the path (FR-025); ≥ 2 hints (FR-021);
    every test id belongs to exactly one criterion; the reference solution (kept under
    `solution/`) passes all tests in the sandbox image; the starter code fails at

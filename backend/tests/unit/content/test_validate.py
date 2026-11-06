@@ -179,3 +179,8 @@ def test_rule10_secret_in_content(tree_dir: Path) -> None:
     lesson = tree_dir / MODULE / "lessons/01-basics.md"
     lesson.write_text(lesson.read_text() + "\nkey = sk-abcdefghijklmnopqrstuvwxyz123456\n")
     assert "10-secrets" in rules(tree_dir)
+
+
+def test_rule6_every_competency_needs_a_challenge(tree_dir: Path) -> None:
+    edit_yaml(tree_dir / MODULE / "challenges/hello-tool/challenge.yaml", lambda d: d.update(competencies=["design-tools"]))
+    assert "not covered by any challenge" in messages(tree_dir)

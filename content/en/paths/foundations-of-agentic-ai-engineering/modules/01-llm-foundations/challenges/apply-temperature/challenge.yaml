@@ -1,0 +1,58 @@
+id: apply-temperature
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Turn model scores into sampling probabilities
+difficulty_rank: 1
+scenario: >-
+  Your team is debugging why an agent's classification step gives different answers on identical
+  inputs. To reason about it, you build the small piece of the runtime that converts a model's raw
+  token scores into probabilities with a temperature.
+problem: >-
+  Implement `apply_temperature(scores, temperature)` and `most_likely(scores)` in `sampling.py`.
+expected_outcome: >-
+  Probabilities are a valid distribution, lower temperature concentrates probability on the most
+  likely token, invalid temperatures are rejected, and very large scores do not overflow.
+instructions: |
+  1. `apply_temperature` receives a dict `token -> score` and a temperature. Divide every score by
+     the temperature, apply the softmax function, and return a dict `token -> probability`.
+  2. Subtract the maximum scaled score before calling `math.exp` so large scores do not overflow.
+  3. Raise `ValueError` if the temperature is not greater than 0 or if `scores` is empty.
+  4. `most_likely` returns the token with the highest score (what greedy decoding would pick).
+criteria:
+  - id: valid-distribution
+    description: Returns a probability for every token, and the probabilities sum to 1.
+    mandatory: true
+    tests: ["test_sampling.py::test_probabilities_sum_to_one"]
+    feedback: Apply softmax to the scaled scores — exponentiate each one and divide by the total.
+  - id: temperature-effect
+    description: Lower temperature makes the most likely token more probable; higher temperature flattens the distribution.
+    mandatory: true
+    tests: ["test_sampling.py::test_lower_temperature_sharpens"]
+    feedback: Divide the scores by the temperature before the softmax, not after.
+  - id: robust-inputs
+    description: Rejects invalid temperatures and empty input, and handles very large scores.
+    mandatory: true
+    tests:
+      - "test_sampling.py::test_invalid_temperature_rejected"
+      - "test_sampling.py::test_large_scores_do_not_overflow"
+    feedback: >-
+      Raise ValueError for temperature <= 0 or empty scores, and subtract the maximum scaled score
+      before `math.exp`.
+  - id: greedy-choice
+    description: most_likely returns the highest-scoring token.
+    mandatory: false
+    tests: ["test_sampling.py::test_most_likely_is_greedy_choice"]
+    feedback: Use `max(scores, key=scores.get)`.
+hints:
+  - Softmax of x_i is exp(x_i) divided by the sum of exp(x_j) over all tokens.
+  - Compute the scaled scores first, then subtract their maximum before exponentiating; the result is identical but cannot overflow.
+reference_explanation: >-
+  Temperature reshapes the distribution before a token is sampled: dividing scores by a small
+  temperature magnifies differences, so sampling becomes nearly greedy; a large temperature shrinks
+  them, so less likely tokens are chosen more often. That is why low temperature suits steps that
+  must be consistent — and why, even then, agent code must validate what the model returns.
+competencies: [explain-llm-mechanics]
+limits:
+  wall_seconds: 10
+  memory_mb: 256

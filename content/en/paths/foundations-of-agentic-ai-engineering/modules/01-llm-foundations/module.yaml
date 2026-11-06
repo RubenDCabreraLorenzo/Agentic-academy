@@ -1,0 +1,31 @@
+id: llm-foundations
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: LLM foundations for agent engineers
+summary: >-
+  How language models turn text into tokens and tokens into predictions, why their output is
+  probabilistic, how to get structured output you can trust, and where models fail.
+order: 1
+objectives:
+  - id: explain-generation
+    statement: Explain how a language model generates text token by token and how sampling settings change the output.
+    competencies: [explain-llm-mechanics]
+  - id: use-structured-output
+    statement: Request structured output from a model and validate it before your code relies on it.
+    competencies: [produce-structured-output]
+  - id: identify-limitations
+    statement: Identify hallucination, knowledge cut-offs and context limits, and choose a mitigation for each.
+    competencies: [recognize-llm-limitations]
+prerequisites: []
+competencies: [explain-llm-mechanics, produce-structured-output, recognize-llm-limitations]
+lab_scenarios: []
+references:
+  - title: "Attention Is All You Need (Vaswani et al., 2017)"
+    url: "https://arxiv.org/abs/1706.03762"
+  - title: "JSON Schema: Getting started"
+    url: "https://json-schema.org/learn/getting-started-step-by-step"
+  - title: "Survey of Hallucination in Natural Language Generation (Ji et al., 2023)"
+    url: "https://arxiv.org/abs/2202.03629"
+  - title: "Python json module"
+    url: "https://docs.python.org/3/library/json.html"

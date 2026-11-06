@@ -29,6 +29,6 @@ prerequisite_paths: []
 # Modules are listed as they are published; planned order:
 # 01-llm-foundations, 02-agent-fundamentals, 03-tools-and-function-calling,
 # 04-memory-and-state, 05-evaluation-observability-and-risks.
-competencies: []
+competencies: [explain-llm-mechanics, produce-structured-output, recognize-llm-limitations]
 estimated_hours: 15
-modules: []
+modules: [llm-foundations]

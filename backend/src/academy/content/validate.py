@@ -238,6 +238,16 @@ def _module_completeness(tree: ContentTree, m: LoadedModule) -> None:
 def _rule6_traceability(tree: ContentTree) -> None:
     for m in tree.modules:
         module_comps = set(m.meta.competencies)
+        if m.challenges:
+            uncovered = module_comps - {c for ch in m.challenges for c in ch.meta.competencies}
+            if uncovered:
+                # FR-036: a competency needs practical evidence, so a knowledge check alone can
+                # never demonstrate it.
+                tree.issue(
+                    "6-traceability",
+                    m.path,
+                    f"competencies not covered by any challenge of the module: {sorted(uncovered)}",
+                )
         for obj in m.meta.objectives:
             extra = set(obj.competencies) - module_comps
             if extra:

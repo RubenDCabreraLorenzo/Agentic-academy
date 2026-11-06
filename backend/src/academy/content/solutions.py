@@ -64,7 +64,10 @@ def run_tests(code: dict[str, str], tests: dict[str, str], timeout: int = 60) ->
             name = case.get("name", "")
             file = classname.replace(".", "/") + ".py" if classname else ""
             passed = not any(child.tag in {"failure", "error", "skipped"} for child in case)
-            results[f"{file}::{name}"] = passed
+            # Parametrized cases (test_x[0], test_x[1]…) count as one test that passes only if
+            # every case passes; the runner applies the same rule.
+            key = f"{file}::{name.split('[', 1)[0]}"
+            results[key] = results.get(key, True) and passed
         return results
 
 

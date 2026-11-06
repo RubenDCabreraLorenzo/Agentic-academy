@@ -1,0 +1,110 @@
+id: llm-foundations-check
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+pass_threshold: 0.7
+questions:
+  - id: generation-unit
+    type: single_choice
+    prompt: A language model produces its answer by…
+    explanation: >-
+      The model outputs a probability distribution over the next token; one token is sampled and
+      appended, and the process repeats. There is no hidden "final answer" written down first.
+    objective_id: explain-generation
+    lesson_anchor: how-llms-generate#next-token
+    options:
+      - { id: next-token, text: "repeatedly predicting and sampling the next token" }
+      - { id: lookup, text: "looking up the closest answer in its training data" }
+      - { id: plan-then-write, text: "first deciding the full answer, then writing it out" }
+    correct: [next-token]
+
+  - id: temperature-scenario
+    type: single_choice
+    prompt: >-
+      An agent step classifies support tickets into a fixed set of categories, and the team wants
+      results that are as consistent as possible. Which sampling setting fits best?
+    explanation: >-
+      Low temperature sharpens the distribution toward the most likely tokens, which suits steps that
+      must be consistent. Even then, outputs are not guaranteed to be identical, so the code still
+      validates the category.
+    objective_id: explain-generation
+    lesson_anchor: how-llms-generate#sampling
+    options:
+      - { id: low, text: "A low temperature, plus validation of the returned category" }
+      - { id: high, text: "A high temperature, so the model explores more categories" }
+      - { id: none, text: "Sampling settings do not affect classification" }
+    correct: [low]
+
+  - id: string-tasks
+    type: multiple_choice
+    prompt: Which tasks should agent code do in code rather than asking the model? Select all that apply.
+    explanation: >-
+      Models see tokens, not characters, so exact character-level operations are unreliable.
+      Summarizing free text is a reasonable model task.
+    objective_id: explain-generation
+    lesson_anchor: how-llms-generate#tokens
+    options:
+      - { id: count-letters, text: "Counting the characters in an order id" }
+      - { id: compare-ids, text: "Checking whether two long ids are identical" }
+      - { id: summarize, text: "Summarizing a customer's message" }
+    correct: [count-letters, compare-ids]
+
+  - id: structured-order
+    type: ordering
+    prompt: Put the steps for using a model's structured output safely in the right order.
+    explanation: >-
+      Request a precise structure, parse it, validate it against the schema, and only then use it.
+      Retry with feedback only after validation fails, and keep the number of retries bounded.
+    objective_id: use-structured-output
+    lesson_anchor: structured-output#validate
+    items:
+      - { id: request, text: "Ask for JSON with explicit fields and allowed values" }
+      - { id: parse, text: "Parse the response as JSON" }
+      - { id: validate, text: "Validate fields and values against the schema" }
+      - { id: use, text: "Use the validated data in your code" }
+
+  - id: retry-policy
+    type: single_choice
+    prompt: The model returned JSON with an unknown priority value. What should your code do?
+    explanation: >-
+      Send the validation error back for a bounded number of retries, then fail in a controlled way.
+      Unbounded retries hide problems and can run up cost; guessing a value hides the error.
+    objective_id: use-structured-output
+    lesson_anchor: structured-output#retry
+    options:
+      - { id: bounded, text: "Retry once with the validation error, then raise a clear error" }
+      - { id: forever, text: "Retry until the model returns a valid value" }
+      - { id: default, text: "Silently replace it with \"medium\"" }
+    correct: [bounded]
+
+  - id: mitigations
+    type: matching
+    prompt: Match each failure mode with the mitigation that addresses it best.
+    explanation: >-
+      Verify what you can in code; provide current information through tools for cut-off problems;
+      pass only relevant parts of large documents for context overload.
+    objective_id: identify-limitations
+    lesson_anchor: limitations#hallucination
+    left:
+      - { id: invented-id, text: "The model mentions an order id that does not exist" }
+      - { id: stale, text: "The model describes last year's pricing" }
+      - { id: overloaded, text: "Key instructions are ignored in a very long prompt" }
+    right:
+      - { id: verify, text: "Verify the value in code before acting on it" }
+      - { id: fetch, text: "Fetch current information with a tool" }
+      - { id: trim, text: "Pass only the relevant parts of the documents" }
+    pairs: { invented-id: verify, stale: fetch, overloaded: trim }
+
+  - id: unknown-allowed
+    type: single_choice
+    prompt: Why should an output schema allow a "not found" or null value?
+    explanation: >-
+      If the schema forces a value, the model may invent one. Allowing an explicit "not found"
+      reduces hallucinated values.
+    objective_id: identify-limitations
+    lesson_anchor: limitations#hallucination
+    options:
+      - { id: avoid-invention, text: "So the model is not forced to invent a value" }
+      - { id: shorter, text: "To make responses shorter" }
+      - { id: faster, text: "To make the model respond faster" }
+    correct: [avoid-invention]

@@ -1,0 +1,71 @@
+id: validate-structured-output
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Extract a support ticket with validated structured output
+difficulty_rank: 2
+scenario: >-
+  A support team wants to triage incoming emails automatically. A model reads each email and
+  returns a ticket with a priority, a category and a one-line summary. The triage system routes
+  tickets by priority, so an invalid priority must never reach it.
+problem: >-
+  Implement `extract_ticket(model, email_text)` in `triage.py`. It must ask the model for a JSON
+  ticket, validate it, retry once with the validation error if the response is invalid, and raise
+  `ExtractionError` if the second response is also invalid.
+expected_outcome: >-
+  Valid responses become a `Ticket`; one invalid response is corrected through a single retry that
+  explains what was wrong; two invalid responses raise `ExtractionError`; the model is never called
+  more than twice.
+instructions: |
+  1. Read `triage.py`. `Ticket`, `ExtractionError` and `PRIORITIES` are already defined.
+  2. Build the first request as a list of `Message` objects (from `academy_sim`) with a `system`
+     message describing the JSON format and a `user` message containing the email.
+  3. Call `model.complete(messages)` and validate `response.content`:
+     valid JSON object, fields `priority`, `category`, `summary`, priority in `PRIORITIES`.
+  4. If validation fails, append the model's answer as an `assistant` message and a `user` message
+     that contains the word `invalid` and the validation error, then call the model once more.
+  5. If the second answer is also invalid, raise `ExtractionError`.
+  Use "Run tests" to check your work before submitting.
+criteria:
+  - id: parses-valid-output
+    description: A valid JSON response becomes a Ticket with the right fields.
+    mandatory: true
+    tests: ["test_triage.py::test_valid_response_becomes_ticket"]
+    feedback: >-
+      Parse `response.content` with `json.loads` and build `Ticket(priority=..., category=...,
+      summary=...)` from the parsed object.
+  - id: retries-with-feedback
+    description: An invalid response is retried once, and the retry tells the model what was wrong.
+    mandatory: true
+    tests: ["test_triage.py::test_invalid_response_is_retried_with_feedback"]
+    feedback: >-
+      After a failed validation, call the model a second time with the previous messages plus your
+      answer as `assistant` and a `user` message that includes the word "invalid" and the error.
+  - id: fails-safely
+    description: Unknown priorities are rejected and a second invalid response raises ExtractionError.
+    mandatory: true
+    tests:
+      - "test_triage.py::test_unknown_priority_is_rejected"
+      - "test_triage.py::test_two_invalid_responses_raise_and_stop"
+    feedback: >-
+      Check `priority in PRIORITIES` explicitly, and raise `ExtractionError` after the second invalid
+      response instead of retrying again.
+hints:
+  - >-
+    Separate the work into two functions — one that validates a raw string and raises on problems,
+    and one that talks to the model.
+  - >-
+    `json.loads` raises `json.JSONDecodeError` for invalid JSON; catch it and turn it into your own
+    validation error so both kinds of problems take the same retry path.
+  - >-
+    The retry message can be as simple as
+    `f"Your previous answer was invalid: {error}. Reply with corrected JSON only."`
+reference_explanation: >-
+  Treat model output like any external input: parse, validate, and only then use it. A single
+  retry with explicit feedback fixes most formatting slips, while the hard limit of two calls keeps
+  cost and latency bounded and makes failures visible instead of hidden. The same pattern applies
+  to every tool argument an agent produces in later modules.
+competencies: [produce-structured-output, recognize-llm-limitations]
+limits:
+  wall_seconds: 10
+  memory_mb: 256

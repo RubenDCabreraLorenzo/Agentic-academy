@@ -16,4 +16,4 @@ criteria:
     feedback: Return "Hello, <name>!".
 hints: [Look at the return value., Use an f-string.]
 reference_explanation: An f-string builds the greeting.
-competencies: [design-tools]
+competencies: [design-tools, explain-agents]
