@@ -35,6 +35,7 @@
   publisher information (FR-022).
 - Iteration 2 (2026-11-06): resolved with the owner's answers Q1=A (dark only at launch), Q2=A (no crawler-readable content in this
   release), Q3=A (owner-supplied legal pages; public launch blocked until supplied). All items pass.
+- Iteration 3 (2026-11-06, during planning): added the production highlighting defect to the baseline, FR-054, and the attempt review route. All items pass.
 - Deliberate exceptions to "no implementation details", requested by the product owner:
   - "Technical Constraints" names the existing stack, as an explicit limit rather than a design choice.
   - "Design Token Contract" gives initial values, because the request requires tokens to be defined in the specification.

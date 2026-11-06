@@ -77,6 +77,7 @@ browser set to a dark color preference, because that is the direction this speci
 | Each lesson uses one identifier twice (section and heading) | 2 occurrences per lesson | Deep links; assistive-technology references |
 | Page title is identical on every screen | "Agentic Academy" on all routes | WCAG 2.4.2 |
 | Most navigation does not move focus or announce the new page | Focus remains on the document body (measured from dashboard to module); only the knowledge check moves it | WCAG 2.4.3, 4.1.3 |
+| Code highlighting fails in production | Under the production security policy, 0 of 3 code blocks are highlighted, silently; WebAssembly is blocked. Not visible on the development server. Found during planning (research R4) | S001 FR-009 |
 | Long lessons never register as viewed at narrow widths | Lesson of 3,786 px at 360 px cannot reach the 25% visible threshold (limit 3,120 px); larger type makes this worse | S001 FR-035, FR-038 |
 
 Automated audit (WCAG A and AA rules, dark preference, 1280 px): 13 serious findings on 2 screens,
@@ -509,6 +510,8 @@ both approval branches, and verify that no request leaves the application origin
   replacement.
 - **FR-053**: This initiative MUST NOT change backend architecture, API contracts, database schema, the educational domain model,
   assessment or challenge evaluation semantics, the runner security model, content format or content governance.
+- **FR-054**: Code examples MUST be syntax highlighted in the production build under the existing security policy, without weakening
+  that policy (S001 FR-009).
 
 ### Route Map
 
@@ -526,6 +529,7 @@ both approval branches, and verify that no request leaves the application origin
 | `/dashboard`, `/dashboard/competencies`, `/account` | Learner | Exist | Keep routes; redesigned |
 | `/modules/:moduleId` | Learner | Exists | Keeps route and lesson link format |
 | `/knowledge-checks/:checkId` | Learner | Exists | Keeps route |
+| `/knowledge-checks/:checkId/history` | Learner | Does not exist | **New**; read-only review of past attempts (FR-031) |
 | `/challenges/:challengeId` | Learner | Exists | Keeps route |
 | `/lab/:scenarioId` | Learner | Exists | Keeps route |
 | Any other | Public | Not found | Redesigned; links to `/` and `/curriculum` |
@@ -700,6 +704,7 @@ Spec 001 is not modified. Where they differ, this specification takes precedence
 | S001 FR-032: jump to any step | Only steps already reached are offered | **Included** (FR-035) |
 | Journey 4: return to the module from the laboratory | Only a dashboard link; scenario files list no modules | **Included** (FR-036), from navigation origin |
 | Lesson links and lesson views | See baseline | **Included** (FR-026, FR-028) |
+| S001 FR-009: code highlighting in production | See baseline | **Included** (FR-054), frontend only |
 | S001 T123: manual accessibility audit | Unchecked | **Included** as a gate (SC-002) |
 | S001 US6 scenario 3: missing prerequisites in the catalog | The public catalog has no learner data | **Not included**; needs a contract change |
 | S001 T121: subject-matter review | Pending | **Not included**; content work; blocks the related claim |

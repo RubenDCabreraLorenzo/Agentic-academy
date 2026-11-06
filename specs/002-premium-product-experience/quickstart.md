@@ -1,0 +1,128 @@
+# Quickstart & Validation Guide: Premium Product Experience
+
+**Feature**: [spec.md](./spec.md) | **Plan**: [plan.md](./plan.md)
+
+How to prove the feature works. Commands become runnable as the corresponding tasks are implemented, and new scripts are marked *(new)*. Setup is the same as in [Spec 001's quickstart](../001-agentic-academy-mvp/quickstart.md).
+
+## Prerequisites
+
+| Tool | Notes |
+|------|-------|
+| Everything in Spec 001's quickstart | Database, mail catcher, content build, sandbox image |
+| Docker | Also for the production check and for visual references |
+| A person with a screen reader | For P4; NVDA with Firefox and VoiceOver with Safari |
+
+**Windows**: the runner works only in its container, because `os.O_NOFOLLOW` does not exist there. Set `RUNNER_RUNTIME=runc` in `.env`, start it with `docker compose up -d --build --no-deps runner`, and use `E2E_START_RUNNER=0` for end-to-end runs. If something else listens on `[::1]:8000`, start Vite with `API_URL=http://127.0.0.1:8000`.
+
+## Automated checks
+
+| Check | Command | Proves |
+|-------|---------|--------|
+| Types and lint, including forbidden inline styles | `pnpm --dir frontend lint` | FR-007, SC-010 |
+| Unit: tokens, raw colors, claims, excerpts, legal, player | `pnpm --dir frontend test` | FR-002, FR-015, FR-017, FR-022a, FR-035, SC-003, SC-006 |
+| End-to-end and accessibility, both widths | `pnpm --dir frontend e2e` | US1–US8, SC-001, SC-004, SC-007–SC-009 |
+| Production build under the real security policy | `pnpm --dir frontend e2e:production` *(new)*, against `docker compose up --build api web` | R-13, FR-009, S001 FR-009 |
+| Visual references | `pnpm --dir frontend visual` *(new)*, in the Playwright container | SC-011 |
+| Performance | `pnpm --dir frontend exec playwright test perf --project=desktop` | SC-013 |
+| Landing page size | `pnpm --dir frontend size` *(new)* | SC-012 |
+| Nothing outside the frontend changed | `git diff --stat claude/gifted-davinci-t1hlbh -- backend runner content specs/001-agentic-academy-mvp` is empty | SC-005, FR-053 |
+
+**Baseline before this feature**: end-to-end, 15 passed and 3 skipped; 13 serious audit findings; highlighting off under the production policy.
+
+## Validation scenarios
+
+### P1 — One legible environment (US1)
+
+1. Set the browser's color preference to **light**, then to **dark**, and open a lesson, a challenge and a dashboard.
+2. Inspect body text, code, diagrams and editor.
+
+**Expected**: identical dark rendering in both cases; no white surfaces; plain code in the editor is clearly readable; the audit reports no contrast findings.
+
+### P2 — Landing page and claims (US2)
+
+1. Signed out, open `/` at 1280 px and 360 px.
+2. Confirm that the first viewport has the value proposition and both actions, and scroll through all sections.
+3. Compare each number, title and availability on the page with `GET /catalog`.
+4. Read every sentence against the [claim register](./spec.md#claim-register), recording the entry that supports it.
+5. Block `/api/v1/catalog`, and reload.
+6. Sign in, and open `/`.
+
+**Expected**: all sections are present; numbers match; each statement has an entry and nothing forbidden appears; laboratory copy says recordings are replayed and no model is called; step 5 affects only the data sections and offers a retry; step 6 offers "Go to my progress" with no redirect; there are no legal links, as no legal files exist.
+
+### P3 — Routes and redirects (spec Route Map)
+
+1. Open `/sign-up?x=1`.
+2. Sign up from `/register`, then follow the email from the mail catcher to `/verify-email`.
+3. Request a password reset, and follow the email to `/reset-password`.
+4. Signed out, open `/modules/llm-foundations`, sign in, and confirm you land on that module.
+5. Open `/privacy`, and an unknown address.
+6. From each shell, follow every navigation link, and sign out.
+
+**Expected**: step 1 lands on `/register?x=1`; both email links work; return after sign-in works; both step 5 pages show "not found", with links to `/` and `/curriculum`; "Curriculum" goes to `/curriculum`; sign-out lands on `/`.
+
+### P4 — Accessibility walkthrough (US4, SC-002)
+
+1. With a keyboard only, complete: landing → register; sign-in → module → lesson link → knowledge check → challenge (leave the editor with Esc, then Tab) → laboratory (with approval) → dashboard → reset dialog (cancel with Esc) → account.
+2. Repeat key steps with NVDA and Firefox, and with VoiceOver and Safari, confirming page changes, statuses and feedback are announced.
+3. Check 200% zoom, 320 px width, text spacing overrides, reduced motion and forced colors.
+
+**Expected**: no blockers; focus is always visible and never hidden; results are recorded in `docs/accessibility/audit-premium.md` *(new)*, which also completes S001 T123.
+
+### P5 — Lessons (US3)
+
+1. Fail a knowledge-check question, and select "Review in the lesson".
+2. Open `/modules/llm-foundations#lesson-structured-output` directly.
+3. At 360 × 780, scroll through the longest lesson of Module 1, then check the requests made and "Continue" on the dashboard.
+4. Measure line length of the prose at 1440 px.
+5. Open the module with an outline tool.
+
+**Expected**: steps 1 and 2 show the section at the top, focused, and it stays there as code and diagrams render; step 3 sends `?lesson=` for that lesson once, and "Continue" returns to it; lines are 65–75 characters; the outline is lesson `h2` with `h3` subsections; no identifier repeats.
+
+### P6 — Curriculum and paths (US5)
+
+Signed out and signed in, open `/curriculum`, the available path and a planned path; sign in from the path.
+
+**Expected**: all data of S001 FR-001 appears; planned paths look different and cannot be started; module statuses appear only when signed in; sign-in returns to the path.
+
+### P7 — Dashboard and evidence (US6)
+
+With a new learner, a learner in progress and a learner who has completed a path, open the dashboard at 1280 × 800. Then, from competencies, open a knowledge-check evidence link, watching the requests.
+
+**Expected**: path, progress, next step and "Continue" are visible without scrolling, for a learner with progress; the evidence link opens the review with no `POST .../attempts`.
+
+### P8 — Assessments and challenges unchanged (US7)
+
+Run Spec 001's V2 and V4 in full, and V7.2 and V7.3.
+
+**Expected**: same outcomes as Spec 001; at 1280 px and wider, problem and editor are visible together; the editor has an accessible name and the leaving hint.
+
+### P9 — Laboratory (US8)
+
+1. Run Spec 001's V5.
+2. On the approval scenario, try to jump beyond the pending approval in the stepper, then decide in each direction.
+3. Open a scenario from a module, then directly from its address.
+4. Watch network requests.
+
+**Expected**: the approval cannot be passed without a decision; the return link goes to the module, or to the dashboard for a direct visit; no request leaves the origin.
+
+### P10 — Production policy (R-13)
+
+With `docker compose up --build api web`, open a lesson, a challenge and the landing page at `http://localhost:5173`.
+
+**Expected**: code is highlighted, diagrams render, the editor works, fonts load from the origin, and the browser reports no policy violations.
+
+### P11 — Legal files present (FR-022a, SC-019)
+
+In a test build, using fixture files only, add `privacy.md`, `terms.md` and `publisher.json`, then open the footer, `/privacy`, `/terms` and `/register`.
+
+**Expected**: publisher details and links appear; pages render; registration links to both, and records no acceptance. Remove the fixtures afterwards: the shipped application must not contain invented text.
+
+### P12 — Moderated testing (SC-014–SC-018)
+
+With at least 5 target developers who have not seen the product, measure the 30-second comprehension, time to first lesson, 10-second dashboard reading, reading comfort after 30 minutes, and credibility ratings.
+
+**Expected**: thresholds in the spec are met. Reading comfort is also the signal to revisit the dark-only decision.
+
+## Spec 001 validation
+
+V1–V7 of [Spec 001's quickstart](../001-agentic-academy-mvp/quickstart.md) must pass, with this replacement: V1 step 1 opens `/curriculum` rather than `/` (spec, "Conflicts With Spec 001").
