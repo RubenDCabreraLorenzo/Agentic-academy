@@ -25,6 +25,11 @@ basic practical laboratory experience. No technology stack or architecture at th
 - Q: ¿Qué conocimientos previos debe tener el alumno para empezar la ruta introductoria? → A: Nivel
   intermedio de programación: Python con soltura, consumo de APIs HTTP/REST con JSON, línea de
   comandos y git básicos; sin experiencia previa con LLM ni APIs de modelos (FR-003a, FR-003b).
+- Q: En las trazas del laboratorio, ¿qué se le muestra al alumno para explicar por qué el agente
+  tomó cada decisión? → A: Cuatro tipos de elemento diferenciados: eventos de ejecución, llamadas a
+  herramientas, transiciones de estado y resúmenes de decisión escritos y revisados por el equipo de
+  contenido, etiquetados como explicación didáctica; el razonamiento interno del modelo nunca se
+  muestra (FR-027, FR-027a, NFR-008).
 
 ## Glossary
 
@@ -41,6 +46,11 @@ basic practical laboratory experience. No technology stack or architecture at th
   evaluation criteria, hints and feedback.
 - **Laboratory scenario**: An interactive, inspectable agent execution used to explore how agents
   behave (steps, tool calls, state, traces).
+- **Execution trace**: The ordered record of a laboratory execution, made of four distinct kinds of
+  element: execution events, tool calls, state transitions and decision summaries.
+- **Decision summary**: A short explanation of why the agent took a step, written and reviewed by
+  content maintainers and labeled as an educational explanation. It is not model output and never
+  contains the model's private reasoning.
 - **Learner**: The person using the platform to learn.
 - **Content maintainer**: The person who authors, reviews and updates educational content.
 
@@ -189,9 +199,9 @@ and fails others, and verify the per-criterion feedback, the result and the resu
 ### User Story 5 - Explore an agent run in the basic laboratory (Priority: P3)
 
 The learner opens the laboratory from a module and runs a predefined scenario (e.g. a research agent
-that uses a search tool and a calculator). They step through the execution: the input, each
-reasoning/decision step, each tool invocation with its arguments and result, the evolving state and
-the final answer. They can switch between two orchestration patterns on the same task (e.g. a fixed
+that uses a search tool and a calculator). They step through the execution trace: the input, each
+execution event, each tool invocation with its arguments and result, each state transition, the
+decision summary explaining each step and the final answer. They can switch between two orchestration patterns on the same task (e.g. a fixed
 workflow vs. an agent loop) and compare the resulting traces. Scenarios include failure cases such
 as a failing tool, a hallucinated tool argument or a prompt-injection attempt.
 
@@ -208,8 +218,9 @@ comparison view, including one failure scenario.
    the available tools with their declared permissions, the orchestration pattern and the learning
    objective of the scenario.
 2. **Given** a scenario is running or replaying, **When** the learner steps through it, **Then** each
-   step shows its type (model decision, tool call, tool result, state update, final answer), its
-   inputs and outputs and the state at that point.
+   element shows its kind (execution event, tool call, state transition, decision summary), its
+   inputs and outputs and the agent state at that point, and decision summaries are visibly labeled
+   as educational explanations, distinct from recorded execution data.
 3. **Given** an execution is being replayed, **When** it is in progress, **Then** the learner sees
    its current position and status, and can pause, resume, restart or jump to any step.
 4. **Given** a scenario supports two orchestration patterns, **When** the learner selects compare,
@@ -428,8 +439,15 @@ deprecation notice is visible and that the path's prerequisite order is still va
   path: (a) a single agent using tools, (b) the same task solved by a fixed workflow and by an agent
   loop for comparison, (c) at least one failure case (tool error, invalid tool argument or prompt
   injection).
-- **FR-027**: The laboratory MUST let learners step forward and backward through an execution and
-  inspect each step's type, inputs, outputs and the agent state at that point.
+- **FR-027**: The laboratory MUST let learners step forward and backward through an execution trace
+  and inspect each element's kind, inputs, outputs and the agent state at that point. Elements MUST
+  belong to exactly one kind: execution event (e.g. run started, model call issued, response
+  received, step limit reached, run ended), tool call (tool, arguments, result or error, declared
+  permission, approval status), state transition (state before and after) or decision summary.
+- **FR-027a**: Decision summaries MUST be authored and reviewed by content maintainers, MUST be
+  visually labeled as educational explanations, and MUST NOT reproduce or claim to reproduce the
+  model's private reasoning. Recordings MUST NOT include the model's private reasoning even when the
+  provider exposed it at recording time.
 - **FR-028**: The laboratory MUST show, for every scenario, the tools available to the agent and
   their declared permissions.
 - **FR-029**: The laboratory MUST show two executions side by side and highlight differences in
@@ -539,9 +557,9 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **NFR-007 (Privacy)**: The MVP MUST NOT send learner data to external model services. Account data
   MUST be limited to what is needed to sign in and keep progress, and credentials MUST be stored
   securely and never shown or logged.
-- **NFR-008 (Observability)**: Laboratory executions MUST record a trace of decisions, tool calls
-  and failures that is visible to the learner; the platform MUST record operational errors without
-  personal data or secrets.
+- **NFR-008 (Observability)**: Every laboratory recording MUST contain a complete execution trace
+  (FR-027) in which every tool call and failure is visible to the learner; the platform MUST record
+  its own operational errors without personal data or secrets.
 - **NFR-009 (Maintainability)**: Content MUST be stored and versioned separately from application
   behavior so that maintainers can update it without changing platform functionality.
 - **NFR-010 (Agnosticism)**: The laboratory and content model MUST allow adding scenarios based on a
@@ -570,7 +588,9 @@ deprecation notice is visible and that the path's prerequisite order is still va
   reference explanation, validated competencies.
 - **Laboratory Scenario**: Task, tools with declared permissions, orchestration pattern(s), execution
   steps, failure cases, learning objective.
-- **Execution Trace / Step**: Ordered steps with type, inputs, outputs, state snapshot, status.
+- **Execution Trace / Trace Element**: Ordered elements, each of one kind (execution event, tool
+  call, state transition, decision summary) with inputs, outputs, state snapshot and status;
+  decision summaries carry their author and review date.
 - **Learner Account**: Person using the platform; email, verification status, credentials, created
   date; owns one progress record per path.
 - **Challenge Submission**: Learner code, content version, attempt number, test results per
