@@ -187,7 +187,8 @@ last_viewed_at`. PK (account_id, content_type, content_id). Feeds "in progress" 
 ### 2.5 LastPosition
 
 `account_id (PK), path_id, module_id, lesson_id?, updated_at`. Most recent activity wins
-(multi-device edge case). May be derived from ContentView instead of stored (review R-S2).
+(multi-device edge case). In the MVP it is derived from the most recent ContentView instead of
+being stored (architecture-review §2.4).
 
 ### 2.6 AssessmentAttempt
 
@@ -260,7 +261,7 @@ newer than 30 s; used by the API to reject submissions with `evaluation_unavaila
 `account_id, scenario_id, variant_id, first_viewed_at, last_viewed_at` — recorded as exploration
 only; never evidence (FR-008, FR-036).
 
-### 2.12 CompetencyStatus (derived, materialized)
+### 2.12 CompetencyStatus (derived, computed on read in the MVP; materialize only if NFR-003 requires it)
 
 `account_id, competency_id, status (not_started | in_progress | demonstrated), demonstrated_at,
 evidence (JSONB [{type: knowledge_check | challenge, id, version, result_id}])`.

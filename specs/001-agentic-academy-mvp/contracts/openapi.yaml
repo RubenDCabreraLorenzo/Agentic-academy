@@ -32,6 +32,7 @@ paths:
                   database: { enum: [ok, unavailable] }
                   content_bundle_version: { type: string }
                   evaluation: { enum: [available, unavailable], description: A runner heartbeat newer than 30 s }
+                  challenges_enabled: { type: boolean, description: False until challenge evaluation is deployed (increment 1); drives the "challenge available in a later release" label }
 
   # ---------- Auth & account (FR-045, FR-045a, FR-046) ----------
   /auth/sign-up:
