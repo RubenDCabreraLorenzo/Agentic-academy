@@ -159,11 +159,16 @@ and fails others, and verify the per-criterion feedback, the result and the resu
    challenge is marked as completed and the related competencies as demonstrated.
 5. **Given** a solution does not meet all mandatory criteria, **When** the result is shown,
    **Then** the learner can revise and resubmit, and previous submissions remain reviewable.
-6. Challenges are evaluated by
-   [NEEDS CLARIFICATION: How are practical challenges evaluated in the MVP? (A) automatic
-   evaluation of submitted code against tests in a sandbox, (B) structured submissions such as
-   configuration, tool schemas, design choices or execution-trace analysis evaluated automatically
-   against defined criteria, or (C) self-assessment against a rubric with a reference solution?]
+6. **Given** a learner submits code for a challenge, **When** it is evaluated, **Then** the code is
+   executed automatically against the challenge's tests in an isolated environment, and the
+   learner sees which tests passed or failed, mapped to the evaluation criteria, together with the
+   relevant output and error messages.
+7. **Given** submitted code runs too long, exhausts its resources or tries a forbidden operation
+   (e.g. network access), **When** evaluation ends, **Then** execution is stopped, the attempt is
+   reported as not passed with a clear reason, and nothing outside the isolated environment is
+   affected.
+8. **Given** challenge code needs a language model or an external tool, **When** it is evaluated,
+   **Then** the tests provide simulated model and tool responses; no real model service is called.
 
 ---
 
@@ -191,8 +196,8 @@ comparison view, including one failure scenario.
 2. **Given** a scenario is running or replaying, **When** the learner steps through it, **Then** each
    step shows its type (model decision, tool call, tool result, state update, final answer), its
    inputs and outputs and the state at that point.
-3. **Given** a long-running execution, **When** it is in progress, **Then** the learner sees its
-   current status and progress, and can stop it.
+3. **Given** an execution is being replayed, **When** it is in progress, **Then** the learner sees
+   its current position and status, and can pause, resume, restart or jump to any step.
 4. **Given** a scenario supports two orchestration patterns, **When** the learner selects compare,
    **Then** both traces are shown side by side with differences in steps, tool calls and outcome
    highlighted.
@@ -202,11 +207,9 @@ comparison view, including one failure scenario.
 6. **Given** a scenario includes a potentially destructive tool action, **When** the agent reaches
    it, **Then** the execution pauses and requires explicit learner approval before continuing,
    demonstrating human oversight.
-7. Laboratory executions are
-   [NEEDS CLARIFICATION: Does the MVP laboratory call real language models? (A) No — it replays
-   curated, pre-recorded executions that the learner can step through and modify only within
-   predefined options, (B) Yes, using a model access key supplied by the learner (bring your own
-   key), (C) Yes, using platform-provided model access with usage limits.]
+7. **Given** a scenario offers predefined variations (e.g. a different tool set, a stricter system
+   instruction, an approval decision), **When** the learner selects one, **Then** the matching
+   curated pre-recorded execution is shown; no real language model is called.
 
 ---
 
@@ -261,7 +264,8 @@ deprecation notice is visible and that the path's prerequisite order is still va
 
 ### User Journeys
 
-1. **First visit → first demonstrated competency**: Learner arrives → sees the welcome dashboard →
+1. **First visit → first demonstrated competency**: Visitor browses the public catalog → creates an
+   account and verifies their email → sees the welcome dashboard →
    opens the catalog or directly the introductory path → reads objectives and prerequisites →
    studies Module 1 → passes its knowledge check → sees the first competency marked as demonstrated
    on the dashboard.
@@ -290,13 +294,22 @@ deprecation notice is visible and that the path's prerequisite order is still va
   finishes the version they started.
 - A module, path or laboratory scenario fails to load: the learner sees a clear error state with a
   retry action, and the rest of the application remains usable.
-- An external AI service (if used by the laboratory or challenge feedback) is unavailable, slow or
-  returns an error: the learner sees a clear status, the application does not fail uncontrollably,
-  and any learning content not depending on it remains usable.
-- A laboratory execution exceeds its time or step budget: it is stopped, the partial trace is kept
-  and the reason is explained.
-- A learner submits content that attempts prompt injection or contains secrets: it is handled
-  safely, secrets are never echoed back or logged, and the learner is informed when relevant.
+- The code evaluation service is unavailable, slow or overloaded: the learner sees a clear status,
+  their code is kept, they can retry later, and all other learning content remains usable.
+- Submitted code loops forever, uses excessive memory, prints huge output or tries to access the
+  network or the file system outside its environment: execution is stopped at the limit, the
+  attempt is reported with the reason, and no other learner or platform component is affected.
+- Many learners submit at the same time: submissions are queued, the learner sees their position or
+  an estimated wait, and no submission is lost.
+- A learner submits code that attempts prompt injection against the feedback or contains secrets:
+  it is handled as untrusted input, secrets are never echoed back or logged, and the learner is
+  informed when relevant.
+- The learner's session expires during a knowledge check or while editing challenge code: work in
+  progress is preserved and saved after signing in again.
+- A learner forgets their credentials or never verified their email: they can recover access
+  without losing progress.
+- A learner deletes their account: they are warned that the action is irreversible, and all their
+  progress and personal data are deleted.
 - Very long code examples or traces on small screens remain readable through horizontal scrolling
   inside the code/trace area without breaking the page layout.
 - A learner resets progress on a path: they are asked for confirmation, since the action is
@@ -370,9 +383,17 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **FR-021**: Each challenge MUST define: a realistic scenario, a problem statement, the expected
   outcome, instructions, evaluation criteria (mandatory and optional), the competencies validated,
   at least two progressive hints and a reference explanation shown after completion.
-- **FR-022**: The system MUST evaluate challenge submissions against each evaluation criterion and
-  give actionable feedback per criterion. The evaluation method is: [NEEDS CLARIFICATION: see
-  User Story 4, scenario 6].
+- **FR-022**: The system MUST evaluate code submissions automatically by running them against the
+  challenge's tests in an isolated execution environment, and MUST give actionable feedback per
+  evaluation criterion (tests mapped to criteria, outputs and error messages).
+- **FR-022a**: The isolated execution environment MUST have no network access, no access to other
+  learners' data or platform secrets, and enforced limits on execution time, memory and output
+  size; exceeding a limit MUST stop the execution and report the reason.
+- **FR-022b**: Challenge tests MUST supply simulated model and tool responses so that evaluation is
+  deterministic and never calls a real model service.
+- **FR-022c**: Learners MUST be able to edit their code in the application and run the visible
+  tests before a final submission; challenges MAY include hidden tests that are only run on
+  submission.
 - **FR-023**: Learners MUST be able to revise and resubmit a challenge; previous submissions and
   their feedback MUST remain reviewable.
 - **FR-024**: The system MUST record the number of hints used and the number of attempts per
@@ -396,10 +417,13 @@ deprecation notice is visible and that the path's prerequisite order is still va
   execution MUST pause and require explicit learner approval; rejecting MUST be a valid outcome
   that is explained.
 - **FR-031**: The laboratory MUST explain the risk and mitigation of each failure case.
-- **FR-032**: Executions in progress MUST show their status and progress and MUST be stoppable;
-  executions MUST be bounded by a maximum number of steps and duration.
-- **FR-033**: The MVP laboratory execution source is: [NEEDS CLARIFICATION: see User Story 5,
-  scenario 7].
+- **FR-032**: Replays MUST show their current position and status and MUST support pause, resume,
+  restart and jumping to any step.
+- **FR-033**: The MVP laboratory MUST replay curated, pre-recorded executions and MUST NOT call real
+  language models. Learners MAY change a scenario only through predefined variations, each backed
+  by its own curated recording.
+- **FR-033a**: Each recording MUST state the model, framework and date it was produced with, and
+  MUST be reviewed under the same content governance rules as lessons (FR-048–FR-051).
 - **FR-034**: The MVP MUST NOT include multi-agent execution infrastructure; multi-agent concepts
   MAY appear only as explanatory content or pre-defined traces.
 
@@ -429,11 +453,14 @@ deprecation notice is visible and that the path's prerequisite order is still va
 
 **Identity and data**
 
-- **FR-045**: Learner identity and progress persistence MUST work as follows: [NEEDS
-  CLARIFICATION: Do learners need an account in the MVP? (A) Yes — sign-in is required and progress
-  is stored per account and available on any device, (B) No — progress is stored on the learner's
-  device/browser only, without an account, (C) Hybrid — usable without an account with local
-  progress, and optional sign-in to keep progress across devices.]
+- **FR-045**: Learners MUST have an account to study modules, take knowledge checks, submit
+  challenges and use the laboratory. Progress MUST be stored per account and be available on any
+  device after signing in. The catalog, roadmap and path overviews MAY be browsed without an
+  account.
+- **FR-045a**: Learners MUST be able to create an account, verify their email address, sign in,
+  sign out, recover access when they forget their credentials, and delete their account.
+- **FR-045b**: When a session expires while the learner is working, unsent answers and code MUST be
+  preserved and saved once the learner signs in again.
 - **FR-046**: The system MUST collect only the personal data needed to provide the learning
   experience and MUST let learners delete their progress and personal data.
 - **FR-047**: The system MUST NOT expose secrets, credentials or access keys in any part of the
@@ -472,11 +499,15 @@ deprecation notice is visible and that the path's prerequisite order is still va
   interruption or application error once the system has confirmed it as saved.
 - **NFR-005 (Availability)**: The learning experience SHOULD be available 99.5% of the time per
   month, excluding announced maintenance.
-- **NFR-006 (Security)**: Agents in laboratory scenarios MUST run with explicitly defined
-  capabilities and least-privilege tool access; learner input to the laboratory or challenges MUST
-  be treated as untrusted.
-- **NFR-007 (Privacy)**: Data sent to any external model service MUST be limited to what the task
-  requires and MUST NOT include learner personal data.
+- **NFR-006 (Security)**: Agents in laboratory scenarios MUST be shown with explicitly defined
+  capabilities and least-privilege tool access. Learner-submitted code MUST be treated as untrusted
+  and executed only in isolation (FR-022a); a compromised execution MUST NOT reach other learners'
+  data, platform secrets or the network.
+- **NFR-006a (Evaluation capacity)**: 95% of challenge submissions MUST return results within
+  30 seconds under expected MVP load.
+- **NFR-007 (Privacy)**: The MVP MUST NOT send learner data to external model services. Account data
+  MUST be limited to what is needed to sign in and keep progress, and credentials MUST be stored
+  securely and never shown or logged.
 - **NFR-008 (Observability)**: Laboratory executions MUST record a trace of decisions, tool calls
   and failures that is visible to the learner; the platform MUST record operational errors without
   personal data or secrets.
@@ -509,7 +540,10 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **Laboratory Scenario**: Task, tools with declared permissions, orchestration pattern(s), execution
   steps, failure cases, learning objective.
 - **Execution Trace / Step**: Ordered steps with type, inputs, outputs, state snapshot, status.
-- **Learner**: Person using the platform; identity model pending clarification (FR-045).
+- **Learner Account**: Person using the platform; email, verification status, credentials, created
+  date; owns one progress record per path.
+- **Challenge Submission**: Learner code, content version, attempt number, test results per
+  criterion, feedback, status (queued, running, passed, failed, stopped with reason), hints used.
 - **Progress Record**: Per learner: content viewed, last position, assessment attempts and results,
   challenge submissions and feedback, scenarios explored, competency statuses with evidence and
   content version.
@@ -541,6 +575,10 @@ deprecation notice is visible and that the path's prerequisite order is still va
   content, knowledge checks and progress views remain usable.
 - **SC-011**: In usability testing, at least 80% of learners can correctly identify, using the
   laboratory, which step of an execution invoked a tool and why a failure case failed.
+- **SC-012**: A new learner can create an account and reach the first lesson in under 3 minutes.
+- **SC-013**: In security testing, 0 submitted programs are able to reach the network, other
+  learners' data or platform secrets.
+- **SC-014**: 95% of challenge submissions receive their results within 30 seconds.
 
 ## MVP Scope
 
@@ -552,8 +590,12 @@ deprecation notice is visible and that the path's prerequisite order is still va
   lessons, code examples, diagrams, reference links, knowledge checks and challenges.
 - Basic knowledge assessments with feedback and retries.
 - Persistent progress, competency view and review of past attempts.
-- Minimum viable laboratory: at least three inspectable scenarios, step-by-step trace, comparison
-  of two orchestration patterns, failure cases and human-approval demonstration.
+- Learner accounts: sign-up, email verification, sign-in, sign-out, access recovery, deletion.
+- Automatic evaluation of challenge code against tests in an isolated execution environment, with
+  simulated model and tool responses.
+- Minimum viable laboratory based on curated pre-recorded executions: at least three inspectable
+  scenarios, step-by-step trace, comparison of two orchestration patterns, failure cases and
+  human-approval demonstration.
 - Content versioning, review dates and deprecation notices.
 
 **Out of scope**
@@ -565,7 +607,10 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - A marketplace for courses or third-party content.
 - Complex multi-agent orchestration infrastructure.
 - Native mobile applications (the web application must be responsive instead).
-- Free-form learner-built agents running arbitrary code or arbitrary tools.
+- Calls to real language models from the laboratory or from challenge evaluation.
+- Free-form learner-built agents running outside the scope of a challenge, or with network access
+  or arbitrary tools.
+- Single sign-on for organizations.
 - Content authoring interface inside the application (maintainers may use any versioned workflow).
 
 ## Assumptions
@@ -580,8 +625,14 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - Knowledge check passing threshold defaults to 70%.
 - Content maintainers are members of the project team; there is no public contribution flow in the
   MVP.
-- Code examples are illustrative and run in the learner's own environment unless the clarified
-  laboratory or challenge evaluation approach provides execution.
+- Lesson code examples are illustrative and can be copied to the learner's own environment; only
+  challenge code is executed by the platform.
+- Challenge code is written in Python for the MVP, as that is the stated learner prerequisite; the
+  challenge model does not prevent adding other languages later.
+- Account sign-in uses email and password with verification; the plan may add sign-in with an
+  external identity provider if it does not change the requirements above.
+- The catalog, roadmap and path overviews are public so that visitors can evaluate the curriculum
+  before creating an account.
 - Progress data is retained while the learner keeps it, and is deleted on request.
 
 ## Dependencies and Open Questions
@@ -591,14 +642,16 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - Authoring of accurate educational content for the introductory path, its assessments, challenges
   and laboratory scenarios by subject-matter experts, including technical review.
 - A defined competency framework (list of competencies with levels) for the introductory path.
-- Depending on clarification answers: access to external model services and/or an isolated
-  execution environment for code evaluation.
+- An isolated code execution environment able to meet FR-022a and NFR-006a.
+- Curated, reviewed recordings of agent executions for every laboratory scenario and variation.
+- An email delivery capability for account verification and access recovery.
 
-**Open questions (blocking, to be resolved before planning)**
+**Resolved clarifications (2026-11-06)**
 
-1. Challenge evaluation method (FR-022).
-2. Laboratory execution source (FR-033).
-3. Learner identity and progress persistence model (FR-045).
+1. Challenge evaluation → automatic evaluation of submitted code against tests in an isolated
+   environment (FR-022, FR-022a–c).
+2. Laboratory execution source → curated, pre-recorded executions; no real model calls (FR-033).
+3. Identity and persistence → account required; progress stored per account (FR-045, FR-045a–b).
 
 **Open questions (non-blocking, assumed defaults above)**
 

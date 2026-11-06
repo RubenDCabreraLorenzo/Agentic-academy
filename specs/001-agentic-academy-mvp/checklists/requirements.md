@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,8 +31,10 @@
 
 ## Notes
 
-- Iteration 1: 3 [NEEDS CLARIFICATION] markers pending user input:
-  Q1 challenge evaluation (US4 / FR-022), Q2 laboratory execution source (US5 / FR-033),
-  Q3 learner identity and persistence (FR-045).
-- "Python" in Assumptions refers to learner background knowledge, not to the platform stack.
-- Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
+- Iteration 1: 3 [NEEDS CLARIFICATION] markers raised (challenge evaluation, laboratory execution
+  source, learner identity).
+- Iteration 2 (2026-11-06): resolved with user answers Q1=A (automatic evaluation of code in an
+  isolated environment), Q2=A (curated pre-recorded laboratory executions), Q3=A (account
+  required). All items pass.
+- "Python" appears as learner prerequisite and as the challenge language offered to learners
+  (a product/content decision), not as the platform implementation stack.
