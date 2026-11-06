@@ -8,11 +8,11 @@ Decision record: [research R6, R7](../research.md). Review: [architecture-review
 
 | Zone | Trusted with | Must never have |
 |------|--------------|-----------------|
-| **Browser** (untrusted) | Its own session cookie; visible tests and starter files | Hidden tests, reference solutions, other learners' data |
-| **API host** (trusted) | Full database role, session secrets, SMTP credentials, public content bundle | Execution of learner code; private content (hidden tests, solutions) |
+| **Browser** (untrusted) | Its own session cookie; challenge tests and starter files | Reference solutions, other learners' data |
+| **API host** (trusted) | Full database role, session secrets, SMTP credentials, content bundle | Execution of learner code; reference solutions |
 | **PostgreSQL** (trusted) | All learner data | — |
-| **Runner host** (trusted, exposed) | Docker/gVisor daemon, private content bundles (hidden tests), a database role limited to the runner functions in §1 | API secrets, SMTP credentials, direct table access, learner identity (account ids, emails) |
-| **Sandbox container** (untrusted) | Learner files, the test files of the current phase, `academy_sim` | Network, environment secrets, database, other submissions, reference solutions, hidden tests during the visible phase |
+| **Runner host** (trusted, exposed) | Docker/gVisor daemon, content bundles (challenge tests by version), a database role limited to the runner functions in §1 | API secrets, SMTP credentials, direct table access, learner identity (account ids, emails), reference solutions |
+| **Sandbox container** (untrusted) | Learner files, the challenge's tests, `academy_sim` | Network, environment secrets, database, other submissions, reference solutions |
 
 The runner host is treated as *trusted but exposed*: a sandbox escape is assumed to compromise it,
 so it holds nothing beyond what is needed to execute and report jobs.
@@ -39,26 +39,27 @@ Rules:
   when the queue exceeds 200 jobs; the learner's code stays in the workspace (spec edge case).
 - A submission queued for more than 5 minutes is shown as "delayed" to the learner.
 
-## 2. Execution phases
+## 2. Execution
 
-A `visible_run` executes **phase V** only. A `submission` executes **phase V** and then, in a
-**separate, fresh container**, **phase H**. Phase H is skipped when the challenge has no hidden
-tests.
+Every job runs in **one fresh container**. `visible_run` and `submission` execute the same tests;
+only a `submission` can complete a challenge and count as an attempt. The MVP has no hidden tests
+(architecture review D2).
 
 ```text
-/work/                        # read-only bind mount, rebuilt for every phase
+/work/                        # read-only bind mount, rebuilt for every job
 ├── submission/               # learner files
-├── tests/                    # phase V: visible tests only | phase H: hidden tests only
-└── manifest.json             # phase, test ids expected, limits (no secrets)
+├── tests/                    # the challenge's tests, taken from the content bundle of the
+│                             # submission's bundle_version (never from learner input)
+└── manifest.json             # test ids expected, limits (no secrets)
 /out/                         # writable tmpfs (1 MB) — result file only
 /tmp/                         # writable tmpfs (16 MB)
 ```
 
 - Reference solutions are **never** mounted in any learner run; they are used only by the content
   validator (content-schema rule 7).
-- Phase H output (stdout/stderr, assertion messages, tracebacks) is **never** returned to the
-  learner. Only per-test pass/fail and the per-criterion feedback authored in `challenge.yaml`.
-- Phase V output is returned (truncated, scrubbed) because it only contains visible material.
+- Test output is returned to the learner (truncated, scrubbed), since all tests are visible.
+- *Later release*: hidden tests would run in a second, fresh container whose output is never
+  returned (design retained from the architecture review, C1).
 
 ## 3. Sandbox configuration
 
@@ -80,9 +81,9 @@ tests.
 
 | Limit (platform maximum) | Enforced by | stop_reason |
 |--------------------------|-------------|-------------|
-| Wall clock: 10 s per phase (challenge may set lower) | Runner kills the container at deadline | `timeout` |
+| Wall clock: 10 s per job (challenge may set lower) | Runner kills the container at deadline | `timeout` |
 | Memory: 256 MB | cgroup; container exits with OOM | `memory` |
-| Output: 64 KB per phase | Runner stops reading and kills the container | `output_limit` |
+| Output: 64 KB per job | Runner stops reading and kills the container | `output_limit` |
 | Socket/process/path access attempts | Network namespace + gVisor (enforce), audit hooks (report) | `forbidden_operation` |
 | PIDs: 64; open files: 64 | cgroup / ulimit | reported as test errors |
 
@@ -92,7 +93,6 @@ The harness writes `/out/result.json`; the runner never parses stdout as a resul
 
 ```json
 {
-  "phase": "V | H",
   "tests": [
     { "id": "test_tool_schema_valid", "outcome": "passed | failed | error | skipped",
       "message": "AssertionError: expected 'priority' to be required" }
@@ -106,13 +106,13 @@ The runner **validates** the result before accepting it:
 
 1. The file exists, is valid JSON ≤ 1 MB, and matches the schema above.
 2. The set of test ids equals exactly the expected set from `manifest.json` (no missing, extra or
-   duplicated ids); otherwise the phase is `failed` with reason "test harness integrity check
+   duplicated ids); otherwise the job is `failed` with reason "test harness integrity check
    failed".
 3. The container exit status is consistent with the reported outcomes.
 
 Then it maps tests to criteria (`met` ⇔ all its tests passed), sets `passed` ⇔ all mandatory
-criteria met, attaches authored feedback, strips hidden-test messages, scrubs secret-like patterns
-from phase V messages and output (FR-047), and calls `runner_complete_job`.
+criteria met, attaches authored feedback, scrubs secret-like patterns from messages and output
+(FR-047), and calls `runner_complete_job`.
 
 ## 6. Failure semantics
 
@@ -131,8 +131,8 @@ a reaper on the runner host removes any `academy.*` container past `academy.dead
 
 ## 7. Content versions
 
-The runner resolves hidden tests by `bundle_version` from a local store that keeps every published
-private bundle (immutable), so a submission started before a content release is evaluated against
+The runner resolves challenge tests by `bundle_version` from a local store that keeps every
+published bundle (immutable), so a submission started before a content release is evaluated against
 the version the learner was working on (spec edge case, FR-051).
 
 ## 8. Known limitations of the isolation model
@@ -145,10 +145,11 @@ the version the learner was working on (spec edge case, FR-051).
    the harness, so a deliberate learner can subvert pytest or the harness and fake a pass for
    *their own* submission. Validation (§5) prevents trivial forgery, not a determined attacker.
    Impact is limited to the learner's own progress because the MVP issues no certificates or
-   public credentials. See product-owner decision D1 in the architecture review.
-3. **Hidden tests are not secret against inference.** Pass/fail per hidden test is a side channel;
-   repeated submissions can reveal hidden-test intent. Hidden tests discourage overfitting; they are
-   not a security control.
+   public credentials. Accepted by the product owner (architecture review D1); to be revisited if
+   certificates or public credentials are introduced.
+3. **All tests are visible** (D2), so a learner can write code that satisfies the tests without
+   generalizing. Challenge design mitigates this with behavior-oriented tests and the reference
+   explanation shown after passing.
 4. **Micro-architectural side channels** (e.g. Spectre-class) are not addressed; acceptable because
    the sandbox holds no secrets and runs one submission at a time per container.
 5. **Resource exhaustion on the host** is limited by cgroups and worker concurrency, not eliminated;

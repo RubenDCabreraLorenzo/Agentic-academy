@@ -108,7 +108,8 @@ exact order; matching: all pairs). Score = correct / total.
 | reference_explanation | Markdown | shown only after the challenge is passed |
 | competencies | list of competency ids | ≥ 1 |
 | starter_files | file tree | editable by learner |
-| visible_tests, hidden_tests | file trees | hidden tests never shipped to the frontend (R6) |
+| tests | file tree | all visible to the learner in the MVP (review D2) |
+| solution | file tree | validator only; never shipped or mounted in learner runs |
 | limits | {cpu_seconds, memory_mb, wall_seconds} | ≤ platform maximums (R6) |
 
 ### 1.8 LabScenario
@@ -132,8 +133,8 @@ execution event and the variant set MUST contain both an approved and a rejected
 
 ### 1.9 Content bundle
 
-Build output: `{bundle_version, built_at, lang, items}` (public part) plus a private part (hidden
-tests) for the runner only. Lesson and feedback bodies stay as validated Markdown; rendering and
+Build output: `{bundle_version, built_at, lang, items}`, used by the API and the runner; it never
+contains reference solutions. Lesson and feedback bodies stay as validated Markdown; rendering and
 sanitization happen in the frontend (R2). New learner activity always uses the **current** bundle,
 but every published bundle is kept (immutable) so that attempts and submissions started on an older
 version are scored against that version (spec edge case "content updated mid-module", FR-051).
@@ -163,18 +164,19 @@ wherever the target is referenced (FR-049).
 Transitions: `pending_verification → active` (verify email) · `active|pending_verification →
 deleted` (learner request, FR-045a, FR-046): the account row, sessions, tokens and all progress
 rows (2.4–2.12) are hard-deleted in one transaction; queued jobs of the account are cancelled.
-Unverified accounts are deleted after 30 days *(assumption)*.
+Unverified accounts are deleted after 30 days *(initial value, review D4)*.
 
 ### 2.2 Session
 
 `id (UUID), account_id (FK), token_hash, created_at, last_seen_at, expires_at, revoked_at`.
-Idle timeout 7 days, absolute 30 days *(assumption, see review D4)*; all sessions revoked on
+Idle timeout 7 days, absolute 30 days *(initial value, review D4)*; all sessions revoked on
 password reset and account deletion; sign-out revokes the current session.
 
 ### 2.3 OneTimeToken
 
 `id, account_id, purpose (verify_email | reset_password), token_hash, expires_at, used_at`.
-Single use; verify expires in 24 h, reset in 1 h *(assumption)*.
+Single use; verify expires in 24 h, reset in 1 h *(initial values, review D4)*. Passwords: 12–128
+characters *(initial value, D4)*.
 
 ### 2.4 ContentView
 
@@ -225,7 +227,7 @@ Autosaved draft code; survives session expiry (FR-045b).
 | files | JSONB | snapshot of code |
 | status | enum `queued` \| `running` \| `passed` \| `failed` \| `stopped` \| `error` | see transitions |
 | stop_reason | enum `timeout` \| `memory` \| `output_limit` \| `forbidden_operation` \| null | FR-022a |
-| criteria_results | JSONB [{criterion_id, met, tests:[{id, outcome, message, hidden}]}] | FR-022; `message` is always null for hidden tests |
+| criteria_results | JSONB [{criterion_id, met, tests:[{id, outcome, message}]}] | FR-022 |
 | output_excerpt | text | ≤ 64 KB, secrets scrubbed (FR-047) |
 | hints_used | int | snapshot at submission time (FR-024) |
 | queued_at, started_at, finished_at | timestamptz | |
@@ -233,7 +235,7 @@ Autosaved draft code; survives session expiry (FR-045b).
 Transitions: `queued → running → passed | failed | stopped` · `running → queued` (lease expired,
 infrastructure retry) · `queued|running → error` (after 3 infrastructure attempts; learner may
 resubmit without counting an attempt) · `queued → cancelled` (account deleted) ·
-`passed` = all mandatory criteria met in phase V and phase H (runner protocol §2).
+`passed` = all mandatory criteria met (runner protocol §5).
 `attempt_number` is assigned when the submission reaches a final state that counts as an attempt.
 
 ### 2.9 SubmissionJob (queue)

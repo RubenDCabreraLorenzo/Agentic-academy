@@ -30,8 +30,7 @@ Copy `.env.example` to `.env`. Development defaults need no real secrets.
 | `COOKIE_SECURE` | api | `true` (browsers treat `localhost` as secure) | must be `true` |
 | `PUBLIC_BASE_URL` | api (email links) | `http://localhost:5173` | `https://…` |
 | `EMAIL_BACKEND` | api | `smtp` to Mailpit (`SMTP_HOST=localhost`, `SMTP_PORT=1025`) | `smtp` with real credentials |
-| `CONTENT_PUBLIC_DIR` | api | `./dist/content` (`public/` only) | read-only mount; must not contain `private/` |
-| `CONTENT_PRIVATE_DIR` | runner | `./dist/content` (`private/`) | runner host only |
+| `CONTENT_DIR` | api, runner | `./dist/content` | read-only mount; never contains reference solutions |
 | `RUNNER_RUNTIME` | runner | `runsc` | must be `runsc` |
 | `RUNNER_SANDBOX_IMAGE` | runner | `academy-sandbox:dev` | pinned digest `academy-sandbox@sha256:…` |
 | `RUNNER_CONCURRENCY` | runner | `2` | sized by load (research R10) |
@@ -129,8 +128,9 @@ it runs only on a dedicated host in production (runner protocol §0).
 2. Reveal one hint → hint count = 1.
 3. Run visible tests on starter code → failing criteria with messages.
 4. Submit an infinite loop → `stopped (timeout)` within limit; submit code opening a socket →
-   `stopped (forbidden_operation)`; submit code that prints the contents of `/work/tests` → only
-   visible tests appear; hidden-test messages and output are never shown; platform unaffected.
+   `stopped (forbidden_operation)`; submit code that lists the file system → no reference solution
+   or other learner's files are present; replace the test files in the submission → the runner
+   still uses the bundle's tests; platform unaffected.
 5. Submit a correct solution → all mandatory criteria met; module completed; competencies
    demonstrated; reference explanation shown; previous submissions reviewable.
 **Expected**: 95% of results within 30 s (measured with the load script `runner/tests/load`).

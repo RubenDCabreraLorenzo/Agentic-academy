@@ -431,8 +431,8 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **FR-022b**: Challenge tests MUST supply simulated model and tool responses so that evaluation is
   deterministic and never calls a real model service.
 - **FR-022c**: Learners MUST be able to edit their code in the application and run the visible
-  tests before a final submission; challenges MAY include hidden tests that are only run on
-  submission.
+  tests before a final submission. In the MVP every test of a challenge is visible to the learner;
+  hidden tests are deferred to a later release (architecture review D2).
 - **FR-023**: Learners MUST be able to revise and resubmit a challenge; previous submissions and
   their feedback MUST remain reviewable.
 - **FR-024**: The system MUST record the number of hints used and the number of attempts per
@@ -677,6 +677,7 @@ release acceptance criteria.
 - Free-form learner-built agents running outside the scope of a challenge, or with network access
   or arbitrary tools.
 - Single sign-on for organizations.
+- Hidden challenge tests (deferred; all challenge tests are visible in the MVP).
 - Content authoring interface inside the application (maintainers may use any versioned workflow).
 
 ## Assumptions
@@ -717,6 +718,10 @@ release acceptance criteria.
    environment (FR-022, FR-022a–c).
 2. Laboratory execution source → curated, pre-recorded executions; no real model calls (FR-033).
 3. Identity and persistence → account required; progress stored per account (FR-045, FR-045a–b).
+4. Architecture review decisions (product owner, 2026-11-06): self-tampering risk with challenge
+   results accepted while no certificates exist (D1); no hidden tests in the MVP (D2); MVP scale
+   adopted as a working hypothesis (D3); account and browser policies adopted as initial values
+   (D4). See [architecture-review.md](./architecture-review.md).
 
 **Open questions (non-blocking, assumed defaults above)**
 

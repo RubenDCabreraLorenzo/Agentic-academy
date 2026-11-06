@@ -506,7 +506,7 @@ components:
             criteria: { type: array, items: { type: object, properties: { id: { type: string }, description: { type: string }, mandatory: { type: boolean } } } }
             competencies: { type: array, items: { $ref: '#/components/schemas/Competency' } }
             files: { $ref: '#/components/schemas/Files' }
-            visible_tests: { $ref: '#/components/schemas/Files' }
+            tests: { $ref: '#/components/schemas/Files', description: All challenge tests (no hidden tests in the MVP) }
             hints_revealed: { type: array, items: { type: string } }
             hints_total: { type: integer }
             passed: { type: boolean }
@@ -529,8 +529,8 @@ components:
               criterion_id: { type: string }
               met: { type: boolean }
               feedback_markdown: { type: string }
-              tests: { type: array, items: { type: object, properties: { id: { type: string }, title: { type: string }, outcome: { enum: [passed, failed, error, skipped] }, message: { type: [string, 'null'], description: Always null for hidden tests }, hidden: { type: boolean } } } }
-        output_excerpt: { type: string, description: Phase V (visible tests) output only; never hidden-test output }
+              tests: { type: array, items: { type: object, properties: { id: { type: string }, title: { type: string }, outcome: { enum: [passed, failed, error, skipped] }, message: { type: [string, 'null'] } } } }
+        output_excerpt: { type: string, description: Truncated to 64 KB and scrubbed of secret-like patterns }
         queued_at: { type: string, format: date-time }
         finished_at: { type: [string, 'null'], format: date-time }
     CompetencyProgress:

@@ -6,8 +6,8 @@ checked against [spec.md](./spec.md) and the constitution.
 
 **Outcome**: The architecture holds (modular monolith, PostgreSQL queue, gVisor runner; no stack
 change). Five critical flaws were found in the sandbox and content-version design and **have been
-corrected in the documents**, because existing requirements demanded it. Four decisions remain
-for the product owner (section 4).
+corrected in the documents**, because existing requirements demanded it. The four product-owner
+decisions were taken on 2026-11-06 and applied (section 4).
 
 Legend: ✅ corrected in docs · 💡 recommended, not applied · ⚖️ needs product-owner decision.
 
@@ -17,7 +17,7 @@ Legend: ✅ corrected in docs · 💡 recommended, not applied · ⚖️ needs p
 
 | # | Issue | Why it is critical | Requirement | Status |
 |---|-------|--------------------|-------------|--------|
-| C1 | **Hidden tests and the reference solution were readable by learner code.** Both were mounted into the same container as the submission, whose output was returned to the learner, so `print(open('/work/tests/hidden/...').read())` would leak them. | Leaks hidden tests and solutions to every learner. | FR-022c, FR-022a | ✅ Hidden tests now run in a second fresh container whose output is never returned. Solutions moved to `solution/`, used only by the validator and never mounted. Hidden-test messages are always null (runner protocol §2, §5; content-schema; OpenAPI). |
+| C1 | **Hidden tests and the reference solution were readable by learner code.** Both were mounted into the same container as the submission, whose output was returned to the learner, so `print(open('/work/tests/hidden/...').read())` would leak them. | Leaks hidden tests and solutions to every learner. | FR-022c, FR-022a | ✅ Hidden tests now run in a second fresh container whose output is never returned. Solutions moved to `solution/`, used only by the validator and never mounted. After D2 the MVP has no hidden tests: every job runs in one container, with tests taken from the content bundle and never from learner input. The two-container design is kept for a later release (runner protocol §2). |
 | C2 | **The result was parsed from the sandbox's stdout**, which learner code controls, so a printed fake JSON report was accepted as a pass. | Trivial forgery of competency evidence. | Principle VII, FR-036 | ✅ The result now comes from `/out/result.json`, validated against the exact expected set of test ids and the exit status (runner protocol §5). The remaining tamper risk is documented → D1. |
 | C3 | **Runner database role could `SELECT` all of `challenge_submission`.** A sandbox escape on the runner host would expose every learner's code and allow results to be rewritten at will. | Breaks least privilege and the "other learners' data" guarantee. | FR-022a, NFR-006, SC-011 | ✅ The runner has no table access. It uses three `SECURITY DEFINER` functions (claim, fenced complete, heartbeat) and never receives account ids (runner protocol §0–§1). |
 | C4 | **No fencing or stale-job semantics.** A slow worker whose lock was reclaimed could overwrite a newer result. Orphan containers survived worker crashes. The API could not tell that the runner was down, although quickstart V7.3 expected an "evaluation unavailable" message. | Double execution, wrong results, untestable resilience requirement. | Spec edge case "evaluation service unavailable", Reliability standard | ✅ 60 s leases extended by heartbeat, `lease_id` fencing, 3 infrastructure attempts then `error` (not counted as an attempt), orphan reaper, `runner_worker` heartbeat, `503 evaluation_unavailable`, `/health` (runner protocol §1, §6; data-model §2.8–2.9a; OpenAPI). |
@@ -40,9 +40,9 @@ Legend: ✅ corrected in docs · 💡 recommended, not applied · ⚖️ needs p
   not a VM, results can be tampered with in-process, pass/fail on hidden tests is a side channel,
   micro-architectural side channels exist, host resources can be exhausted, and the `runc`
   exception applies in development.
-- ✅ **Visible vs hidden tests.** Visible tests are *intentionally* shown to the learner (FR-022c:
-  "run the visible tests"). Only hidden tests and solutions must never be exposed, and the
-  corrected design guarantees this as long as the repository stays private (D2).
+- ✅ **Visible vs hidden tests.** Visible tests are *intentionally* shown to the learner (FR-022c).
+  After D2 every test is visible. Only reference solutions must never be exposed: they are never
+  bundled or mounted, and the repository must stay private.
 - 💡 Before launch, run an external penetration test on the runner host. Re-pin gVisor monthly.
 
 ### 2.2 Incremental delivery
@@ -109,10 +109,10 @@ PostgreSQL queue are kept.
 
 | ID | Decision | Options | Recommendation |
 |----|----------|---------|----------------|
-| ⚖️ D1 | **Accept that a determined learner can fake a challenge pass for their own account** by subverting the in-process test harness? | (a) Accept while there are no certificates or public credentials (they are out of scope). (b) Require out-of-process evaluation, where tests call learner code through a protocol; this adds significant cost and makes challenges harder to write | (a); revisit if certificates are introduced |
-| ⚖️ D2 | **Hidden tests in the MVP?** | (a) Keep them, and keep the repository private or store hidden tests and solutions separately. (b) Drop hidden tests for the MVP (FR-022c says MAY): one phase per run, simpler runner, no leak risk | (b) for MVP simplicity, unless anti-overfitting matters at launch |
-| ⚖️ D3 | **Confirm MVP scale** (research R10): ≤ 1,000 registered learners, ≤ 100 concurrent, peak of 10 simultaneous submissions | Confirm or adjust | Confirm; it only affects runner sizing |
-| ⚖️ D4 | **Account and platform policies** currently assumed | Session lifetime of 7 days idle / 30 days absolute; password of at least 12 characters; verification link 24 h; reset link 1 h; unverified accounts deleted after 30 days; last 2 browser versions | Approve as defaults |
+| ✅ D1 | **Accept that a determined learner can fake a challenge pass for their own account** by subverting the in-process test harness? | (a) Accept while there are no certificates or public credentials (they are out of scope). (b) Require out-of-process evaluation, where tests call learner code through a protocol; this adds significant cost and makes challenges harder to write | **Approved (a)**: revisit if certificates are introduced |
+| ✅ D2 | **Hidden tests in the MVP?** | (a) Keep them, and keep the repository private or store hidden tests and solutions separately. (b) Drop hidden tests for the MVP (FR-022c says MAY): one phase per run, simpler runner, no leak risk | **Approved (b)**: no hidden tests for now; applied to spec FR-022c, runner protocol, content schema, data model, OpenAPI |
+| ✅ D3 | **Confirm MVP scale** (research R10): ≤ 1,000 registered learners, ≤ 100 concurrent, peak of 10 simultaneous submissions | Confirm or adjust | **Approved as a working hypothesis**; re-validate with beta data |
+| ✅ D4 | **Account and platform policies** | Session lifetime of 7 days idle / 30 days absolute; password of at least 12 characters; verification link 24 h; reset link 1 h; unverified accounts deleted after 30 days; last 2 browser versions | **Approved as initial values**; adjustable without a spec change |
 
 ## 5. Confirmed requirements vs assumptions
 
@@ -123,4 +123,8 @@ PostgreSQL queue are kept.
 - **Engineering decisions (plan level, changeable without the product owner)**:
   - The stack (R1–R3, R5, R9); gVisor runtime; resource limits; lease and heartbeat timings; queue
     cap; delivery order inside increments.
-- **Assumptions awaiting confirmation**: D1–D4; hosting provider (R12, deferred by design).
+- **Product-owner decisions (2026-11-06)**: D1 approved; D2 hidden tests removed for now; D3
+  approved as a working hypothesis; D4 approved as initial values. Recorded in spec.md
+  ("Resolved clarifications").
+- **Still open by design**: hosting provider (R12), to be decided before the first public
+  deployment.

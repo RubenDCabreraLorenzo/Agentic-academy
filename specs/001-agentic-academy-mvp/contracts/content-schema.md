@@ -20,8 +20,7 @@ content/
     │               └── challenges/<challenge-id>/
     │                   ├── challenge.yaml
     │                   ├── starter/…            # learner-editable files
-    │                   ├── tests/visible/…      # shipped to the learner
-    │                   ├── tests/hidden/…       # runner only; never shipped to the frontend
+    │                   ├── tests/…              # all visible to the learner in the MVP (no hidden tests, review D2)
     │                   └── solution/…           # validator only; never shipped, never mounted in learner runs
     ├── lab/<scenario-id>.json                 # conforms to lab-trace.schema.json
     └── deprecations.yaml
@@ -64,7 +63,7 @@ A build fails (non-zero exit, machine-readable report) when any rule is violated
 6. Every question and every challenge criterion maps to an objective/competency (FR-044).
 7. Challenge `difficulty_rank` strictly increases along the path (FR-025); ≥ 2 hints (FR-021);
    every test id belongs to exactly one criterion; the reference solution (kept under
-   `solution/`) passes all visible and hidden tests in the sandbox image; the starter code fails at
+   `solution/`) passes all tests in the sandbox image; the starter code fails at
    least one mandatory criterion.
 8. Lab scenarios validate against `lab-trace.schema.json`; every destructive tool call has an
    `approval_request` and both approved/rejected branches; every recording has `recorded_with`;
@@ -76,11 +75,10 @@ A build fails (non-zero exit, machine-readable report) when any rule is violated
 
 `academy content build --lang en` writes:
 
-- `dist/content/en/public/bundle-<bundle_version>.json` — validated content with Markdown bodies
-  (rendered, highlighted and sanitized in the frontend, research R2), visible tests and starter
-  files. Mounted on the API host.
-- `dist/content/en/private/bundle-<bundle_version>/` — hidden tests per challenge. Mounted **only**
-  on the runner host. Reference solutions are not included in either output.
+- `dist/content/en/bundle-<bundle_version>.json` — validated content with Markdown bodies
+  (rendered, highlighted and sanitized in the frontend, research R2), challenge tests and starter
+  files. Mounted read-only on the API host and on the runner host. Reference solutions are never
+  included.
 
 Every published bundle is kept (immutable) so older attempts and submissions can be scored against
 their own version (data-model §1.9).

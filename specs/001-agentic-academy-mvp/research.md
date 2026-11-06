@@ -93,8 +93,7 @@ evaluated against the constitution: educational value, technical suitability and
   (`runsc`) runtime, with:
   - no network (`--network none`), read-only root filesystem, a small `tmpfs` work directory;
   - non-root user, all Linux capabilities dropped, `no-new-privileges`, default seccomp profile;
-  - limits: 1 vCPU, 256 MB memory, 64 PIDs, 10 s wall-clock per phase (visible tests; hidden tests
-    in a second, fresh container), 64 KB captured output per phase;
+  - limits: 1 vCPU, 256 MB memory, 64 PIDs, 10 s wall-clock per job, 64 KB captured output;
   - a pinned, minimal sandbox image containing Python 3.13, pytest and the `academy_sim` package
     (R7), and nothing else; no platform secrets, credentials or database access;
   - the container is destroyed after each run; results are returned as a structured JSON report.
@@ -115,14 +114,14 @@ evaluated against the constitution: educational value, technical suitability and
     learner's device cannot be trusted as evidence of competency (Principle VII) and hidden tests
     would be exposed. Pyodide MAY later be used for the optional "run visible tests" preview only.
   - Third-party code execution APIs: vendor coupling and sends learner code to a third party.
-- **Hidden tests**: stored in the content repository under `tests/hidden/` folders, built into a
-  private bundle mounted only on the runner host, and executed in a separate container whose output
-  is never returned to the learner. Reference solutions live in `solution/` and are never mounted
-  in learner runs. If the content repository becomes public, hidden tests and solutions must move to
-  a private location (documented risk; review decision D2).
+- **Hidden tests**: not included in the MVP (product-owner decision D2); all challenge tests are
+  visible. Reference solutions live in `solution/`, are used only by the content validator and are
+  never mounted in learner runs. If the content repository becomes public, solutions must move to a
+  private location. The two-container design for hidden tests is kept in the runner protocol for a
+  later release.
 - **Result integrity**: results are read from a result file and validated (exact expected test-id
   set), but learner code shares the process with the test harness, so a determined learner can fake
-  a pass for their own submission. Accepted only while no certificates exist (review decision D1).
+  a pass for their own submission. Accepted by the product owner while no certificates exist (D1).
 
 ## R7. Simulated model and tool responses in challenges
 
@@ -171,12 +170,12 @@ evaluated against the constitution: educational value, technical suitability and
 
 ## R10. Expected MVP scale (pending spec item)
 
-- **Decision (assumption)**: up to 1,000 registered learners, 100 concurrently active, and a peak of
+- **Decision (working hypothesis approved by the product owner, D3)**: up to 1,000 registered learners, 100 concurrently active, and a peak of
   10 simultaneous challenge submissions during the beta. The runner starts with 2 workers × 2
   concurrent sandboxes and scales by adding workers.
 - **Rationale**: Realistic for a first beta cohort; sizes the queue and runner without
   over-engineering. NFR-006a (95% of results < 30 s) holds at this load with ~2–5 s per run.
-- **To confirm with the product owner** before launch; it does not change the architecture.
+- Re-validate with beta usage data; it does not change the architecture.
 
 ## R11. Internationalization readiness
 

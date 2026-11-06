@@ -42,7 +42,7 @@ runner security suite; Vitest + Testing Library; Playwright + axe-core (end-to-e
 ruff, mypy, ESLint, TypeScript strict
 
 **Target Platform**: Modern evergreen desktop and mobile browsers (last 2 versions of Chromium,
-Firefox, Safari); Linux x86_64 servers with gVisor for the runner; hosting provider not chosen
+Firefox, Safari; initial value D4); Linux x86_64 servers with gVisor for the runner; hosting provider not chosen
 (R12)
 
 **Project Type**: Web application (SPA frontend + API backend + background runner)
@@ -56,7 +56,7 @@ English only but i18n-ready (FR-054, FR-055); 99.5% monthly availability target 
 (NFR-005)
 
 **Scale/Scope**: ≤ 1,000 registered learners, ≤ 100 concurrent, peak 10 simultaneous submissions
-(assumption R10, to confirm); 1 available path with 5–7 modules, ≥ 3 lab scenarios; ~20 screens
+(working hypothesis R10, approved D3); 1 available path with 5–7 modules, ≥ 3 lab scenarios; ~20 screens
 
 ## Constitution Check
 
@@ -77,7 +77,7 @@ English only but i18n-ready (FR-054, FR-055); 99.5% monthly availability target 
 | Governance | No conflicts identified; complexity deviations justified below | ✅ | ✅ |
 
 **Result**: PASS (pre-research and post-design). No unresolved NEEDS CLARIFICATION remain; R10
-(scale) is an assumption to confirm that does not affect the architecture.
+(scale) is an approved working hypothesis (D3) that does not affect the architecture.
 
 ## Project Structure
 
@@ -182,8 +182,8 @@ router, and modules interact only through service interfaces, never through each
 |------|------------|
 | Sandbox escape or resource abuse | gVisor + no network + limits + separate host + restricted DB role; security suite in CI; Firecracker as upgrade path |
 | Content authoring effort underestimated | Content is the critical path: write Module 1 during increment 1; validator enforces completeness early |
-| Hidden tests or solutions leak | Separate hidden-test container with no output returned; solutions never mounted; repository kept private (review D2) |
-| Learner fakes a pass by subverting the in-process harness | Result-file validation; accepted residual risk while no certificates exist (review D1) |
+| Reference solutions leak | Solutions never bundled or mounted; repository kept private. No hidden tests in the MVP (D2) |
+| Learner fakes a pass by subverting the in-process harness | Result-file validation; residual risk accepted by the product owner while no certificates exist (D1) |
 | Lab recordings drift from current model behavior | `recorded_with` + `last_reviewed` + review cadence under content governance |
 | Scale assumption wrong | Runner scales horizontally by adding workers; queue position shown to learners |
 
