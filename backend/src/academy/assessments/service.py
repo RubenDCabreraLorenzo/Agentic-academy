@@ -301,3 +301,18 @@ def _evidence(db: Session, account_id: uuid.UUID, ev: Evidence) -> None:
                     str(row.id),
                     row.submitted_at,
                 )
+
+
+from academy.shared.hooks import PathScope, on_reset_path  # noqa: E402
+
+
+@on_reset_path
+def _reset(db: Session, account_id: uuid.UUID, scope: PathScope) -> None:
+    from sqlalchemy import delete
+
+    db.execute(
+        delete(AssessmentAttempt).where(
+            AssessmentAttempt.account_id == account_id,
+            AssessmentAttempt.knowledge_check_id.in_(scope.check_ids),
+        )
+    )

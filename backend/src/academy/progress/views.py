@@ -26,8 +26,12 @@ class ContentView(Base):
     content_version: Mapped[str] = mapped_column(String)
     path_id: Mapped[str] = mapped_column(String)
     module_id: Mapped[str] = mapped_column(String)
-    first_viewed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    last_viewed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    first_viewed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    last_viewed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
 
 def record_view(
@@ -56,7 +60,9 @@ def record_view(
 
 
 def viewed_modules(db: Session, account_id: uuid.UUID) -> set[str]:
-    return set(db.scalars(select(ContentView.module_id).where(ContentView.account_id == account_id)))
+    return set(
+        db.scalars(select(ContentView.module_id).where(ContentView.account_id == account_id))
+    )
 
 
 @dataclass(frozen=True)

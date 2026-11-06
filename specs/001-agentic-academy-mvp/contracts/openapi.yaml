@@ -567,5 +567,13 @@ components:
         modules: { type: array, items: { type: object, properties: { id: { type: string }, title: { type: string }, status: { enum: [not_started, in_progress, completed] } } } }
         pending_objectives: { type: array, items: { type: object, properties: { id: { type: string }, statement: { type: string }, module_id: { type: string } } } }
         next_step: { type: object, properties: { kind: { enum: [lesson, knowledge_check, challenge, next_path] }, target_id: { type: string }, label: { type: string } } }
-        continue: { type: [object, 'null'], properties: { module_id: { type: string }, lesson_id: { type: string } } }
+        continue: { type: [object, 'null'], properties: { module_id: { type: string }, lesson_id: { type: [string, 'null'] } } }
         path_completed: { type: boolean }
+        new_learner: { type: boolean, description: No activity yet; show the welcome state }
+        competencies: { type: array, items: { $ref: '#/components/schemas/CompetencyProgress' } }
+        completion_summary:
+          type: [object, 'null']
+          description: FR-042; present only when the path is completed
+          properties:
+            competencies: { type: array, items: { $ref: '#/components/schemas/CompetencyProgress' } }
+            recommended_next_path: { type: [object, 'null'], properties: { id: { type: string }, title: { type: string }, status: { type: string } } }

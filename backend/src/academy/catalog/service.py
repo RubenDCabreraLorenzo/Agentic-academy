@@ -72,12 +72,18 @@ def get_path(path_id: str, db: Session, account_id: Any | None) -> dict[str, Any
 
 def _deprecations(bundle: Bundle) -> dict[str, dict[str, Any]]:
     return {
-        d["target"]: {"reason": d["reason"], "replacement": d.get("replacement"), "since": d["since"]}
+        d["target"]: {
+            "reason": d["reason"],
+            "replacement": d.get("replacement"),
+            "since": d["since"],
+        }
         for d in bundle.deprecations
     }
 
 
-def get_module(module_id: str, db: Session, account_id: Any, lesson_id: str | None = None) -> dict[str, Any]:
+def get_module(
+    module_id: str, db: Session, account_id: Any, lesson_id: str | None = None
+) -> dict[str, Any]:
     bundle = get_registry().current()
     m = bundle.module(module_id)
     if m is None:
@@ -106,7 +112,8 @@ def get_module(module_id: str, db: Session, account_id: Any, lesson_id: str | No
         "objectives_demonstrated": derivation.objective_demonstrated(m, ev),
         "missing_prerequisites": derivation.missing_prerequisites(bundle.data, m, ev),
         "lessons": [
-            {**_meta(ls), "title": ls["title"], "body_markdown": ls["body_markdown"]} for ls in m["lessons"]
+            {**_meta(ls), "title": ls["title"], "body_markdown": ls["body_markdown"]}
+            for ls in m["lessons"]
         ],
         "references": m["references"],
         "knowledge_check_id": m["knowledge_check_id"],

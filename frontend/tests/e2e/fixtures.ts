@@ -24,9 +24,20 @@ export async function expectNoHorizontalScroll(page: Page) {
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
+/** Resets the demo learner's progress in the introductory path through the real reset API (FR-043). */
+export async function resetProgress(page: Page) {
+  const csrf = (await page.context().cookies()).find((c) => c.name === "aa_csrf")?.value ?? "";
+  const r = await page.request.delete("/api/v1/me/paths/foundations-of-agentic-ai-engineering/progress", {
+    data: { confirm: "RESET" },
+    headers: { "X-CSRF-Token": csrf },
+  });
+  expect(r.status()).toBe(204);
+}
+
 export const test = base.extend<{ signedIn: Page }>({
   signedIn: async ({ page }, use) => {
     await signIn(page);
+    await resetProgress(page);
     await use(page);
   },
 });

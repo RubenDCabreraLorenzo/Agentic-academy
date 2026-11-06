@@ -62,7 +62,9 @@ def competency_states(bundle_data: dict[str, Any], ev: Evidence) -> dict[str, Co
             status: CompetencyStatus = "demonstrated"
             at = max(i.at for i in items)
         else:
-            active = any(r in ev.attempted or module_of.get(r) in ev.active_modules for r in required)
+            active = any(
+                r in ev.attempted or module_of.get(r) in ev.active_modules for r in required
+            )
             status = "in_progress" if active else "not_started"
             at = None
         out[cid] = CompetencyState(cid, status, items if status == "demonstrated" else [], at)
@@ -86,7 +88,9 @@ def module_status(module: dict[str, Any], ev: Evidence) -> Status:
 
 
 def path_completed(bundle_data: dict[str, Any], path: dict[str, Any], ev: Evidence) -> bool:
-    modules = [bundle_data["modules"][m] for m in path.get("modules", []) if m in bundle_data["modules"]]
+    modules = [
+        bundle_data["modules"][m] for m in path.get("modules", []) if m in bundle_data["modules"]
+    ]
     return bool(modules) and all(module_status(m, ev) == "completed" for m in modules)
 
 
@@ -103,7 +107,9 @@ def missing_prerequisites(
     states = competency_states(bundle_data, ev)
     competencies = bundle_data_competencies(bundle_data)
     path = bundle_data["paths"].get(module["path_id"], {})
-    ordered = [bundle_data["modules"][m] for m in path.get("modules", []) if m in bundle_data["modules"]]
+    ordered = [
+        bundle_data["modules"][m] for m in path.get("modules", []) if m in bundle_data["modules"]
+    ]
     out: list[dict[str, str]] = []
     for pre in module.get("prerequisites", []):
         if pre in bundle_data["modules"]:

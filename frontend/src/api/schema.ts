@@ -1359,9 +1359,21 @@ export interface components {
             };
             continue?: {
                 module_id?: string;
-                lesson_id?: string;
+                lesson_id?: string | null;
             } | null;
             path_completed?: boolean;
+            /** @description No activity yet; show the welcome state */
+            new_learner?: boolean;
+            competencies?: components["schemas"]["CompetencyProgress"][];
+            /** @description FR-042; present only when the path is completed */
+            completion_summary?: {
+                competencies?: components["schemas"]["CompetencyProgress"][];
+                recommended_next_path?: {
+                    id?: string;
+                    title?: string;
+                    status?: string;
+                } | null;
+            } | null;
         };
         element: {
             id: string;

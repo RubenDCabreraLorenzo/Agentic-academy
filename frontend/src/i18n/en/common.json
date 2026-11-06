@@ -206,5 +206,53 @@
       "output_limit": "Stopped: your code printed too much output.",
       "forbidden_operation": "Stopped: a forbidden operation was attempted (network, processes or system files)."
     }
+  },
+  "dashboard": {
+    "title": "My progress",
+    "noPaths": "No learning paths are available yet.",
+    "welcomeTitle": "Welcome to Agentic Academy",
+    "welcomeBody": "Progress here reflects what you demonstrate — passed knowledge checks and code challenges — not just what you read. Start with the foundations; later paths build on them.",
+    "start": "Start {{path}}",
+    "exploreCurriculum": "Explore the curriculum",
+    "activePath": "Active path",
+    "competencies": "{{done}} of {{total}} competencies demonstrated",
+    "progressLabel": "Competencies demonstrated",
+    "viewCompetencies": "View competencies and evidence",
+    "nextStep": "Next step",
+    "continue": "Continue where you left off",
+    "allDone": "You have completed everything available.",
+    "modules": "Modules",
+    "pendingObjectives": "Objectives not yet demonstrated",
+    "noPending": "All objectives of this path are demonstrated.",
+    "stepKind": {
+      "lesson": "Read",
+      "knowledge_check": "Take the knowledge check",
+      "challenge": "Solve the challenge",
+      "next_path": "Next path"
+    },
+    "completedTitle": "You completed {{path}}",
+    "completedBody": "These competencies are demonstrated, with the evidence that demonstrated them:",
+    "recommendedNext": "Recommended next path:",
+    "evidence": {
+      "knowledge_check": "knowledge check v{{version}}",
+      "challenge": "code challenge v{{version}}"
+    },
+    "resetTitle": "Reset progress",
+    "resetOpen": "Reset my progress in {{path}}",
+    "resetWarning": "This permanently deletes your lesson history, knowledge-check attempts, code and submissions for {{path}}. It cannot be undone.",
+    "resetConfirmLabel": "Type RESET to confirm",
+    "resetSubmit": "Reset progress permanently",
+    "cancel": "Cancel",
+    "back": "Back to my progress",
+    "competencyTitle": "Competencies",
+    "colCompetency": "Competency",
+    "colLevel": "Level",
+    "colStatus": "Status",
+    "colEvidence": "Evidence",
+    "status": {
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "demonstrated": "Demonstrated"
+    }
   }
 }

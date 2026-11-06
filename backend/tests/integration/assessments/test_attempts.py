@@ -10,11 +10,11 @@ from pathlib import Path
 import pytest
 import yaml
 from fastapi.testclient import TestClient
-from tests.helpers import csrf, sign_up_and_in
 
 from academy.content.build import build
 from academy.content.loader import load_tree
 from academy.content.registry import Registry, set_registry
+from tests.helpers import csrf, sign_up_and_in
 
 FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "content"
 CORRECT = {

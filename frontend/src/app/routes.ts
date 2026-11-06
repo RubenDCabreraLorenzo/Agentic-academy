@@ -13,4 +13,6 @@ export const routes: RouteDef[] = [
   { path: "/modules/:moduleId", auth: true, load: () => import("../features/module/ModulePage") },
   { path: "/knowledge-checks/:checkId", auth: true, load: () => import("../features/knowledge-check/KnowledgeCheckPage") },
   { path: "/challenges/:challengeId", auth: true, load: () => import("../features/challenge/ChallengePage") },
+  { path: "/dashboard", auth: true, load: () => import("../features/dashboard/DashboardPage") },
+  { path: "/dashboard/competencies", auth: true, load: () => import("../features/dashboard/CompetenciesPage") },
 ];

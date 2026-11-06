@@ -269,17 +269,17 @@ completion summary; path reset.
 
 ### Tests for User Story 3
 
-- [ ] T093 [P] [US3] Write failing integration tests for `GET /me/dashboard` (new learner welcome state; module in progress vs completed; next step; continue; `path_completed`), `GET /me/competencies` (evidence with version) and `DELETE /me/paths/{pathId}/progress` (requires `confirm: "RESET"`, removes only that path's rows) in `backend/tests/integration/progress/test_dashboard_api.py`
-- [ ] T094 [P] [US3] Write a failing end-to-end test for quickstart V3 in `frontend/tests/e2e/us3-dashboard.spec.ts`
+- [X] T093 [P] [US3] Write failing integration tests for `GET /me/dashboard` (new learner welcome state; module in progress vs completed; next step; continue; `path_completed`), `GET /me/competencies` (evidence with version) and `DELETE /me/paths/{pathId}/progress` (requires `confirm: "RESET"`, removes only that path's rows) in `backend/tests/integration/progress/test_dashboard_api.py`
+- [X] T094 [P] [US3] Write a failing end-to-end test for quickstart V3 in `frontend/tests/e2e/us3-dashboard.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T095 [US3] Implement the dashboard service (active path = path of the most recent activity; competencies demonstrated/total; module statuses; pending objectives per module; next step: next unread lesson → knowledge check → challenge → next path; `continue` from the latest ContentView; `path_completed`) in `backend/src/academy/progress/service.py`
-- [ ] T096 [US3] Implement path reset deleting the learner's ContentView, attempts, workspaces, submissions, hint usage and lab visits scoped to the path's content ids in one transaction in `backend/src/academy/progress/reset.py`
-- [ ] T097 [US3] Implement routes `GET /me/dashboard`, `GET /me/competencies`, `DELETE /me/paths/{pathId}/progress` in `backend/src/academy/progress/router.py`
-- [ ] T098 [US3] Implement the dashboard page (single screen; welcome state for new learners; continue action; module list; pending objectives) in `frontend/src/features/dashboard/DashboardPage.tsx`
-- [ ] T099 [P] [US3] Implement the competency view (level, status, evidence links to attempt history and submissions per FR-041) in `frontend/src/features/dashboard/CompetenciesPage.tsx`
-- [ ] T100 [P] [US3] Implement the path completion summary (demonstrated competencies, evidence, recommended next path) and the reset dialog with explicit confirmation in `frontend/src/features/dashboard/PathCompletion.tsx` and `frontend/src/features/dashboard/ResetPathDialog.tsx`
+- [X] T095 [US3] Implement the dashboard service (active path = path of the most recent activity; competencies demonstrated/total; module statuses; pending objectives per module; next step: next unread lesson → knowledge check → challenge → next path; `continue` from the latest ContentView; `path_completed`) in `backend/src/academy/progress/service.py`
+- [X] T096 [US3] Implement path reset deleting the learner's ContentView, attempts, workspaces, submissions, hint usage and lab visits scoped to the path's content ids in one transaction in `backend/src/academy/progress/reset.py`
+- [X] T097 [US3] Implement routes `GET /me/dashboard`, `GET /me/competencies`, `DELETE /me/paths/{pathId}/progress` in `backend/src/academy/progress/router.py`
+- [X] T098 [US3] Implement the dashboard page (single screen; welcome state for new learners; continue action; module list; pending objectives) in `frontend/src/features/dashboard/DashboardPage.tsx`
+- [X] T099 [P] [US3] Implement the competency view (level, status, evidence links to attempt history and submissions per FR-041) in `frontend/src/features/dashboard/CompetenciesPage.tsx`
+- [X] T100 [P] [US3] Implement the path completion summary (demonstrated competencies, evidence, recommended next path) and the reset dialog with explicit confirmation in `frontend/src/features/dashboard/PathCompletion.tsx` and `frontend/src/features/dashboard/ResetPathDialog.tsx`
 
 **Checkpoint (Increment 2 exit)**: quickstart V3, V4, V7.2–V7.4 pass; sandbox security suite green
 under `runsc`.

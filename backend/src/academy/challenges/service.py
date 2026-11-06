@@ -331,3 +331,28 @@ def _evidence(db: Session, account_id: uuid.UUID, ev: Evidence) -> None:
                 ev.passed[key] = EvidenceItem(
                     "challenge", row.challenge_id, row.content_version, str(row.id), row.finished_at
                 )
+
+
+from academy.shared.hooks import PathScope, on_reset_path  # noqa: E402
+
+
+@on_reset_path
+def _reset(db: Session, account_id: uuid.UUID, scope: PathScope) -> None:
+    ids = scope.challenge_ids
+    owned = select(ChallengeSubmission.id).where(
+        ChallengeSubmission.account_id == account_id, ChallengeSubmission.challenge_id.in_(ids)
+    )
+    db.execute(delete(SubmissionJob).where(SubmissionJob.submission_id.in_(owned)))
+    db.execute(
+        delete(ChallengeSubmission).where(
+            ChallengeSubmission.account_id == account_id, ChallengeSubmission.challenge_id.in_(ids)
+        )
+    )
+    db.execute(
+        delete(ChallengeWorkspace).where(
+            ChallengeWorkspace.account_id == account_id, ChallengeWorkspace.challenge_id.in_(ids)
+        )
+    )
+    db.execute(
+        delete(HintUsage).where(HintUsage.account_id == account_id, HintUsage.challenge_id.in_(ids))
+    )
