@@ -94,3 +94,30 @@ def test_missing_prerequisites_are_reported_not_blocking(client: TestClient, out
     m = r.json()
     assert m["missing_prerequisites"] == [{"id": "intro", "title": "Intro", "taught_in_module": "intro"}]
     assert m["previous_module_id"] == "intro"
+
+
+def test_deprecations_are_exposed_with_versions(client: TestClient, outbox: list, tmp_path: Path) -> None:
+    import shutil
+
+    import yaml
+
+    content = tmp_path / "content-dep"
+    shutil.copytree(FIXTURE, content)
+    (content / "en/deprecations.yaml").write_text(
+        yaml.safe_dump({"deprecations": [{"target": "old-api", "reason": "Replaced", "replacement": "new-api", "since": "2026-10-01"}]})
+    )
+    lesson = content / "en/paths/mini-path/modules/01-intro/lessons/01-basics.md"
+    lesson.write_text(lesson.read_text() + '\n:::deprecated{ref="old-api"}\n')
+    module = content / "en/paths/mini-path/modules/01-intro/module.yaml"
+    data = yaml.safe_load(module.read_text())
+    data["deprecation"] = {"reason": "Superseded by v2", "replacement": "intro-v2", "since": "2026-10-01"}
+    module.write_text(yaml.safe_dump(data))
+    out = tmp_path / "bundles-dep"
+    build(load_tree(content), out)
+    set_registry(Registry.load(out))
+    sign_up_and_in(client, outbox)
+    m = client.get("/api/v1/modules/intro").json()
+    assert m["deprecation"]["replacement"] == "intro-v2"
+    assert m["deprecations"]["old-api"] == {"reason": "Replaced", "replacement": "new-api", "since": "2026-10-01"}
+    assert m["version"] == "1.0.0" and m["last_reviewed"] == "2026-11-06"
+    assert ':::deprecated{ref="old-api"}' in m["lessons"][0]["body_markdown"]

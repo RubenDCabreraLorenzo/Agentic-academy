@@ -322,15 +322,15 @@ demonstrated competencies preserved across versions.
 
 ### Tests for User Story 7
 
-- [ ] T111 [P] [US7] Write failing tests for validator rule 9 (content changed without a version bump relative to the previous bundle) in `backend/tests/unit/content/test_version_bump.py`
-- [ ] T112 [P] [US7] Write a failing integration test: learner passes a check and challenge on version 1.0.0, a 2.0.0 bundle is published, the competency stays demonstrated with evidence on 1.0.0 (FR-051), in `backend/tests/integration/progress/test_version_retention.py`
+- [X] T111 [P] [US7] Write failing tests for validator rule 9 (content changed without a version bump relative to the previous bundle) in `backend/tests/unit/content/test_version_bump.py`
+- [X] T112 [P] [US7] Write a failing integration test: learner passes a check and challenge on version 1.0.0, a 2.0.0 bundle is published, the competency stays demonstrated with evidence on 1.0.0 (FR-051), in `backend/tests/integration/progress/test_version_retention.py`
 
 ### Implementation for User Story 7
 
-- [ ] T113 [US7] Implement rule 9 comparing each item's content hash against the latest bundle in `dist/content/` in `backend/src/academy/content/validate.py`
-- [ ] T114 [US7] Resolve `content/en/deprecations.yaml` and inline `:::deprecated` references so every API item carries its `deprecation` in `backend/src/academy/content/loader.py`
-- [ ] T115 [P] [US7] Show version and last-reviewed date on module, challenge and lab pages, and deprecation notices wherever a deprecated item appears, in `frontend/src/components/content/ContentMeta.tsx`
-- [ ] T116 [US7] Add the `academy content validate --run-solutions` and `academy content build` gates to CI so a failing validation blocks merges in `.github/workflows/ci.yml`
+- [X] T113 [US7] Implement rule 9 comparing each item's content hash against the latest bundle in `dist/content/` in `backend/src/academy/content/validate.py`
+- [X] T114 [US7] Resolve `content/en/deprecations.yaml` and inline `:::deprecated` references so every API item carries its `deprecation` in `backend/src/academy/content/loader.py`
+- [X] T115 [P] [US7] Show version and last-reviewed date on module, challenge and lab pages, and deprecation notices wherever a deprecated item appears, in `frontend/src/components/content/ContentMeta.tsx`
+- [X] T116 [US7] Add the `academy content validate --run-solutions` and `academy content build` gates to CI so a failing validation blocks merges in `.github/workflows/ci.yml`
 
 **Checkpoint (Increment 3 exit)**: quickstart V5, V6 pass; 3 lab scenarios reviewed.
 

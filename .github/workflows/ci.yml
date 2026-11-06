@@ -24,7 +24,10 @@ jobs:
       - run: uv run --project backend mypy --config-file backend/pyproject.toml
         working-directory: .
       - run: uv run --project backend pytest backend/tests
-      - name: Content validation (publication gate)
+      - name: Content validation (publication gate, FR-050)
+        # Rules 1–8 and 10 plus reference-solution checks. Rule 9 (version bump required when content
+        # changes) runs where published bundles are available: the publishing job must pass
+        # `--previous <published bundles dir>` (bundles are immutable and retained, research R4).
         run: uv run --project backend academy content validate --run-solutions
       - name: Content build
         run: uv run --project backend academy content build --lang en --out dist/content
