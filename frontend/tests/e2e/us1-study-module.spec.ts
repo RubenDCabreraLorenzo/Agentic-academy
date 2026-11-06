@@ -26,7 +26,12 @@ test("signed-in learner studies Module 1", async ({ signedIn: page }) => {
   // References and navigation (FR-015)
   await expect(page.getByRole("heading", { name: "References" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Back to path overview" })).toBeVisible();
-  await expect(page.getByText(/challenge available in a later release/)).toBeVisible();
+  const health = await (await page.request.get("/api/v1/health")).json();
+  if (health.challenges_enabled) {
+    await expect(page.getByRole("link", { name: "Turn model scores into sampling probabilities" })).toBeVisible();
+  } else {
+    await expect(page.getByText(/challenge available in a later release/)).toBeVisible();
+  }
 
   await expectNoHorizontalScroll(page);
   await expectNoCriticalA11yViolations(page);

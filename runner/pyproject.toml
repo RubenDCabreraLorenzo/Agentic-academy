@@ -28,7 +28,7 @@ packages = ["src/academy_runner"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 addopts = "-q"
 
 [tool.ruff]
@@ -43,7 +43,9 @@ ignore = ["S101", "RUF001", "RUF002", "RUF003"]
 max-line-length = 120
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S", "B"]
+"tests/**" = ["S", "B", "E501"]
+# The harness intentionally uses the sandbox /tmp and class-level state shared with audit hooks.
+"sandbox-image/academy_sim/run.py" = ["S108", "RUF012", "E501"]
 
 [tool.mypy]
 python_version = "3.13"

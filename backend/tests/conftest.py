@@ -17,6 +17,7 @@ os.environ.setdefault("APP_ENV", "test")
 os.environ.setdefault("EMAIL_BACKEND", "memory")
 os.environ.setdefault("SESSION_SECRET", "x" * 40)
 os.environ.setdefault("COOKIE_SECURE", "false")
+os.environ.setdefault("RUNNER_DB_PASSWORD", "runner")
 
 BACKEND = Path(__file__).resolve().parents[1]
 ADMIN_URL = os.environ.get(

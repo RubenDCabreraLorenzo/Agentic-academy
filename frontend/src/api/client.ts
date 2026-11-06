@@ -62,7 +62,7 @@ export async function api<T>(method: Method, path: string, body?: unknown): Prom
     }
     throw new ApiError(response.status, parsed);
   }
-  if (response.status === 204 || response.status === 202) return undefined as T;
+  if (response.status === 204) return undefined as T;
   const text = await response.text();
   return (text ? JSON.parse(text) : undefined) as T;
 }

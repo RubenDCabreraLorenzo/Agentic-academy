@@ -68,7 +68,9 @@ def _coerce_response(turn: ModelResponse | Mapping[str, Any] | str) -> ModelResp
     if isinstance(turn, str):
         return ModelResponse(content=turn)
     calls = tuple(
-        c if isinstance(c, ToolCall) else ToolCall(c.get("id", f"call-{i}"), c["name"], dict(c.get("arguments", {})))
+        c
+        if isinstance(c, ToolCall)
+        else ToolCall(c.get("id", f"call-{i}"), c["name"], dict(c.get("arguments", {})))
         for i, c in enumerate(turn.get("tool_calls", []))
     )
     return ModelResponse(content=turn.get("content"), tool_calls=calls)
@@ -188,7 +190,12 @@ class TraceRecorder:
         self.elements: list[dict[str, Any]] = []
 
     def _add(self, kind: str, **data: Any) -> dict[str, Any]:
-        element = {"id": f"e{len(self.elements) + 1}", "seq": len(self.elements), "kind": kind, **data}
+        element = {
+            "id": f"e{len(self.elements) + 1}",
+            "seq": len(self.elements),
+            "kind": kind,
+            **data,
+        }
         self.elements.append(element)
         return element
 
@@ -206,13 +213,22 @@ class TraceRecorder:
         error: str | None = None,
     ) -> dict[str, Any]:
         return self._add(
-            "tool_call", tool=tool, arguments=dict(arguments), permission=permission,
-            approval=approval, result=result, error=error,
+            "tool_call",
+            tool=tool,
+            arguments=dict(arguments),
+            permission=permission,
+            approval=approval,
+            result=result,
+            error=error,
         )
 
-    def state_transition(self, before: Mapping[str, Any], after: Mapping[str, Any]) -> dict[str, Any]:
+    def state_transition(
+        self, before: Mapping[str, Any], after: Mapping[str, Any]
+    ) -> dict[str, Any]:
         before_c, after_c = copy.deepcopy(dict(before)), copy.deepcopy(dict(after))
-        changed = sorted(k for k in set(before_c) | set(after_c) if before_c.get(k) != after_c.get(k))
+        changed = sorted(
+            k for k in set(before_c) | set(after_c) if before_c.get(k) != after_c.get(k)
+        )
         return self._add("state_transition", before=before_c, after=after_c, changed_keys=changed)
 
     def of_kind(self, kind: str) -> list[dict[str, Any]]:
@@ -227,14 +243,22 @@ class TraceRecorder:
         return [e["event"] for e in self.of_kind("execution_event")]
 
 
-def _calls_from(source: TraceRecorder | FakeTool | Iterable[dict[str, Any]], name: str) -> list[dict[str, Any]]:
+def _calls_from(
+    source: TraceRecorder | FakeTool | Iterable[dict[str, Any]], name: str
+) -> list[dict[str, Any]]:
     if isinstance(source, FakeTool):
         return source.calls if source.name == name else []
     elements = source.elements if isinstance(source, TraceRecorder) else list(source)
-    return [e.get("arguments", {}) for e in elements if e.get("kind") == "tool_call" and e.get("tool") == name]
+    return [
+        e.get("arguments", {})
+        for e in elements
+        if e.get("kind") == "tool_call" and e.get("tool") == name
+    ]
 
 
-def assert_tool_called(source: TraceRecorder | FakeTool | Iterable[dict[str, Any]], name: str, **expected: Any) -> None:
+def assert_tool_called(
+    source: TraceRecorder | FakeTool | Iterable[dict[str, Any]], name: str, **expected: Any
+) -> None:
     """Assert ``name`` was called at least once with arguments containing ``expected``."""
     calls = _calls_from(source, name)
     if not calls:
@@ -243,10 +267,14 @@ def assert_tool_called(source: TraceRecorder | FakeTool | Iterable[dict[str, Any
         raise AssertionError(f"tool '{name}' was called with {calls}, none matching {expected}")
 
 
-def assert_tool_not_called(source: TraceRecorder | FakeTool | Iterable[dict[str, Any]], name: str) -> None:
+def assert_tool_not_called(
+    source: TraceRecorder | FakeTool | Iterable[dict[str, Any]], name: str
+) -> None:
     calls = _calls_from(source, name)
     if calls:
-        raise AssertionError(f"expected tool '{name}' not to be called, but it was called {len(calls)} time(s)")
+        raise AssertionError(
+            f"expected tool '{name}' not to be called, but it was called {len(calls)} time(s)"
+        )
 
 
 def assert_approval_requested(gate: ApprovalGate, tool_name: str) -> None:

@@ -2,7 +2,14 @@
   "app": {
     "name": "Agentic Academy",
     "skipToContent": "Skip to content",
-    "nav": { "catalog": "Curriculum", "dashboard": "My progress", "account": "Account", "signIn": "Sign in", "signUp": "Create account", "signOut": "Sign out" },
+    "nav": {
+      "catalog": "Curriculum",
+      "dashboard": "My progress",
+      "account": "Account",
+      "signIn": "Sign in",
+      "signUp": "Create account",
+      "signOut": "Sign out"
+    },
     "footer": "Learn to engineer reliable AI agents."
   },
   "states": {
@@ -57,7 +64,11 @@
     "copied": "Copied",
     "codeLabel": "{{language}} code",
     "diagram": "Diagram",
-    "maturity": { "established": "Established practice", "emerging": "Emerging approach", "experimental": "Experimental technique" },
+    "maturity": {
+      "established": "Established practice",
+      "emerging": "Emerging approach",
+      "experimental": "Experimental technique"
+    },
     "vendor": "Vendor-specific: {{name}}",
     "deprecated": "Deprecated",
     "deprecatedReplacement": "Use instead: {{replacement}}",
@@ -67,7 +78,11 @@
   "catalog": {
     "title": "Curriculum",
     "intro": "A progressive path from LLM foundations to production agents. Start with the foundations; later paths build on them.",
-    "level": { "foundational": "Foundational", "intermediate": "Intermediate", "advanced": "Advanced" },
+    "level": {
+      "foundational": "Foundational",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
     "planned": "Not yet available",
     "available": "Available",
     "estimatedHours": "About {{count}} hours",
@@ -86,7 +101,11 @@
     "learnMore": "Learn more",
     "modules": "Modules",
     "plannedNotice": "This path is planned and cannot be started yet.",
-    "moduleStatus": { "not_started": "Not started", "in_progress": "In progress", "completed": "Completed" },
+    "moduleStatus": {
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "completed": "Completed"
+    },
     "signInToStudy": "Sign in to study this path and save your progress."
   },
   "module": {
@@ -139,5 +158,53 @@
     "choose": "Choose…",
     "competencyPending": "Objectives demonstrated. Complete the module's code challenge to demonstrate its competencies.",
     "history": "Previous attempts"
+  },
+  "challenge": {
+    "backToModule": "Back to module",
+    "completed": "Completed",
+    "scenario": "Scenario",
+    "problem": "Problem",
+    "expected": "Expected outcome",
+    "instructions": "Instructions",
+    "criteria": "Evaluation criteria",
+    "optional": "optional",
+    "validates": "Validates",
+    "hints": "Hints",
+    "hintsIntro": "Stuck? {{total}} hints are available, from general to specific. Using hints is recorded but never penalized.",
+    "showHint": "Show hint {{n}} of {{total}}",
+    "code": "Your code",
+    "files": "Files",
+    "runTests": "Run tests",
+    "submit": "Submit",
+    "reset": "Reset to starter code",
+    "unavailable": "Code evaluation is unavailable right now. Your code is saved; try again in a few minutes.",
+    "inProgress": "Wait for your current run to finish.",
+    "reference": "Reference explanation",
+    "history": "Previous runs and submissions",
+    "submissionN": "Submission {{n}}",
+    "testRun": "Test run",
+    "resultSubmission": "Submission",
+    "resultRun": "Test run",
+    "queued": "Queued — position {{position}}.",
+    "running": "Running your code…",
+    "delayed": "This is taking longer than usual; you can keep working.",
+    "infraError": "Something went wrong on our side while evaluating. This does not count as an attempt; please submit again.",
+    "passedNote": "All mandatory criteria are met. The challenge is completed.",
+    "output": "Output",
+    "status": {
+      "queued": "Queued",
+      "running": "Running",
+      "passed": "Passed",
+      "failed": "Not passed",
+      "stopped": "Stopped",
+      "error": "Evaluation error",
+      "cancelled": "Cancelled"
+    },
+    "stop": {
+      "timeout": "Stopped: your code ran longer than the time limit. Check for infinite loops.",
+      "memory": "Stopped: your code used too much memory.",
+      "output_limit": "Stopped: your code printed too much output.",
+      "forbidden_operation": "Stopped: a forbidden operation was attempted (network, processes or system files)."
+    }
   }
 }

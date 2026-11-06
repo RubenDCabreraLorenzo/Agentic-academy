@@ -12,4 +12,5 @@ export const routes: RouteDef[] = [
   { path: "/paths/:pathId", auth: false, load: () => import("../features/catalog/PathPage") },
   { path: "/modules/:moduleId", auth: true, load: () => import("../features/module/ModulePage") },
   { path: "/knowledge-checks/:checkId", auth: true, load: () => import("../features/knowledge-check/KnowledgeCheckPage") },
+  { path: "/challenges/:challengeId", auth: true, load: () => import("../features/challenge/ChallengePage") },
 ];

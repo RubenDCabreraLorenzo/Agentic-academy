@@ -12,16 +12,17 @@ const apiEnv = {
   SESSION_SECRET: process.env.SESSION_SECRET ?? "e2e-session-secret-0123456789abcdef",
   CONTENT_DIR: process.env.CONTENT_DIR ?? "../dist/content",
   DATABASE_URL: process.env.DATABASE_URL ?? "postgresql+psycopg://academy:academy@localhost:5432/academy",
-  CHALLENGES_ENABLED: process.env.CHALLENGES_ENABLED ?? "false",
+  CHALLENGES_ENABLED: process.env.CHALLENGES_ENABLED ?? (process.env.E2E_START_RUNNER === "0" ? "false" : "true"),
 };
 
 export default defineConfig({
   testDir: "tests/e2e",
-  timeout: 30_000,
+  timeout: 90_000,
   fullyParallel: false,
   workers: 1,
   reporter: [["list"]],
   globalSetup: "./tests/e2e/global-setup.ts",
+  globalTeardown: "./tests/e2e/global-teardown.ts",
   use: { baseURL: "http://localhost:5173", trace: "off" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },

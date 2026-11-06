@@ -1,5 +1,4 @@
 import pytest
-
 from academy_sim import (
     ApprovalGate,
     FakeTool,
