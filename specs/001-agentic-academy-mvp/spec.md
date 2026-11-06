@@ -19,6 +19,9 @@ basic practical laboratory experience. No technology stack or architecture at th
 - Q: ¿Cómo se evalúan los retos prácticos en la primera versión que se publique? → A: Se mantiene
   en el MVP la evaluación automática del código del alumno en un entorno aislado (FR-022,
   FR-022a–c); no se difiere a una fase posterior.
+- Q: ¿En qué idioma se publica el MVP y qué hay que preparar para traducirlo después? → A: Inglés
+  en el MVP (interfaz y contenido), preparado para añadir el español y otros idiomas después
+  (FR-054, FR-055).
 
 ## Glossary
 
@@ -485,6 +488,16 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - **FR-051**: Learner results MUST be recorded against the content version they completed, and
   content updates MUST NOT remove a competency already demonstrated.
 
+**Language and internationalization**
+
+- **FR-054**: The MVP MUST deliver the interface and all learning content (lessons, knowledge
+  checks, challenges, feedback messages, laboratory scenarios and system messages) in English only.
+- **FR-055**: The MVP MUST be prepared for adding Spanish and other languages later without
+  restructuring: all interface text MUST be separable from application behavior, every content item
+  MUST carry a language identifier, translations of an item MUST share the same competencies,
+  objectives and version lineage, and dates and numbers MUST be presented according to the selected
+  language. Adding a language MUST NOT require changing learner progress records.
+
 **System states and errors**
 
 - **FR-052**: The system MUST communicate loading, empty, error and offline states clearly, with a
@@ -625,8 +638,6 @@ deprecation notice is visible and that the path's prerequisite order is still va
 
 - Learners have basic programming knowledge and can read Python code; the introductory path states
   this as a prerequisite and links to external resources for those who lack it.
-- Learning content and interface are delivered in English for the MVP; the content model does not
-  prevent adding other languages later.
 - Learners use a modern desktop or mobile browser with internet connectivity; offline study is not
   required.
 - The introductory path contains between 5 and 7 modules, each designed for about 30–90 minutes.
@@ -666,4 +677,5 @@ deprecation notice is visible and that the path's prerequisite order is still va
 - Should the platform issue a completion certificate in a future release?
 - Should the end-of-path assessment be a separate, larger assessment or the aggregation of module
   checks? (Assumed: a separate end-of-path assessment.)
-- Which languages, beyond English, should be prioritized after the MVP?
+- When should Spanish be released, and should progress demonstrated in one language count for the
+  same competency in another? (Assumed: yes, competencies are language-independent.)
