@@ -55,6 +55,8 @@ export function Diagram({ source, alt }: { source: string; alt: string }) {
     let cancelled = false;
     import("mermaid")
       .then(async ({ default: mermaid }) => {
+        // Never start a render for a cancelled effect: two at once with one identifier can both hang.
+        if (cancelled) return;
         mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "base", themeVariables: themeVariables() });
         const { svg: out } = await mermaid.render(`mmd${id}`, source);
         if (!cancelled) setSvg(out);
