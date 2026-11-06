@@ -12,6 +12,10 @@
     },
     "footer": "Learn to engineer reliable AI agents."
   },
+  "ui": {
+    "mainNav": "Main",
+    "breadcrumb": "Breadcrumb"
+  },
   "states": {
     "loading": "Loading…",
     "errorTitle": "Something went wrong",

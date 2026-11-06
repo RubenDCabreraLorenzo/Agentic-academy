@@ -27,6 +27,8 @@ Names are stable. Values may be refined, but only with the contrast test passing
 **Color** (values in the spec unless listed here): `--surface-canvas`, `--surface-1`, `--surface-2`, `--surface-3`, `--text-primary`, `--text-muted`,
 `--accent`, `--on-accent`, `--accent-secondary`, `--border-subtle`, `--border-control`, `--focus-ring`, `--success`, `--warning`, `--danger`, `--on-danger`.
 
+**Control states** (new): `--accent-hover` `#8FB4FF`, `--accent-pressed` `#5A88F0`, `--danger-hover` `#FFA79F`, `--danger-pressed` `#F27B70`; `--on-accent` and `--on-danger` must keep 4.5:1 on them. **Overlay**: `--backdrop` `#0E1014CC`.
+
 **Syntax** (new; used by lesson code, the editor and showcases, always on `--surface-1`, `--surface-2` or `--surface-3`):
 
 | Token | Value | Lowest measured contrast (on `--surface-3`) |
@@ -43,7 +45,7 @@ Names are stable. Values may be refined, but only with the contrast test passing
 
 Each surface of the code highlighter is mapped from these through its own prefix (`--code-token-*`), so that only `tokens.css` holds values.
 
-**Type**: `--font-sans`, `--font-mono`; `--text-display`, `--text-page`, `--text-section`, `--text-subsection`, `--text-prose`, `--text-ui`, `--text-small`, `--text-code`; `--leading-tight`, `--leading-prose`, `--leading-ui`.
+**Type**: `--font-sans`, `--font-mono`; `--text-display`, `--text-page`, `--text-section`, `--text-subsection`, `--text-prose`, `--text-ui`, `--text-small`, `--text-code`; `--leading-tight`, `--leading-heading`, `--leading-prose`, `--leading-ui`.
 
 **Space**: `--space-1` (4 px) through `--space-9` (96 px), following the spec's scale. **Radius**: `--radius-control`, `--radius-surface`, `--radius-full`.
 
@@ -56,8 +58,8 @@ The contrast test (see below) MUST cover at least these:
 | Foreground | Backgrounds | Minimum |
 |------------|-------------|---------|
 | `--text-primary`, `--text-muted`, `--accent`, `--accent-secondary`, `--success`, `--warning`, `--danger`, all `--syntax-*` text | Every `--surface-*` they may sit on | 4.5:1 |
-| `--on-accent` | `--accent` | 4.5:1 |
-| `--on-danger` | `--danger` | 4.5:1 |
+| `--on-accent` | `--accent`, `--accent-hover`, `--accent-pressed` | 4.5:1 |
+| `--on-danger` | `--danger`, `--danger-hover`, `--danger-pressed` | 4.5:1 |
 | `--border-control`, `--focus-ring` | Every `--surface-*` | 3:1 |
 | `--focus-ring` | `--accent`, `--danger` | Not required, because rule 3 applies |
 

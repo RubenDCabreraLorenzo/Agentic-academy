@@ -1,6 +1,8 @@
-/** Shared loading, empty, error and offline states (FR-052). */
+/** Shared loading, empty, error and offline states (FR-051, S001 FR-052). */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Alert } from "../ui/Alert";
+import { Button } from "../ui/Button";
 
 export function Loading({ label }: { label?: string }) {
   const { t } = useTranslation();
@@ -27,15 +29,17 @@ export function ErrorState({
 }) {
   const { t } = useTranslation();
   return (
-    <div role="alert" className="alert error stack">
-      <strong>{title ?? t("states.errorTitle")}</strong>
-      <p>{message ?? t("states.errorBody")}</p>
-      {onRetry && (
-        <button type="button" className="btn secondary" onClick={onRetry}>
-          {t("states.retry")}
-        </button>
-      )}
-    </div>
+    <Alert tone="danger" role="alert" className="error-state">
+      <div className="stack">
+        <strong>{title ?? t("states.errorTitle")}</strong>
+        <p>{message ?? t("states.errorBody")}</p>
+        {onRetry && (
+          <Button variant="secondary" onClick={onRetry}>
+            {t("states.retry")}
+          </Button>
+        )}
+      </div>
+    </Alert>
   );
 }
 
@@ -59,8 +63,8 @@ export function OfflineBanner() {
   const online = useOnline();
   if (online) return null;
   return (
-    <div role="status" className="alert warning">
+    <Alert tone="warning" role="status">
       {t("states.offline")}
-    </div>
+    </Alert>
   );
 }

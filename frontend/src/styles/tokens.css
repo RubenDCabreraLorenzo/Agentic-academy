@@ -1,0 +1,122 @@
+/* The only file with color values (design tokens contract). Changing a value requires the contrast
+   test in tests/unit/design/tokens.test.ts to keep passing. */
+
+@font-face {
+  font-family: "Geist";
+  src: url("@fontsource-variable/geist/files/geist-latin-wght-normal.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("@fontsource-variable/geist/files/geist-latin-wght-italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --surface-canvas: #0E1014;
+  --surface-1: #15181E;
+  --surface-2: #1C2027;
+  --surface-3: #252A33;
+
+  /* Text */
+  --text-primary: #EDEFF3;
+  --text-muted: #A9B0BC;
+
+  /* Accents: electric blue is interactive; violet is for laboratory and showcase highlights only */
+  --accent: #6E9BFF;
+  --accent-hover: #8FB4FF;
+  --accent-pressed: #5A88F0;
+  --on-accent: #0A0F1F;
+  --accent-secondary: #B69CFF;
+
+  /* Boundaries */
+  --border-subtle: #2E343E;
+  --border-control: #6B7482;
+  --focus-ring: #9CC0FF;
+
+  /* Status */
+  --success: #4FD18B;
+  --warning: #F2C14E;
+  --danger: #FF8F85;
+  --danger-hover: #FFA79F;
+  --danger-pressed: #F27B70;
+  --on-danger: #1F0705;
+
+  /* Syntax, shared by lesson code, the editor and showcases */
+  --syntax-foreground: #EDEFF3;
+  --syntax-comment: #9AA5B4;
+  --syntax-keyword: #C4B1FF;
+  --syntax-string: #7EE0A8;
+  --syntax-function: #8FB4FF;
+  --syntax-constant: #F2C14E;
+  --syntax-parameter: #F0A87C;
+  --syntax-punctuation: #B4BBC6;
+  --syntax-selection: #2D3A55;
+
+  /* Type */
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-display: clamp(2.75rem, 6vw, 4rem);
+  --text-page: clamp(2rem, 4vw, 2.75rem);
+  --text-section: clamp(1.5rem, 2.5vw, 1.875rem);
+  --text-subsection: 1.25rem;
+  --text-prose: 1.0625rem;
+  --text-ui: 1rem;
+  --text-small: 0.875rem;
+  --text-code: 0.875rem;
+  --leading-tight: 1.15;
+  --leading-heading: 1.25;
+  --leading-prose: 1.65;
+  --leading-ui: 1.5;
+
+  /* Space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Shape and depth */
+  --radius-control: 6px;
+  --radius-surface: 10px;
+  --radius-full: 999px;
+  --shadow-overlay: 0 16px 48px #00000099;
+  --backdrop: #0E1014CC;
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+
+  /* Layout */
+  --layout-max: 75rem;
+  --measure-prose: 50ch;
+  --measure-wide: 46rem;
+  --header-offset: var(--space-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+  }
+}

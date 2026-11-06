@@ -1,0 +1,12 @@
+/* Layer order is the source of truth for the cascade (design tokens contract). `legacy` is the MVP
+   stylesheet while screens move over; it is the lowest layer, and T047 removes it. */
+@layer legacy, reset, tokens, base, layout, components, content, screens;
+
+@import "./legacy.css" layer(legacy);
+@import "./reset.css" layer(reset);
+@import "./tokens.css" layer(tokens);
+@import "./base.css" layer(base);
+@import "./layout.css" layer(layout);
+@import "./components.css" layer(components);
+@import "./content.css" layer(content);
+@import "./screens.css" layer(screens);
