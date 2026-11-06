@@ -35,6 +35,12 @@ evaluated against the constitution: educational value, technical suitability and
   on mobile); Prism (less accurate highlighting).
 - **Note**: the public catalog pages (FR-045) are served by the same SPA; pre-rendering them is a
   later optimization if search visibility becomes a goal.
+- **Rendering**: content Markdown is rendered in the frontend (Markdown → sanitized HTML, Shiki for
+  code, Mermaid for diagrams). The content build validates Markdown but does not pre-render it,
+  because Shiki and Mermaid are JavaScript tools.
+- **Same origin**: the SPA and the API are served from one origin (`/` and `/api/v1`) through a
+  reverse proxy in production and the Vite dev proxy locally, so `SameSite=Lax` session cookies and
+  CSRF protection work without CORS.
 
 ## R3. Persistent storage
 
@@ -87,12 +93,15 @@ evaluated against the constitution: educational value, technical suitability and
   (`runsc`) runtime, with:
   - no network (`--network none`), read-only root filesystem, a small `tmpfs` work directory;
   - non-root user, all Linux capabilities dropped, `no-new-privileges`, default seccomp profile;
-  - limits: 1 vCPU, 256 MB memory, 64 PIDs, 10 s wall-clock for visible tests and 20 s for the full
-    run, 64 KB captured output (truncated beyond);
+  - limits: 1 vCPU, 256 MB memory, 64 PIDs, 10 s wall-clock per phase (visible tests; hidden tests
+    in a second, fresh container), 64 KB captured output per phase;
   - a pinned, minimal sandbox image containing Python 3.13, pytest and the `academy_sim` package
     (R7), and nothing else; no platform secrets, credentials or database access;
   - the container is destroyed after each run; results are returned as a structured JSON report.
-  The runner host is separate from the API host and only has credentials for the job queue table.
+  The runner host is separate from the API host and may only call three `SECURITY DEFINER`
+  database functions (claim, complete with lease fencing, heartbeat); it has no table access and
+  never receives learner identity. Full protocol, trust boundaries, failure handling and known
+  limitations: [contracts/runner-protocol.md](./contracts/runner-protocol.md).
 - **Rationale**: gVisor intercepts system calls in a user-space kernel, adding a strong isolation
   layer over standard containers at modest start-up cost (sub-second), which fits NFR-006a
   (results < 30 s for 95% of submissions). A dedicated runner keeps untrusted execution away from
@@ -106,9 +115,14 @@ evaluated against the constitution: educational value, technical suitability and
     learner's device cannot be trusted as evidence of competency (Principle VII) and hidden tests
     would be exposed. Pyodide MAY later be used for the optional "run visible tests" preview only.
   - Third-party code execution APIs: vendor coupling and sends learner code to a third party.
-- **Hidden tests**: stored in the content repository under `hidden/` folders and excluded from the
-  public frontend bundle; they are only mounted into the sandbox at run time. If the content
-  repository becomes public, hidden tests must move to a private location (documented risk).
+- **Hidden tests**: stored in the content repository under `tests/hidden/` folders, built into a
+  private bundle mounted only on the runner host, and executed in a separate container whose output
+  is never returned to the learner. Reference solutions live in `solution/` and are never mounted
+  in learner runs. If the content repository becomes public, hidden tests and solutions must move to
+  a private location (documented risk; review decision D2).
+- **Result integrity**: results are read from a result file and validated (exact expected test-id
+  set), but learner code shares the process with the test harness, so a determined learner can fake
+  a pass for their own submission. Accepted only while no certificates exist (review decision D1).
 
 ## R7. Simulated model and tool responses in challenges
 

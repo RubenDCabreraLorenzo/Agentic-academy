@@ -17,6 +17,22 @@ security:
   - session: []
 
 paths:
+  /health:
+    get:
+      security: []
+      summary: Liveness and dependency status
+      responses:
+        '200':
+          description: Status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  database: { enum: [ok, unavailable] }
+                  content_bundle_version: { type: string }
+                  evaluation: { enum: [available, unavailable], description: A runner heartbeat newer than 30 s }
+
   # ---------- Auth & account (FR-045, FR-045a, FR-046) ----------
   /auth/sign-up:
     post:
@@ -159,6 +175,16 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Attempt' }
+  /knowledge-checks/{checkId}/attempts/history:
+    get:
+      summary: Completed attempts with per-question feedback (FR-041)
+      parameters: [ { $ref: '#/components/parameters/CheckId' } ]
+      responses:
+        '200':
+          description: Submitted attempts, newest first
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/AttemptResult' } }
   /attempts/{attemptId}/answers/{questionId}:
     put:
       summary: Save an answer and get immediate feedback for that question
@@ -247,6 +273,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Submission' }
         '429': { description: Too many runs in progress for this learner (max 1 concurrent) }
+        '503': { description: "No healthy runner worker or queue full (code `evaluation_unavailable`); workspace is kept" }
     get:
       summary: Previous submissions and their feedback (FR-023, FR-041)
       parameters: [ { $ref: '#/components/parameters/ChallengeId' } ]
@@ -453,11 +480,16 @@ components:
     AttemptResult:
       type: object
       properties:
+        attempt_id: { type: string, format: uuid }
+        version: { type: string }
+        submitted_at: { type: string, format: date-time }
         score: { type: number }
         passed: { type: boolean }
+        questions: { type: array, items: { allOf: [ { $ref: '#/components/schemas/QuestionFeedback' }, { type: object, properties: { question_id: { type: string } } } ] } }
         best_score: { type: number }
         weak_objectives: { type: array, items: { type: object, properties: { id: { type: string }, statement: { type: string }, lesson_link: { type: object } } } }
-        competencies_demonstrated: { type: array, items: { type: string } }
+        objectives_demonstrated: { type: array, items: { type: string } }
+        competencies_demonstrated: { type: array, items: { type: string }, description: Empty until the module's challenges are also passed (FR-036) }
     Files:
       type: object
       description: Map of relative path → UTF-8 content; total ≤ 256 KB
@@ -485,7 +517,8 @@ components:
         submission_id: { type: string, format: uuid }
         kind: { enum: [visible_run, submission] }
         attempt_number: { type: [integer, 'null'] }
-        status: { enum: [queued, running, passed, failed, stopped, error] }
+        status: { enum: [queued, running, passed, failed, stopped, error, cancelled] }
+        delayed: { type: boolean, description: Queued for more than 5 minutes }
         queue_position: { type: [integer, 'null'] }
         stop_reason: { enum: [timeout, memory, output_limit, forbidden_operation, null] }
         criteria_results:
@@ -496,8 +529,8 @@ components:
               criterion_id: { type: string }
               met: { type: boolean }
               feedback_markdown: { type: string }
-              tests: { type: array, items: { type: object, properties: { id: { type: string }, outcome: { enum: [passed, failed, error, skipped] }, message: { type: string }, hidden: { type: boolean } } } }
-        output_excerpt: { type: string }
+              tests: { type: array, items: { type: object, properties: { id: { type: string }, title: { type: string }, outcome: { enum: [passed, failed, error, skipped] }, message: { type: [string, 'null'], description: Always null for hidden tests }, hidden: { type: boolean } } } }
+        output_excerpt: { type: string, description: Phase V (visible tests) output only; never hidden-test output }
         queued_at: { type: string, format: date-time }
         finished_at: { type: [string, 'null'], format: date-time }
     CompetencyProgress:

@@ -23,6 +23,7 @@ Technical approach (see [research.md](./research.md)):
   vendor-neutral `academy_sim` package with scripted model and tool doubles.
 - **Laboratory**: recorded, reviewed traces replayed entirely client-side; no model calls.
 - Delivered in three increments following spec priorities, then hardening (research R13).
+- Architecture review findings and corrections: [architecture-review.md](./architecture-review.md).
 
 ## Technical Context
 
@@ -161,17 +162,19 @@ docker-compose.yml
 
 **Structure Decision**: Web application with three deployable units (frontend, backend API,
 runner) sharing one repository and one PostgreSQL database; educational content versioned in the
-same repository. Backend is a modular monolith: each domain module owns its models, services and
+same repository. The frontend and API share one origin through a reverse proxy (Vite proxy in
+development). Trust boundaries between browser, API host, database, runner host and sandbox are
+defined in [contracts/runner-protocol.md §0](./contracts/runner-protocol.md). Backend is a modular monolith: each domain module owns its models, services and
 router, and modules interact only through service interfaces, never through each other's tables.
 
 ## Delivery Increments
 
 | Increment | User stories | Exit criteria |
 |-----------|--------------|---------------|
-| 1 | US1, US2, US6 (catalog), accounts, content validation in CI | quickstart V1, V2, V7.1 pass; Module 1 content complete |
-| 2 | US3, US4 (runner + sandbox) | V3, V4, V7.2–V7.3 pass; sandbox security suite green |
+| 1 | US1, US2, US6 (catalog), accounts, content validation in CI | quickstart V1, V2, V7.1, V7.5 pass; Module 1 content complete; modules shown as "in progress — challenge available in a later release", no competency demonstrated (data-model §2.12) |
+| 2 | US4 (runner + sandbox) first, then US3 (dashboard, competency view) | V3, V4, V7.2–V7.4 pass; sandbox security suite green under `runsc` |
 | 3 | US5, US7 | V5, V6 pass; ≥ 3 lab scenarios recorded and reviewed |
-| Hardening | All | Accessibility audit (SC-007), performance (NFR-003, SC-012), full introductory path content, V7.4 |
+| Hardening | All | Accessibility audit (SC-007), performance (NFR-003, SC-012), full introductory path content |
 
 ## Risks
 
@@ -179,7 +182,8 @@ router, and modules interact only through service interfaces, never through each
 |------|------------|
 | Sandbox escape or resource abuse | gVisor + no network + limits + separate host + restricted DB role; security suite in CI; Firecracker as upgrade path |
 | Content authoring effort underestimated | Content is the critical path: write Module 1 during increment 1; validator enforces completeness early |
-| Hidden tests leak if repository becomes public | Keep repository private or move hidden tests to a private store before going public |
+| Hidden tests or solutions leak | Separate hidden-test container with no output returned; solutions never mounted; repository kept private (review D2) |
+| Learner fakes a pass by subverting the in-process harness | Result-file validation; accepted residual risk while no certificates exist (review D1) |
 | Lab recordings drift from current model behavior | `recorded_with` + `last_reviewed` + review cadence under content governance |
 | Scale assumption wrong | Runner scales horizontally by adding workers; queue position shown to learners |
 

@@ -132,8 +132,12 @@ execution event and the variant set MUST contain both an approved and a rejected
 
 ### 1.9 Content bundle
 
-Build output: `{bundle_version, built_at, lang, items}`. The backend serves exactly one bundle per
-language at a time; `bundle_version` is recorded on every learner result for traceability.
+Build output: `{bundle_version, built_at, lang, items}` (public part) plus a private part (hidden
+tests) for the runner only. Lesson and feedback bodies stay as validated Markdown; rendering and
+sanitization happen in the frontend (R2). New learner activity always uses the **current** bundle,
+but every published bundle is kept (immutable) so that attempts and submissions started on an older
+version are scored against that version (spec edge case "content updated mid-module", FR-051).
+`bundle_version` is recorded on every learner result for traceability.
 
 ### 1.10 DeprecationNotice
 
@@ -157,19 +161,20 @@ wherever the target is referenced (FR-049).
 | created_at, updated_at | timestamptz | |
 
 Transitions: `pending_verification → active` (verify email) · `active|pending_verification →
-deleted` (learner request, FR-045a; personal data and progress hard-deleted within the same
-transaction; row retained only as a tombstone without email for audit counts, or removed entirely).
+deleted` (learner request, FR-045a, FR-046): the account row, sessions, tokens and all progress
+rows (2.4–2.12) are hard-deleted in one transaction; queued jobs of the account are cancelled.
+Unverified accounts are deleted after 30 days *(assumption)*.
 
 ### 2.2 Session
 
 `id (UUID), account_id (FK), token_hash, created_at, last_seen_at, expires_at, revoked_at`.
-Idle timeout 7 days, absolute 30 days; all sessions revoked on sign-out-all, password reset and
-account deletion.
+Idle timeout 7 days, absolute 30 days *(assumption, see review D4)*; all sessions revoked on
+password reset and account deletion; sign-out revokes the current session.
 
 ### 2.3 OneTimeToken
 
 `id, account_id, purpose (verify_email | reset_password), token_hash, expires_at, used_at`.
-Single use; verify expires in 24 h, reset in 1 h.
+Single use; verify expires in 24 h, reset in 1 h *(assumption)*.
 
 ### 2.4 ContentView
 
@@ -180,7 +185,7 @@ last_viewed_at`. PK (account_id, content_type, content_id). Feeds "in progress" 
 ### 2.5 LastPosition
 
 `account_id (PK), path_id, module_id, lesson_id?, updated_at`. Most recent activity wins
-(multi-device edge case).
+(multi-device edge case). May be derived from ContentView instead of stored (review R-S2).
 
 ### 2.6 AssessmentAttempt
 
@@ -198,6 +203,9 @@ last_viewed_at`. PK (account_id, content_type, content_id). Feeds "in progress" 
 | started_at, submitted_at | timestamptz | |
 
 Best result per (account, knowledge_check) = max score among submitted attempts (FR-019).
+An attempt is scored with the knowledge-check version it started on (`content_version`,
+`bundle_version`), even if a newer version was published meanwhile.
+Unsent answers are also kept client-side and re-sent after re-authentication (FR-045b).
 Idempotent submit: a client-generated `attempt_id` prevents duplicates (connectivity edge case).
 
 ### 2.7 ChallengeWorkspace
@@ -217,20 +225,29 @@ Autosaved draft code; survives session expiry (FR-045b).
 | files | JSONB | snapshot of code |
 | status | enum `queued` \| `running` \| `passed` \| `failed` \| `stopped` \| `error` | see transitions |
 | stop_reason | enum `timeout` \| `memory` \| `output_limit` \| `forbidden_operation` \| null | FR-022a |
-| criteria_results | JSONB [{criterion_id, met, tests:[{id, outcome, message}]}] | FR-022 |
+| criteria_results | JSONB [{criterion_id, met, tests:[{id, outcome, message, hidden}]}] | FR-022; `message` is always null for hidden tests |
 | output_excerpt | text | ≤ 64 KB, secrets scrubbed (FR-047) |
 | hints_used | int | snapshot at submission time (FR-024) |
 | queued_at, started_at, finished_at | timestamptz | |
 
-Transitions: `queued → running → passed | failed | stopped` · `queued|running → error`
-(runner/infrastructure failure; learner may resubmit without counting an attempt) ·
-`passed` = all mandatory criteria met.
+Transitions: `queued → running → passed | failed | stopped` · `running → queued` (lease expired,
+infrastructure retry) · `queued|running → error` (after 3 infrastructure attempts; learner may
+resubmit without counting an attempt) · `queued → cancelled` (account deleted) ·
+`passed` = all mandatory criteria met in phase V and phase H (runner protocol §2).
+`attempt_number` is assigned when the submission reaches a final state that counts as an attempt.
 
 ### 2.9 SubmissionJob (queue)
 
-`submission_id (PK, FK), available_at, locked_by, locked_at, attempts`. Claimed with
-`FOR UPDATE SKIP LOCKED`; a lock older than 2 minutes is reclaimable; max 3 infrastructure retries,
-then submission → `error`.
+`submission_id (PK, FK), available_at, worker_id, lease_id, lease_expires_at, infra_attempts`.
+Accessed by the runner only through the functions in
+[runner-protocol §1](./contracts/runner-protocol.md): claim with `FOR UPDATE SKIP LOCKED`, 60 s
+lease extended by heartbeat, fenced completion by `lease_id`, max 3 infrastructure attempts then
+submission → `error`.
+
+### 2.9a RunnerWorker
+
+`worker_id (PK), capacity, started_at, last_heartbeat_at`. Evaluation is available ⇔ a heartbeat is
+newer than 30 s; used by the API to reject submissions with `evaluation_unavailable`.
 
 ### 2.10 HintUsage
 
@@ -246,7 +263,10 @@ only; never evidence (FR-008, FR-036).
 `account_id, competency_id, status (not_started | in_progress | demonstrated), demonstrated_at,
 evidence (JSONB [{type: knowledge_check | challenge, id, version, result_id}])`.
 
-Derivation rules (FR-036, FR-037):
+Derivation rules (FR-036, FR-037, FR-040):
+
+- **Objective demonstrated** ⇔ the knowledge check of its module has been passed (US2 scenario 3).
+  Objectives are listed as pending (FR-040) until then. Objective status is derived, not stored.
 
 - `demonstrated` ⇔ every knowledge check and every challenge mapped to the competency (through
   their objectives/competencies) has a passed result in any version.
@@ -256,6 +276,11 @@ Derivation rules (FR-036, FR-037):
 
 Module completed ⇔ its knowledge check passed AND all its challenges passed. Path completed ⇔ all
 modules completed. Both are computed, not stored.
+
+**Increments without challenge evaluation** (plan increment 1): the rules above are not relaxed.
+A passed knowledge check demonstrates objectives but never a competency or module completion; the
+UI shows the module as "in progress — challenge available in a later release" instead of implying
+completion. No temporary rule may mark competencies demonstrated.
 
 ### 2.13 Path reset (FR-043)
 
