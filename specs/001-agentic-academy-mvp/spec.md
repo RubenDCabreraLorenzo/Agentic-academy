@@ -22,6 +22,9 @@ basic practical laboratory experience. No technology stack or architecture at th
 - Q: ¿En qué idioma se publica el MVP y qué hay que preparar para traducirlo después? → A: Inglés
   en el MVP (interfaz y contenido), preparado para añadir el español y otros idiomas después
   (FR-054, FR-055).
+- Q: ¿Qué conocimientos previos debe tener el alumno para empezar la ruta introductoria? → A: Nivel
+  intermedio de programación: Python con soltura, consumo de APIs HTTP/REST con JSON, línea de
+  comandos y git básicos; sin experiencia previa con LLM ni APIs de modelos (FR-003a, FR-003b).
 
 ## Glossary
 
@@ -345,6 +348,13 @@ deprecation notice is visible and that the path's prerequisite order is still va
   Agentic AI Engineering", covering at least: LLM foundations, agent fundamentals, tools and
   function calling, memory and state management, and an introduction to evaluation, observability
   and agentic risks. Paths covering the remaining topics MAY be shown as planned.
+- **FR-003a**: The introductory path MUST declare these entry prerequisites: working proficiency in
+  Python (functions, classes, exceptions, packages and virtual environments), ability to call
+  HTTP/REST APIs and handle JSON, and basic command-line and git usage. Prior experience with LLMs
+  or model APIs MUST NOT be required; LLM foundations are taught in the first module.
+- **FR-003b**: Before starting the introductory path, the learner MUST be shown the entry
+  prerequisites as a self-assessment list with links to external learning resources for each item.
+  The self-assessment MUST NOT block access and MUST NOT count as a demonstrated competency.
 - **FR-004**: Each path MUST contain modules in a defined order, and each module MUST declare its
   prerequisites (modules or competencies) and the competencies it develops.
 - **FR-005**: The curriculum MUST introduce single-agent concepts before any multi-agent
@@ -636,8 +646,9 @@ deprecation notice is visible and that the path's prerequisite order is still va
 
 ## Assumptions
 
-- Learners have basic programming knowledge and can read Python code; the introductory path states
-  this as a prerequisite and links to external resources for those who lack it.
+- The target audience (software developers, data engineers and technical professionals) generally
+  meets the entry prerequisites of FR-003a; teaching Python, HTTP APIs, the command line or git is
+  out of scope for the MVP.
 - Learners use a modern desktop or mobile browser with internet connectivity; offline study is not
   required.
 - The introductory path contains between 5 and 7 modules, each designed for about 30–90 minutes.
@@ -646,7 +657,7 @@ deprecation notice is visible and that the path's prerequisite order is still va
   MVP.
 - Lesson code examples are illustrative and can be copied to the learner's own environment; only
   challenge code is executed by the platform.
-- Challenge code is written in Python for the MVP, as that is the stated learner prerequisite; the
+- Challenge code is written in Python for the MVP, as that is the entry prerequisite (FR-003a); the
   challenge model does not prevent adding other languages later.
 - Account sign-in uses email and password with verification; the plan may add sign-in with an
   external identity provider if it does not change the requirements above.
