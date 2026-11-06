@@ -12,6 +12,14 @@ learning dashboard, at least one complete introductory learning path, modules wi
 examples and practical exercises, basic knowledge assessments, persistent learning progress and a
 basic practical laboratory experience. No technology stack or architecture at this stage."
 
+## Clarifications
+
+### Session 2026-11-06
+
+- Q: ¿Cómo se evalúan los retos prácticos en la primera versión que se publique? → A: Se mantiene
+  en el MVP la evaluación automática del código del alumno en un entorno aislado (FR-022,
+  FR-022a–c); no se difiere a una fase posterior.
+
 ## Glossary
 
 - **Learning path**: An ordered sequence of modules with defined objectives, prerequisites and a
