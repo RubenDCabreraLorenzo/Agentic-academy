@@ -5,7 +5,11 @@
 }
 
 html,
-body {
+body,
+ul,
+ol,
+dl,
+figure {
   margin: 0;
 }
 

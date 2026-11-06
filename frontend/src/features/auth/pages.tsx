@@ -6,6 +6,9 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { ApiError, del, post, type Schemas } from "../../api/client";
 import { useMe } from "../../app/session";
 import { Loading } from "../../components/states";
+import { Alert } from "../../components/ui/Alert";
+import { Button, LinkButton } from "../../components/ui/Button";
+import { Field } from "../../components/ui/Field";
 
 function useErrorMessage() {
   const { t } = useTranslation();
@@ -22,9 +25,9 @@ function useErrorMessage() {
 function FormError({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <div role="alert" className="alert error">
+    <Alert tone="danger" role="alert">
       {message}
-    </div>
+    </Alert>
   );
 }
 
@@ -60,20 +63,20 @@ export function SignUpPage() {
       <h1>{t("auth.signUpTitle")}</h1>
       <form className="form" onSubmit={submit} noValidate={false}>
         <FormError message={error} />
-        <label>
-          {t("auth.email")}
-          <input name="email" type="email" autoComplete="email" required />
-        </label>
-        <label>
-          {t("auth.password")}
-          <input name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required aria-describedby="pw-hint" />
-          <span id="pw-hint" className="hint">
-            {t("auth.passwordHint")}
-          </span>
-        </label>
-        <button className="btn" type="submit" disabled={busy}>
+        <Field label={t("auth.email")} name="email" type="email" autoComplete="email" required />
+        <Field
+          label={t("auth.password")}
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={12}
+          maxLength={128}
+          required
+          hint={t("auth.passwordHint")}
+        />
+        <Button type="submit" disabled={busy}>
           {t("auth.signUpSubmit")}
-        </button>
+        </Button>
         <p>
           {t("auth.haveAccount")} <Link to="/sign-in">{t("auth.signInSubmit")}</Link>
         </p>
@@ -114,12 +117,12 @@ export function VerifyEmailPage() {
       <h1>{t("auth.verifyTitle")}</h1>
       {state === "pending" && <Loading />}
       {state === "done" && (
-        <div role="status" className="alert success stack">
-          <p>{t("auth.verified")}</p>
-          <Link className="btn" to="/sign-in">
-            {t("auth.signInSubmit")}
-          </Link>
-        </div>
+        <Alert tone="success" role="status">
+          <div className="stack">
+            <p>{t("auth.verified")}</p>
+            <LinkButton to="/sign-in">{t("auth.signInSubmit")}</LinkButton>
+          </div>
+        </Alert>
       )}
       {state !== "pending" && state !== "done" && <FormError message={state} />}
     </section>
@@ -160,17 +163,11 @@ export function SignInPage() {
       <h1>{t("auth.signInTitle")}</h1>
       <form className="form" onSubmit={submit}>
         <FormError message={error} />
-        <label>
-          {t("auth.email")}
-          <input name="email" type="email" autoComplete="email" required />
-        </label>
-        <label>
-          {t("auth.password")}
-          <input name="password" type="password" autoComplete="current-password" required />
-        </label>
-        <button className="btn" type="submit" disabled={busy}>
+        <Field label={t("auth.email")} name="email" type="email" autoComplete="email" required />
+        <Field label={t("auth.password")} name="password" type="password" autoComplete="current-password" required />
+        <Button type="submit" disabled={busy}>
           {t("auth.signInSubmit")}
-        </button>
+        </Button>
         <p>
           <Link to="/forgot-password">{t("auth.forgot")}</Link>
         </p>
@@ -202,19 +199,14 @@ export function ForgotPasswordPage() {
     <section className="stack">
       <h1>{t("auth.forgotTitle")}</h1>
       {sent ? (
-        <p role="status" className="alert success">
+        <Alert tone="success" role="status">
           {t("auth.forgotSent")}
-        </p>
+        </Alert>
       ) : (
         <form className="form" onSubmit={submit}>
           <FormError message={error} />
-          <label>
-            {t("auth.email")}
-            <input name="email" type="email" autoComplete="email" required />
-          </label>
-          <button className="btn" type="submit">
-            {t("auth.forgotSubmit")}
-          </button>
+          <Field label={t("auth.email")} name="email" type="email" autoComplete="email" required />
+          <Button type="submit">{t("auth.forgotSubmit")}</Button>
         </form>
       )}
     </section>
@@ -245,23 +237,26 @@ export function ResetPasswordPage() {
     <section className="stack">
       <h1>{t("auth.resetTitle")}</h1>
       {done ? (
-        <div role="status" className="alert success stack">
-          <p>{t("auth.resetDone")}</p>
-          <Link className="btn" to="/sign-in">
-            {t("auth.signInSubmit")}
-          </Link>
-        </div>
+        <Alert tone="success" role="status">
+          <div className="stack">
+            <p>{t("auth.resetDone")}</p>
+            <LinkButton to="/sign-in">{t("auth.signInSubmit")}</LinkButton>
+          </div>
+        </Alert>
       ) : (
         <form className="form" onSubmit={submit}>
           <FormError message={error} />
-          <label>
-            {t("auth.newPassword")}
-            <input name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required />
-            <span className="hint">{t("auth.passwordHint")}</span>
-          </label>
-          <button className="btn" type="submit">
-            {t("auth.resetSubmit")}
-          </button>
+          <Field
+            label={t("auth.newPassword")}
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            minLength={12}
+            maxLength={128}
+            required
+            hint={t("auth.passwordHint")}
+          />
+          <Button type="submit">{t("auth.resetSubmit")}</Button>
         </form>
       )}
     </section>
@@ -289,21 +284,22 @@ export function AccountPage() {
   };
 
   return (
-    <section className="stack reading">
-      <h1>{t("auth.accountTitle")}</h1>
-      {me && <p>{t("auth.signedInAs", { email: me.email })}</p>}
-      <h2>{t("auth.deleteTitle")}</h2>
-      <p>{t("auth.deleteBody")}</p>
-      <form className="form" onSubmit={remove}>
-        <FormError message={error} />
-        <label>
-          {t("auth.deleteConfirmLabel")}
-          <input type="text" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" />
-        </label>
-        <button className="btn danger" type="submit" disabled={confirm !== "DELETE"}>
-          {t("auth.deleteSubmit")}
-        </button>
-      </form>
+    <section className="stack-lg reading">
+      <div className="stack">
+        <h1>{t("auth.accountTitle")}</h1>
+        {me && <p>{t("auth.signedInAs", { email: me.email })}</p>}
+      </div>
+      <div className="stack">
+        <h2>{t("auth.deleteTitle")}</h2>
+        <p>{t("auth.deleteBody")}</p>
+        <form className="form" onSubmit={remove}>
+          <FormError message={error} />
+          <Field label={t("auth.deleteConfirmLabel")} type="text" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" />
+          <Button variant="danger" type="submit" disabled={confirm !== "DELETE"}>
+            {t("auth.deleteSubmit")}
+          </Button>
+        </form>
+      </div>
     </section>
   );
 }

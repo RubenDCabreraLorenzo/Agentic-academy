@@ -34,7 +34,7 @@ export function LessonView({
   }, [lesson.id, onVisible]);
 
   return (
-    <section ref={ref} aria-labelledby={`lesson-${lesson.id}`} className="reading" id={`lesson-${lesson.id}`}>
+    <section ref={ref} aria-labelledby={`lesson-${lesson.id}`} className="reading stack" id={`lesson-${lesson.id}`}>
       <h2 id={`lesson-${lesson.id}`}>{lesson.title}</h2>
       <ContentMeta version={lesson.version} lastReviewed={lesson.last_reviewed} deprecation={lesson.deprecation} />
       <Markdown source={lesson.body_markdown} deprecations={deprecations} />

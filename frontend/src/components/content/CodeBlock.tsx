@@ -1,6 +1,7 @@
-/** Highlighted code with language label, copy action and annotations (FR-009). */
+/** Highlighted code with language label, copy action and annotations (FR-009, FR-054). */
 import { useEffect, useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "../ui/Button";
 import { extractAnnotations } from "./markdownParser";
 
 const LANG_NAMES: Record<string, string> = { python: "Python", json: "JSON", bash: "Bash", text: "Text", yaml: "YAML", typescript: "TypeScript" };
@@ -27,14 +28,8 @@ export function CodeBlock({
 
   useEffect(() => {
     let cancelled = false;
-    import("shiki")
-      .then(({ codeToHtml }) =>
-        codeToHtml(clean, {
-          lang: language in LANG_NAMES ? language : "text",
-          themes: { light: "github-light", dark: "github-dark" },
-          defaultColor: false,
-        }),
-      )
+    import("./highlighter")
+      .then(({ highlight }) => highlight(clean, language))
       .then((out) => !cancelled && setHtml(out))
       .catch(() => !cancelled && setHtml(null));
     return () => {
@@ -57,9 +52,9 @@ export function CodeBlock({
     <figure className="code-block" aria-labelledby={labelId}>
       <header>
         <span id={labelId}>{title ? `${title} · ${name}` : t("content.codeLabel", { language: name })}</span>
-        <button type="button" className="linklike" onClick={copy} aria-live="polite">
+        <Button variant="ghost" onClick={copy} aria-live="polite">
           {copied ? t("content.copied") : t("content.copy")}
-        </button>
+        </Button>
       </header>
       <div className="code-scroll" tabIndex={0} role="region" aria-labelledby={labelId}>
         {html ? (
@@ -72,10 +67,10 @@ export function CodeBlock({
         )}
       </div>
       {notes.length > 0 && (
-        <ol className="muted" style={{ margin: 0, padding: "8px 12px 8px 32px", fontSize: "0.9rem" }}>
+        <ol className="code-notes">
           {notes.map((n) => (
             <li key={n.line}>
-              <strong>Line {n.line}:</strong> {n.text}
+              <strong>{t("content.line", { n: n.line })}</strong> {n.text}
             </li>
           ))}
         </ol>

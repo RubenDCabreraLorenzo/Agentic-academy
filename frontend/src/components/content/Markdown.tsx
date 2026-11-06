@@ -54,10 +54,10 @@ export function Markdown({
 export function InlineMarkdown({ source }: { source: string }) {
   const segments = useMemo(() => parseLesson(source), [source]);
   return (
-    <>
+    <div className="markdown">
       {segments.map((s, i) => (
         <SegmentView key={i} segment={s} deprecations={{}} />
       ))}
-    </>
+    </div>
   );
 }

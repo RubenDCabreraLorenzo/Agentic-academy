@@ -5,8 +5,7 @@ import path from "node:path";
 const frontend = path.resolve(import.meta.dirname, "../../..");
 const src = path.join(frontend, "src");
 
-/** Temporary until T047 removes the MVP stylesheet. */
-const EXCLUDED = new Set(["tokens.css", "legacy.css"]);
+const EXCLUDED = new Set(["tokens.css"]);
 
 function walk(dir: string, extension: string): string[] {
   return readdirSync(dir).flatMap((name) => {

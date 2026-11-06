@@ -1,1 +1,246 @@
 /* Layout that belongs to one screen. No new visual values: use tokens. */
+
+/* Forms */
+.form {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 26rem;
+}
+
+/* Lists of modules */
+.module-list {
+  padding-left: var(--space-5);
+}
+
+.module-list li + li {
+  margin-top: var(--space-3);
+}
+
+/* Choices */
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.option input {
+  margin-top: 0.35em;
+}
+
+/* Knowledge check */
+.question fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+}
+
+.question legend {
+  padding: 0 var(--space-1);
+  font-weight: 600;
+}
+
+.ordering {
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+.ordering li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.matching-row {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+@media (min-width: 37.5em) {
+  .matching-row {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
+
+/* Competency table */
+.cell-detail {
+  font-weight: 400;
+}
+
+.cell-list {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+/* Challenge */
+.editor-panel {
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-control) var(--radius-control);
+}
+
+.output {
+  max-width: 100%;
+  margin: 0;
+  padding: var(--space-3);
+  overflow-x: auto;
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+  color: var(--syntax-foreground);
+  font-size: var(--text-code);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.output-long {
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+/* Laboratory */
+.lab-layout {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 56.25em) {
+  .lab-layout {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+.lab-trace {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lab-trace.compact {
+  gap: var(--space-1);
+  font-size: var(--text-small);
+}
+
+.lab-trace.compact li {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-control);
+  overflow-wrap: anywhere;
+}
+
+.lab-trace.compact li.unique {
+  border-left: 4px solid var(--accent-secondary);
+  background: var(--surface-3);
+  font-weight: 600;
+}
+
+.lab-element {
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 4px;
+  border-radius: var(--radius-control);
+  background: var(--surface-1);
+  overflow-wrap: anywhere;
+}
+
+.lab-element > * + * {
+  margin-top: var(--space-2);
+}
+
+.lab-element.current {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.lab-element.kind-execution_event {
+  border-left-color: var(--text-muted);
+}
+
+.lab-element.kind-tool_call {
+  border-left-color: var(--accent);
+}
+
+.lab-element.kind-state_transition {
+  border-left-color: var(--success);
+}
+
+.lab-element.kind-decision_summary {
+  border-left-color: var(--accent-secondary);
+  background: var(--surface-2);
+}
+
+.lab-element.failing {
+  border-left-color: var(--danger);
+}
+
+.lab-kind {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.lab-kind:hover {
+  color: var(--text-primary);
+}
+
+.lab-educational {
+  border-color: currentColor;
+  color: var(--accent-secondary);
+}
+
+.lab-pre {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  overflow-x: auto;
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+  color: var(--syntax-foreground);
+  font-size: var(--text-code);
+  white-space: pre-wrap;
+}
+
+.lab-pre-error {
+  color: var(--danger);
+}
+
+.compare-stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+
+.compare-stats dt {
+  color: var(--text-muted);
+}
+
+.compare-stats dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+@media (forced-colors: active) {
+  .lab-element,
+  .question fieldset {
+    border: 1px solid CanvasText;
+  }
+
+  .lab-element.current {
+    outline-color: Highlight;
+  }
+}

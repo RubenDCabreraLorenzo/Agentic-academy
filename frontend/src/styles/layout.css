@@ -93,11 +93,10 @@ main:focus {
 .grid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
 }
 
 .plain-list {
-  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -110,10 +109,10 @@ main:focus {
   font-size: var(--text-small);
 }
 
-.flush {
-  margin: 0;
-}
-
 .scroll-x {
   overflow-x: auto;
+}
+
+.measure {
+  max-width: var(--measure-prose);
 }

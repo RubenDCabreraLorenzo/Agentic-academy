@@ -1,6 +1,7 @@
 /** Accessible inputs for the four question types (FR-016, NFR-001). */
 import { useTranslation } from "react-i18next";
 import { renderInline } from "../../../components/content/markdownParser";
+import { Button } from "../../../components/ui/Button";
 import type { Answer, Question } from "../types";
 
 interface Props {
@@ -58,17 +59,12 @@ function OrderingInput({ question, value, onChange, disabled, legendId }: Props)
             {byId[id]}
           </span>
           <span className="row">
-            <button type="button" className="btn secondary" onClick={() => move(index, -1)} disabled={disabled || index === 0}>
+            <Button variant="secondary" onClick={() => move(index, -1)} disabled={disabled || index === 0}>
               ↑ <span className="sr-only">{t("check.moveUp")}: {byId[id]}</span>
-            </button>
-            <button
-              type="button"
-              className="btn secondary"
-              onClick={() => move(index, 1)}
-              disabled={disabled || index === order.length - 1}
-            >
+            </Button>
+            <Button variant="secondary" onClick={() => move(index, 1)} disabled={disabled || index === order.length - 1}>
               ↓ <span className="sr-only">{t("check.moveDown")}: {byId[id]}</span>
-            </button>
+            </Button>
           </span>
         </li>
       ))}
@@ -83,7 +79,7 @@ function MatchingInput({ question, value, onChange, disabled }: Props) {
     <div>
       {(question.left ?? []).map((l) => (
         <div key={l.id} className="matching-row">
-          <label htmlFor={`m-${question.id}-${l.id}`} style={{ fontWeight: 400 }}>
+          <label htmlFor={`m-${question.id}-${l.id}`}>
             {l.text}
           </label>
           <select

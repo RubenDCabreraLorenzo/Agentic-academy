@@ -6,6 +6,10 @@ import { Link, useParams } from "react-router";
 import { get } from "../../api/client";
 import { ContentMeta } from "../../components/content/Callouts";
 import { ErrorState, Loading } from "../../components/states";
+import { Alert } from "../../components/ui/Alert";
+import { Badge } from "../../components/ui/Badge";
+import { Button } from "../../components/ui/Button";
+import { Card } from "../../components/ui/Card";
 import { CompareView } from "./CompareView";
 import {
   effectiveElements,
@@ -27,7 +31,7 @@ function ElementBody({ e }: { e: TraceElement }) {
       return (
         <>
           <strong>{e.event}</strong>
-          {e.summary && <p style={{ margin: "4px 0 0" }}>{e.summary}</p>}
+          {e.summary && <p>{e.summary}</p>}
           {e.payload && Object.keys(e.payload).length > 0 && <pre className="lab-pre">{JSON.stringify(e.payload, null, 2)}</pre>}
         </>
       );
@@ -37,10 +41,10 @@ function ElementBody({ e }: { e: TraceElement }) {
           <strong>
             {e.tool}({JSON.stringify(e.arguments ?? {})})
           </strong>{" "}
-          <span className="badge">{t(`lab.permission.${e.permission}`)}</span>{" "}
-          {e.approval && e.approval !== "not_required" && <span className="badge warning">{t(`lab.approval.${e.approval}`)}</span>}
+          <Badge>{t(`lab.permission.${e.permission}`)}</Badge>{" "}
+          {e.approval && e.approval !== "not_required" && <Badge tone="warning">{t(`lab.approval.${e.approval}`)}</Badge>}
           {e.error ? (
-            <pre className="lab-pre" style={{ color: "var(--danger)" }}>{e.error}</pre>
+            <pre className="lab-pre lab-pre-error">{e.error}</pre>
           ) : (
             <pre className="lab-pre">{JSON.stringify(e.result, null, 2)}</pre>
           )}
@@ -55,9 +59,9 @@ function ElementBody({ e }: { e: TraceElement }) {
     case "decision_summary":
       return (
         <>
-          <span className="badge">{t("lab.educational")}</span>
-          <p style={{ margin: "4px 0 0" }}>{e.text}</p>
-          <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
+          <Badge className="lab-educational">{t("lab.educational")}</Badge>
+          <p>{e.text}</p>
+          <p className="muted text-small">
             {t("lab.authoredBy", { author: e.author, date: e.reviewed_on })}
           </p>
         </>
@@ -93,64 +97,66 @@ function Player({ scenario }: { scenario: Scenario }) {
   }, [state.index]);
 
   return (
-    <article className="stack">
+    <article className="stack-lg">
+      <div className="stack">
       <h1>{scenario.title}</h1>
       <ContentMeta version={scenario.version} lastReviewed={scenario.last_reviewed} />
-      <p className="alert info">{t("lab.replayNote")}</p>
+      <Alert tone="info">{t("lab.replayNote")}</Alert>
+      </div>
       <div className="grid">
-        <section className="card stack" aria-labelledby="task">
-          <h2 id="task" style={{ marginTop: 0 }}>{t("lab.task")}</h2>
-          <p style={{ margin: 0 }}>{scenario.task}</p>
-          <p style={{ margin: 0 }}><strong>{t("lab.objective")}:</strong> {scenario.objective}</p>
-          <p style={{ margin: 0 }}><strong>{t("lab.pattern")}:</strong> {variant.orchestration_pattern}</p>
-          <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
+        <Card as="section" className="stack" aria-labelledby="task">
+          <h2 id="task">{t("lab.task")}</h2>
+          <p>{scenario.task}</p>
+          <p><strong>{t("lab.objective")}:</strong> {scenario.objective}</p>
+          <p><strong>{t("lab.pattern")}:</strong> {variant.orchestration_pattern}</p>
+          <p className="muted text-small">
             {t("lab.recordedWith", { model: variant.recorded_with.model, framework: variant.recorded_with.framework, date: variant.recorded_with.date })}
           </p>
-        </section>
-        <section className="card stack" aria-labelledby="tools">
-          <h2 id="tools" style={{ marginTop: 0 }}>{t("lab.tools")}</h2>
-          <ul style={{ margin: 0 }}>
+        </Card>
+        <Card as="section" className="stack" aria-labelledby="tools">
+          <h2 id="tools">{t("lab.tools")}</h2>
+          <ul className="plain-list stack">
             {scenario.tools.map((tool) => (
               <li key={tool.name}>
-                <code>{tool.name}</code> <span className="badge">{t(`lab.permission.${tool.permission}`)}</span>
+                <code>{tool.name}</code> <Badge>{t(`lab.permission.${tool.permission}`)}</Badge>
                 <div className="muted">{tool.description}</div>
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
       </div>
 
       {rootVariants(scenario).length > 1 && (
         <div className="row" role="group" aria-label={t("lab.variants")}>
           {rootVariants(scenario).map((v) => (
-            <button
+            <Button
               key={v.id}
-              type="button"
-              className={v.id === state.variantId ? "btn" : "btn secondary"}
+              variant={v.id === state.variantId ? "primary" : "secondary"}
               aria-pressed={v.id === state.variantId}
               onClick={() => dispatch({ type: "select", variantId: v.id })}
             >
               {v.label}
-            </button>
+            </Button>
           ))}
         </div>
       )}
 
+      <div className="stack">
       <div className="row" role="toolbar" aria-label={t("lab.controls")}>
-        <button type="button" className="btn secondary" onClick={() => dispatch({ type: "prev" })} disabled={state.index === 0}>
+        <Button variant="secondary" onClick={() => dispatch({ type: "prev" })} disabled={state.index === 0}>
           ← {t("lab.back")}
-        </button>
+        </Button>
         {state.playing ? (
-          <button type="button" className="btn secondary" onClick={() => dispatch({ type: "pause" })}>{t("lab.pause")}</button>
+          <Button variant="secondary" onClick={() => dispatch({ type: "pause" })}>{t("lab.pause")}</Button>
         ) : (
-          <button type="button" className="btn secondary" onClick={() => dispatch({ type: "play" })} disabled={state.awaitingApproval || state.index >= elements.length - 1}>
+          <Button variant="secondary" onClick={() => dispatch({ type: "play" })} disabled={state.awaitingApproval || state.index >= elements.length - 1}>
             {t("lab.play")}
-          </button>
+          </Button>
         )}
-        <button type="button" className="btn" onClick={() => dispatch({ type: "next" })} disabled={state.awaitingApproval || state.index >= elements.length - 1}>
+        <Button onClick={() => dispatch({ type: "next" })} disabled={state.awaitingApproval || state.index >= elements.length - 1}>
           {t("lab.forward")} →
-        </button>
-        <button type="button" className="linklike" onClick={() => dispatch({ type: "restart" })}>{t("lab.restart")}</button>
+        </Button>
+        <Button variant="ghost" onClick={() => dispatch({ type: "restart" })}>{t("lab.restart")}</Button>
       </div>
       <p role="status" aria-live="polite" className="muted">
         {t("lab.position", { n: state.index + 1, total: elements.length })}
@@ -158,18 +164,21 @@ function Player({ scenario }: { scenario: Scenario }) {
       </p>
 
       {state.awaitingApproval && current && (
-        <div role="alertdialog" aria-labelledby="approval-title" className="alert warning stack">
-          <strong id="approval-title">{t("lab.approvalTitle")}</strong>
-          <p style={{ margin: 0 }}>{current.summary}</p>
-          <div className="row">
-            <button type="button" className="btn" onClick={() => dispatch({ type: "decide", decision: "approved" })}>{t("lab.approve")}</button>
-            <button type="button" className="btn secondary" onClick={() => dispatch({ type: "decide", decision: "rejected" })}>{t("lab.reject")}</button>
+        <Alert tone="warning" role="alertdialog" aria-labelledby="approval-title">
+          <div className="stack">
+            <strong id="approval-title">{t("lab.approvalTitle")}</strong>
+            <p>{current.summary}</p>
+            <div className="row">
+              <Button onClick={() => dispatch({ type: "decide", decision: "approved" })}>{t("lab.approve")}</Button>
+              <Button variant="secondary" onClick={() => dispatch({ type: "decide", decision: "rejected" })}>{t("lab.reject")}</Button>
+            </div>
           </div>
-        </div>
+        </Alert>
       )}
+      </div>
 
       <div className="lab-layout">
-        <section aria-labelledby="trace">
+        <section aria-labelledby="trace" className="stack">
           <h2 id="trace">{t("lab.trace")}</h2>
           <ol ref={listRef} className="lab-trace">
             {elements.slice(0, state.index + 1).map((e, i) => (
@@ -179,26 +188,28 @@ function Player({ scenario }: { scenario: Scenario }) {
                 className={`lab-element kind-${e.kind}${i === state.index ? " current" : ""}${failures.has(e.id) ? " failing" : ""}`}
                 aria-current={i === state.index ? "step" : undefined}
               >
-                <button type="button" className="linklike lab-kind" onClick={() => dispatch({ type: "jump", index: i })}>
+                <button type="button" className="lab-kind" onClick={() => dispatch({ type: "jump", index: i })}>
                   {t(`lab.kind.${e.kind}`)}
                 </button>
                 <ElementBody e={e} />
                 {failures.has(e.id) && (
-                  <div role="note" className="alert error" style={{ marginTop: 8 }}>
-                    <strong>{t("lab.failure", { kind: failures.get(e.id)?.kind.replaceAll("_", " ") })}</strong>
-                    <p style={{ margin: "4px 0" }}>
-                      <strong>{t("lab.risk")}:</strong> {failures.get(e.id)?.risk}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      <strong>{t("lab.mitigation")}:</strong> {failures.get(e.id)?.mitigation}
-                    </p>
-                  </div>
+                  <Alert role="note" tone="danger" className="lab-failure">
+                    <div className="stack">
+                      <strong>{t("lab.failure", { kind: failures.get(e.id)?.kind.replaceAll("_", " ") })}</strong>
+                      <p>
+                        <strong>{t("lab.risk")}:</strong> {failures.get(e.id)?.risk}
+                      </p>
+                      <p>
+                        <strong>{t("lab.mitigation")}:</strong> {failures.get(e.id)?.mitigation}
+                      </p>
+                    </div>
+                  </Alert>
                 )}
               </li>
             ))}
           </ol>
         </section>
-        <section aria-labelledby="state">
+        <section aria-labelledby="state" className="stack">
           <h2 id="state">{t("lab.state")}</h2>
           <pre className="lab-pre">{JSON.stringify(stateAt(scenario, state.variantId, state.index), null, 2)}</pre>
         </section>

@@ -213,6 +213,14 @@
   background: var(--surface-1);
 }
 
+.card h2 {
+  font-size: var(--text-subsection);
+}
+
+.card h3 {
+  font-size: var(--text-ui);
+}
+
 /* Progress */
 .progress {
   height: 0.5rem;
@@ -319,4 +327,8 @@
   .progress > span {
     background: Highlight;
   }
+}
+
+.badge-wrap {
+  white-space: normal;
 }

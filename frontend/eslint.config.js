@@ -15,7 +15,7 @@ export default tseslint.config(
       // Visual values come from tokens. The only allowed exception is a value computed from data and
       // passed as a custom property (for example --progress), with an inline eslint-disable comment.
       "no-restricted-syntax": [
-        "warn",
+        "error",
         { selector: "JSXAttribute[name.name='style']", message: "Use tokens and shared classes instead of inline styles (design tokens contract, rule 1)." },
       ],
     },

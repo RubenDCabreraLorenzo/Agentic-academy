@@ -6,6 +6,9 @@ import { Link, useParams } from "react-router";
 import { get } from "../../api/client";
 import { ContentMeta } from "../../components/content/Callouts";
 import { ErrorState, Loading } from "../../components/states";
+import { Alert } from "../../components/ui/Alert";
+import { Badge } from "../../components/ui/Badge";
+import { Breadcrumb } from "../../components/ui/Breadcrumb";
 import type { ModuleDetail } from "../catalog/types";
 import { LessonView } from "./LessonView";
 import { ModuleStatusBadge, PracticeSection } from "./ModuleStatus";
@@ -30,10 +33,8 @@ export default function ModulePage() {
   const m = q.data;
 
   return (
-    <article className="stack">
-      <nav aria-label="Breadcrumb">
-        <Link to={`/paths/${m.path_id}`}>{m.path_title ?? t("module.backToPath")}</Link>
-      </nav>
+    <article className="stack-lg">
+      <Breadcrumb items={[{ label: m.path_title ?? t("module.backToPath"), to: `/paths/${m.path_id}` }]} />
       <header className="stack reading">
         <h1>{m.title}</h1>
         <p>{m.summary}</p>
@@ -44,25 +45,27 @@ export default function ModulePage() {
       </header>
 
       {m.missing_prerequisites.length > 0 && (
-        <div className="alert warning reading" role="note">
-          <p style={{ marginTop: 0 }}>{t("module.missingPrereqs")}</p>
-          <ul>
-            {m.missing_prerequisites.map((p) => (
-              <li key={p.id}>
-                {p.title}
-                {p.taught_in_module && (
-                  <>
-                    {" — "}
-                    <Link to={`/modules/${p.taught_in_module}`}>{t("module.taughtIn", { module: p.taught_in_module })}</Link>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Alert tone="warning" role="note" className="reading">
+          <div className="stack">
+            <p>{t("module.missingPrereqs")}</p>
+            <ul>
+              {m.missing_prerequisites.map((p) => (
+                <li key={p.id}>
+                  {p.title}
+                  {p.taught_in_module && (
+                    <>
+                      {" — "}
+                      <Link to={`/modules/${p.taught_in_module}`}>{t("module.taughtIn", { module: p.taught_in_module })}</Link>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Alert>
       )}
 
-      <section aria-labelledby="objectives" className="reading">
+      <section aria-labelledby="objectives" className="reading stack">
         <h2 id="objectives">{t("module.objectives")}</h2>
         <ul>
           {m.objectives.map((o) => (
@@ -71,7 +74,7 @@ export default function ModulePage() {
         </ul>
       </section>
 
-      <nav aria-labelledby="toc" className="reading">
+      <nav aria-labelledby="toc" className="reading stack">
         <h2 id="toc">{t("module.contents")}</h2>
         <ol>
           {m.lessons.map((l) => (
@@ -86,15 +89,17 @@ export default function ModulePage() {
         <LessonView key={lesson.id} lesson={lesson} deprecations={m.deprecations} onVisible={onLessonVisible} />
       ))}
 
-      <section aria-labelledby="refs" className="reading">
+      <section aria-labelledby="refs" className="reading stack">
         <h2 id="refs">{t("module.references")}</h2>
         <ul>
           {m.references.map((r) => (
             <li key={r.url}>
-              <a href={r.url} target="_blank" rel="noopener noreferrer">
-                {r.title}
-              </a>
-              {r.vendor && <span className="badge" style={{ marginLeft: 8 }}>{t("content.vendor", { name: r.vendor })}</span>}
+              <span className="row">
+                <a href={r.url} target="_blank" rel="noopener noreferrer">
+                  {r.title}
+                </a>
+                {r.vendor && <Badge>{t("content.vendor", { name: r.vendor })}</Badge>}
+              </span>
             </li>
           ))}
         </ul>
@@ -102,7 +107,7 @@ export default function ModulePage() {
 
       <PracticeSection module={m} />
 
-      <nav aria-label={t("module.contents")} className="row" style={{ justifyContent: "space-between" }}>
+      <nav aria-label={t("module.contents")} className="row row-between">
         {m.previous_module_id ? (
           <Link to={`/modules/${m.previous_module_id}`}>← {t("module.previous")}</Link>
         ) : (

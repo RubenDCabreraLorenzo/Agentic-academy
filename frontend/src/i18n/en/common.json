@@ -66,6 +66,7 @@
   "content": {
     "copy": "Copy",
     "copied": "Copied",
+    "line": "Line {{n}}:",
     "codeLabel": "{{language}} code",
     "diagram": "Diagram",
     "maturity": {
@@ -178,6 +179,7 @@
     "showHint": "Show hint {{n}} of {{total}}",
     "code": "Your code",
     "files": "Files",
+    "readOnly": "(read-only)",
     "runTests": "Run tests",
     "submit": "Submit",
     "reset": "Reset to starter code",

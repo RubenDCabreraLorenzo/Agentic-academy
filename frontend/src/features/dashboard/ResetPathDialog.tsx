@@ -3,6 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { del } from "../../api/client";
+import { Alert } from "../../components/ui/Alert";
+import { Button } from "../../components/ui/Button";
+import { Card } from "../../components/ui/Card";
+import { Field } from "../../components/ui/Field";
 
 export function ResetPathDialog({ pathId, pathTitle }: { pathId: string; pathTitle: string }) {
   const { t } = useTranslation();
@@ -27,26 +31,27 @@ export function ResetPathDialog({ pathId, pathTitle }: { pathId: string; pathTit
     <section aria-labelledby="reset" className="stack">
       <h2 id="reset">{t("dashboard.resetTitle")}</h2>
       {!open ? (
-        <button type="button" className="btn secondary" onClick={() => setOpen(true)}>
+        <Button variant="secondary" onClick={() => setOpen(true)}>
           {t("dashboard.resetOpen", { path: pathTitle })}
-        </button>
+        </Button>
       ) : (
-        <form className="form card" onSubmit={submit} role="alertdialog" aria-labelledby="reset-warning">
+        <Card as="form" className="form" onSubmit={submit} role="alertdialog" aria-labelledby="reset-warning">
           <p id="reset-warning">{t("dashboard.resetWarning", { path: pathTitle })}</p>
-          {error && <p role="alert" className="alert error">{t("states.errorBody")}</p>}
-          <label>
-            {t("dashboard.resetConfirmLabel")}
-            <input type="text" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" />
-          </label>
+          {error && (
+            <Alert tone="danger" role="alert">
+              {t("states.errorBody")}
+            </Alert>
+          )}
+          <Field label={t("dashboard.resetConfirmLabel")} type="text" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" />
           <div className="row">
-            <button type="submit" className="btn danger" disabled={confirm !== "RESET"}>
+            <Button variant="danger" type="submit" disabled={confirm !== "RESET"}>
               {t("dashboard.resetSubmit")}
-            </button>
-            <button type="button" className="btn secondary" onClick={() => setOpen(false)}>
+            </Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
               {t("dashboard.cancel")}
-            </button>
+            </Button>
           </div>
-        </form>
+        </Card>
       )}
     </section>
   );

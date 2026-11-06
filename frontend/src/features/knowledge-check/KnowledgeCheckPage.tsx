@@ -8,6 +8,9 @@ import { clearDraft, loadDraft, saveDraft } from "../../app/drafts";
 import { useMe } from "../../app/session";
 import { InlineMarkdown } from "../../components/content/Markdown";
 import { ErrorState, Loading } from "../../components/states";
+import { Alert } from "../../components/ui/Alert";
+import { Button, LinkButton } from "../../components/ui/Button";
+import { Card } from "../../components/ui/Card";
 import { formatPercent } from "../../i18n";
 import { initialAnswer, isAnswered, QuestionInput } from "./questions/QuestionInput";
 import type { Answer, Attempt, AttemptResult, Feedback } from "./types";
@@ -122,27 +125,27 @@ export default function KnowledgeCheckPage() {
           {result.best_score !== null && <> · {t("check.best", { score: formatPercent(result.best_score) })}</>}
         </p>
         {result.passed && result.competencies_demonstrated.length === 0 && (
-          <p className="alert info">{t("check.competencyPending")}</p>
+          <Alert tone="info">{t("check.competencyPending")}</Alert>
         )}
         {result.weak_objectives.length > 0 && (
-          <div className="alert warning">
-            <h2 style={{ marginTop: 0 }}>{t("check.weakObjectives")}</h2>
-            <ul>
-              {result.weak_objectives.map((w) => (
-                <li key={w.id}>
-                  {w.statement} — <Link to={lessonHref(w.lesson_link)}>{t("check.review")}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Alert tone="warning">
+            <div className="stack">
+              <h2>{t("check.weakObjectives")}</h2>
+              <ul>
+                {result.weak_objectives.map((w) => (
+                  <li key={w.id}>
+                    {w.statement} — <Link to={lessonHref(w.lesson_link)}>{t("check.review")}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Alert>
         )}
         <div className="row">
-          <button type="button" className="btn" onClick={start}>
-            {t("check.retry")}
-          </button>
-          <Link className="btn secondary" to={`/modules/${attempt.module_id}`}>
+          <Button onClick={start}>{t("check.retry")}</Button>
+          <LinkButton variant="secondary" to={`/modules/${attempt.module_id}`}>
             {t("check.backToModule")}
-          </Link>
+          </LinkButton>
         </div>
       </section>
     );
@@ -168,7 +171,7 @@ export default function KnowledgeCheckPage() {
         </ul>
       </details>
       {question && (
-        <div className="question card stack">
+        <Card className="question stack">
           <fieldset>
             <legend id={legendId}>{t("check.question", { n: index + 1, total })}</legend>
             <InlineMarkdown source={question.prompt_markdown} />
@@ -181,45 +184,47 @@ export default function KnowledgeCheckPage() {
             />
           </fieldset>
           {answeredFeedback ? (
-            <div role="status" className={`alert ${answeredFeedback.correct ? "success" : "error"}`}>
-              <strong>{answeredFeedback.correct ? t("check.correct") : t("check.incorrect")}</strong>
-              <InlineMarkdown source={answeredFeedback.explanation_markdown} />
-              <Link to={lessonHref(answeredFeedback.lesson_link)}>{t("check.review")}</Link>
-            </div>
+            <Alert role="status" tone={answeredFeedback.correct ? "success" : "danger"}>
+              <div className="stack">
+                <strong>{answeredFeedback.correct ? t("check.correct") : t("check.incorrect")}</strong>
+                <InlineMarkdown source={answeredFeedback.explanation_markdown} />
+                <Link to={lessonHref(answeredFeedback.lesson_link)}>{t("check.review")}</Link>
+              </div>
+            </Alert>
           ) : (
-            <button type="button" className="btn" onClick={check} disabled={busy || !isAnswered(question, answers[question.id])}>
+            <Button onClick={check} disabled={busy || !isAnswered(question, answers[question.id])}>
               {t("check.checkAnswer")}
-            </button>
+            </Button>
           )}
-          <div className="row" style={{ justifyContent: "space-between" }}>
-            <button type="button" className="btn secondary" onClick={() => setIndex(index - 1)} disabled={index === 0}>
+          <div className="row row-between">
+            <Button variant="secondary" onClick={() => setIndex(index - 1)} disabled={index === 0}>
               {t("check.previous")}
-            </button>
+            </Button>
             {index < total - 1 ? (
-              <button type="button" className="btn secondary" onClick={() => setIndex(index + 1)}>
+              <Button variant="secondary" onClick={() => setIndex(index + 1)}>
                 {t("check.next")}
-              </button>
+              </Button>
             ) : (
-              <button type="button" className="btn" onClick={() => submit(false)} disabled={busy}>
+              <Button onClick={() => submit(false)} disabled={busy}>
                 {t("check.submit")}
-              </button>
+              </Button>
             )}
           </div>
-        </div>
+        </Card>
       )}
       {confirming && (
-        <div role="alertdialog" aria-labelledby="unanswered-title" className="alert warning stack">
-          <strong id="unanswered-title">{t("check.unansweredTitle")}</strong>
-          <p>{t("check.unansweredBody", { count: unanswered })}</p>
-          <div className="row">
-            <button type="button" className="btn" onClick={() => submit(true)}>
-              {t("check.submitAnyway")}
-            </button>
-            <button type="button" className="btn secondary" onClick={() => setConfirming(false)}>
-              {t("check.keepAnswering")}
-            </button>
+        <Alert tone="warning" role="alertdialog" aria-labelledby="unanswered-title">
+          <div className="stack">
+            <strong id="unanswered-title">{t("check.unansweredTitle")}</strong>
+            <p>{t("check.unansweredBody", { count: unanswered })}</p>
+            <div className="row">
+              <Button onClick={() => submit(true)}>{t("check.submitAnyway")}</Button>
+              <Button variant="secondary" onClick={() => setConfirming(false)}>
+                {t("check.keepAnswering")}
+              </Button>
+            </div>
           </div>
-        </div>
+        </Alert>
       )}
     </section>
   );

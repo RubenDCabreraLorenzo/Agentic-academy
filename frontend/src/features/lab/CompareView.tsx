@@ -1,5 +1,6 @@
 /** Side-by-side comparison of two executions (FR-029). */
 import { useTranslation } from "react-i18next";
+import { Card } from "../../components/ui/Card";
 import { compare, effectiveElements, type Scenario } from "./player";
 
 export function CompareView({
@@ -14,11 +15,11 @@ export function CompareView({
   return (
     <section aria-labelledby="compare" className="stack">
       <h2 id="compare">{t("lab.compareTitle")}</h2>
-      {comparison.explanation && <p className="reading">{comparison.explanation}</p>}
+      {comparison.explanation && <p className="measure">{comparison.explanation}</p>}
       <div className="grid">
         {sides.map((side) => (
-          <div key={side.variant.id} className="card stack" aria-label={side.variant.label}>
-            <h3 style={{ margin: 0 }}>{side.variant.label}</h3>
+          <Card key={side.variant.id} className="stack" aria-label={side.variant.label}>
+            <h3>{side.variant.label}</h3>
             <dl className="compare-stats">
               <dt>{t("lab.elements")}</dt>
               <dd>{side.elementCount}</dd>
@@ -37,8 +38,8 @@ export function CompareView({
                   </li>
                 ))}
             </ol>
-            <p className="muted" style={{ margin: 0 }}>{t("lab.uniqueLegend", { count: side.uniqueIds.size })}</p>
-          </div>
+            <p className="muted">{t("lab.uniqueLegend", { count: side.uniqueIds.size })}</p>
+          </Card>
         ))}
       </div>
     </section>

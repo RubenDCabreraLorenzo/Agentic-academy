@@ -2,13 +2,18 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { ApiError, get, NetworkError, post, put } from "../../api/client";
 import { loadDraft, saveDraft } from "../../app/drafts";
 import { useMe } from "../../app/session";
 import { ContentMeta } from "../../components/content/Callouts";
 import { InlineMarkdown } from "../../components/content/Markdown";
 import { ErrorState, Loading } from "../../components/states";
+import { Alert } from "../../components/ui/Alert";
+import { Badge } from "../../components/ui/Badge";
+import { Breadcrumb } from "../../components/ui/Breadcrumb";
+import { Button } from "../../components/ui/Button";
+import { Card } from "../../components/ui/Card";
 import { formatDate } from "../../i18n";
 import { Editor } from "./Editor";
 
@@ -175,17 +180,15 @@ export default function ChallengePage() {
   };
 
   return (
-    <article className="stack">
-      <nav aria-label="Breadcrumb">
-        <Link to={`/modules/${ch.module_id}`}>{t("challenge.backToModule")}</Link>
-      </nav>
+    <article className="stack-lg">
+      <Breadcrumb items={[{ label: t("challenge.backToModule"), to: `/modules/${ch.module_id}` }]} />
       <header className="stack reading">
         <h1>{ch.title}</h1>
         <ContentMeta version={ch.version} lastReviewed={ch.last_reviewed} deprecation={ch.deprecation} />
-        {ch.passed && <p className="badge success">{t("challenge.completed")}</p>}
+        {ch.passed && <Badge tone="success">{t("challenge.completed")}</Badge>}
       </header>
 
-      <section className="reading" aria-labelledby="scenario">
+      <section className="reading stack" aria-labelledby="scenario">
         <h2 id="scenario">{t("challenge.scenario")}</h2>
         <InlineMarkdown source={ch.scenario_markdown} />
         <h2>{t("challenge.problem")}</h2>
@@ -198,7 +201,7 @@ export default function ChallengePage() {
         <ul>
           {ch.criteria.map((c) => (
             <li key={c.id}>
-              {c.description} {!c.mandatory && <span className="badge">{t("challenge.optional")}</span>}
+              {c.description} {!c.mandatory && <Badge>{t("challenge.optional")}</Badge>}
             </li>
           ))}
         </ul>
@@ -207,10 +210,8 @@ export default function ChallengePage() {
         </p>
       </section>
 
-      <section aria-labelledby="hints" className="card stack reading">
-        <h2 id="hints" style={{ marginTop: 0 }}>
-          {t("challenge.hints")}
-        </h2>
+      <Card as="section" aria-labelledby="hints" className="stack reading">
+        <h2 id="hints">{t("challenge.hints")}</h2>
         {hints.length === 0 && <p className="muted">{t("challenge.hintsIntro", { total: ch.hints_total })}</p>}
         <ol>
           {hints.map((h, i) => (
@@ -220,11 +221,11 @@ export default function ChallengePage() {
           ))}
         </ol>
         {hints.length < ch.hints_total && (
-          <button type="button" className="btn secondary" onClick={revealHint}>
+          <Button variant="secondary" onClick={revealHint}>
             {t("challenge.showHint", { n: hints.length + 1, total: ch.hints_total })}
-          </button>
+          </Button>
         )}
-      </section>
+      </Card>
 
       <section aria-labelledby="code" className="stack">
         <h2 id="code">{t("challenge.code")}</h2>
@@ -237,36 +238,34 @@ export default function ChallengePage() {
           label={t("challenge.files")}
         />
         <div className="row">
-          <button type="button" className="btn secondary" onClick={() => send("visible_run")} disabled={busy || !ch.evaluation_enabled}>
+          <Button variant="secondary" onClick={() => send("visible_run")} disabled={busy || !ch.evaluation_enabled}>
             {t("challenge.runTests")}
-          </button>
-          <button type="button" className="btn" onClick={() => send("submission")} disabled={busy || !ch.evaluation_enabled}>
+          </Button>
+          <Button onClick={() => send("submission")} disabled={busy || !ch.evaluation_enabled}>
             {t("challenge.submit")}
-          </button>
-          <button type="button" className="linklike" onClick={reset}>
+          </Button>
+          <Button variant="ghost" onClick={reset}>
             {t("challenge.reset")}
-          </button>
+          </Button>
         </div>
-        {!ch.evaluation_enabled && <p className="alert info">{t("module.challengeLater")}</p>}
+        {!ch.evaluation_enabled && <Alert tone="info">{t("module.challengeLater")}</Alert>}
         {notice && (
-          <p role="alert" className="alert warning">
+          <Alert role="alert" tone="warning">
             {notice}
-          </p>
+          </Alert>
         )}
       </section>
 
       {current && <ResultView submission={current} />}
 
       {ch.passed && ch.reference_explanation_markdown && (
-        <section aria-labelledby="reference" className="card reading">
-          <h2 id="reference" style={{ marginTop: 0 }}>
-            {t("challenge.reference")}
-          </h2>
+        <Card as="section" aria-labelledby="reference" className="stack reading">
+          <h2 id="reference">{t("challenge.reference")}</h2>
           <InlineMarkdown source={ch.reference_explanation_markdown} />
-        </section>
+        </Card>
       )}
 
-      <section aria-labelledby="history" className="reading">
+      <section aria-labelledby="history" className="reading stack">
         <h2 id="history">{t("challenge.history")}</h2>
         {(history.data ?? []).length === 0 ? (
           <p className="muted">{t("states.empty")}</p>
@@ -274,11 +273,11 @@ export default function ChallengePage() {
           <ul>
             {(history.data ?? []).map((s) => (
               <li key={s.submission_id}>
-                <button type="button" className="linklike" onClick={() => setCurrent(s)}>
+                <Button variant="ghost" onClick={() => setCurrent(s)}>
                   {s.kind === "submission" ? t("challenge.submissionN", { n: s.attempt_number ?? "–" }) : t("challenge.testRun")} ·{" "}
                   {t(`challenge.status.${s.status}`)}
                   {s.queued_at ? ` · ${formatDate(s.queued_at)}` : ""}
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -292,8 +291,8 @@ function ResultView({ submission: s }: { submission: Submission }) {
   const { t } = useTranslation();
   const active = ACTIVE.has(s.status);
   return (
-    <section aria-labelledby="result" className="card stack" aria-live="polite">
-      <h2 id="result" style={{ marginTop: 0 }}>
+    <Card as="section" aria-labelledby="result" className="stack" aria-live="polite">
+      <h2 id="result">
         {s.kind === "submission" ? t("challenge.resultSubmission") : t("challenge.resultRun")}: {t(`challenge.status.${s.status}`)}
       </h2>
       {active && (
@@ -302,31 +301,33 @@ function ResultView({ submission: s }: { submission: Submission }) {
           {s.delayed && <> {t("challenge.delayed")}</>}
         </p>
       )}
-      {s.stop_reason && <p className="alert warning">{t(`challenge.stop.${s.stop_reason}`)}</p>}
-      {s.status === "error" && <p className="alert error">{t("challenge.infraError")}</p>}
+      {s.stop_reason && <Alert tone="warning">{t(`challenge.stop.${s.stop_reason}`)}</Alert>}
+      {s.status === "error" && <Alert tone="danger">{t("challenge.infraError")}</Alert>}
       {s.criteria_results.map((c) => (
-        <div key={c.criterion_id} className={`alert ${c.met ? "success" : "error"}`}>
-          <strong>
-            {c.met ? "✓" : "✗"} {c.description}
-            {!c.mandatory && ` (${t("challenge.optional")})`}
-          </strong>
-          {c.feedback_markdown && <InlineMarkdown source={c.feedback_markdown} />}
-          {c.tests
-            .filter((x) => x.outcome !== "passed" && x.message)
-            .map((x) => (
-              <pre key={x.id} style={{ whiteSpace: "pre-wrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                {x.title}: {x.message}
-              </pre>
-            ))}
-        </div>
+        <Alert key={c.criterion_id} tone={c.met ? "success" : "danger"}>
+          <div className="stack">
+            <strong>
+              {c.met ? "✓" : "✗"} {c.description}
+              {!c.mandatory && ` (${t("challenge.optional")})`}
+            </strong>
+            {c.feedback_markdown && <InlineMarkdown source={c.feedback_markdown} />}
+            {c.tests
+              .filter((x) => x.outcome !== "passed" && x.message)
+              .map((x) => (
+                <pre key={x.id} className="output">
+                  {x.title}: {x.message}
+                </pre>
+              ))}
+          </div>
+        </Alert>
       ))}
-      {s.status === "passed" && s.kind === "submission" && <p className="alert success">{t("challenge.passedNote")}</p>}
+      {s.status === "passed" && s.kind === "submission" && <Alert tone="success">{t("challenge.passedNote")}</Alert>}
       {!active && s.output_excerpt && (
         <details>
           <summary>{t("challenge.output")}</summary>
-          <pre style={{ whiteSpace: "pre-wrap", overflowX: "auto", maxHeight: 320 }}>{s.output_excerpt}</pre>
+          <pre className="output output-long">{s.output_excerpt}</pre>
         </details>
       )}
-    </section>
+    </Card>
   );
 }

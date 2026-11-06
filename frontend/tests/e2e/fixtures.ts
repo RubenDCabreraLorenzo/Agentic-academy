@@ -18,6 +18,13 @@ export async function expectNoCriticalA11yViolations(page: Page) {
   expect(critical, JSON.stringify(critical.map((v) => ({ id: v.id, nodes: v.nodes.length })), null, 2)).toEqual([]);
 }
 
+/** Spec 002 SC-001: fails on critical and serious violations. */
+export async function expectNoSeriousA11yViolations(page: Page) {
+  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+  const found = results.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
+  expect(found, JSON.stringify(found.map((v) => ({ id: v.id, targets: v.nodes.slice(0, 5).map((n) => n.target.join(" ")) })), null, 2)).toEqual([]);
+}
+
 /** NFR-002: no horizontal page scroll at the current viewport. */
 export async function expectNoHorizontalScroll(page: Page) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

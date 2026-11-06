@@ -107,33 +107,33 @@ description: "Task list for the Premium Product Experience"
 
 ### Tests for User Story 1
 
-- [ ] T029 [P] [US1] Add `expectNoSeriousA11yViolations` (fails on critical and serious findings) to `frontend/tests/e2e/fixtures.ts`, keeping the existing helper
-- [ ] T030 [P] [US1] Write a failing end-to-end test: with `colorScheme` light and dark, a module, a challenge and the dashboard render the same canvas, code and editor backgrounds; plain code in the editor has at least 4.5:1; the module and challenge pass `expectNoSeriousA11yViolations` (baseline: 13 findings); control states are distinct, in `frontend/tests/e2e/premium/us1-visual-system.spec.ts`
-- [ ] T031 [P] [US1] Write a failing test for the production project: listen for `securitypolicyviolation` through an init script; sign in; assert that `figure.code-block .shiki` exists on a lesson, `.diagram svg` renders, the editor works, fonts come from the origin, and no violation occurred, in `frontend/tests/e2e/csp.spec.ts`; it runs against the nginx image on port 5173, so the development server must be stopped first
-- [ ] T032 [P] [US1] Write a failing unit test: the highlighter returns output using `--code-` variables with no WebAssembly engine, for each of the five languages, in `frontend/tests/unit/content/highlighter.test.ts`
+- [X] T029 [P] [US1] Add `expectNoSeriousA11yViolations` (fails on critical and serious findings) to `frontend/tests/e2e/fixtures.ts`, keeping the existing helper
+- [X] T030 [P] [US1] Write a failing end-to-end test: with `colorScheme` light and dark, a module, a challenge and the dashboard render the same canvas, code and editor backgrounds; plain code in the editor has at least 4.5:1; the module and challenge pass `expectNoSeriousA11yViolations` (baseline: 13 findings); control states are distinct, in `frontend/tests/e2e/premium/us1-visual-system.spec.ts`
+- [X] T031 [P] [US1] Write a failing test for the production project: listen for `securitypolicyviolation` through an init script; sign in; assert that `figure.code-block .shiki` exists on a lesson, `.diagram svg` renders, the editor works, fonts come from the origin, and no violation occurred, in `frontend/tests/e2e/csp.spec.ts`; it runs against the nginx image on port 5173, so the development server must be stopped first
+- [X] T032 [P] [US1] Write a failing unit test: the highlighter returns output using `--code-` variables with no WebAssembly engine, for each of the five languages, in `frontend/tests/unit/content/highlighter.test.ts`
 
 ### Content components
 
-- [ ] T033 [US1] Create a single highlighter with `createHighlighterCore`, `createJavaScriptRegexEngine`, `createCssVariablesTheme` and only the Python, JSON, Bash, YAML and TypeScript grammars, in `frontend/src/components/content/highlighter.ts`, using imports `shiki/core`, `shiki/engine/javascript` and `shiki/langs/*`
-- [ ] T034 [US1] Use the highlighter in `frontend/src/components/content/CodeBlock.tsx`: remove the `themes` light and dark options; keep the language label, copy, annotations, internal scroll with `tabindex="0"`, plain fallback and `figure.code-block`; move "Line {n}" to translations
-- [ ] T035 [US1] Change `frontend/src/components/content/Diagram.tsx` to `theme: "base"` with `themeVariables` read from resolved tokens through `getComputedStyle` (use the variable set proven in research R6), remove `matchMedia`, and keep `securityLevel: "strict"`, accessible name, caption and fallback
-- [ ] T036 [US1] Map `--code-*` to `--syntax-*`, and style code blocks, diagrams, callouts, tables and lesson prose, in `frontend/src/styles/content.css`
-- [ ] T037 [US1] Apply `Icon`, `Badge` and tokens to `frontend/src/components/content/Callouts.tsx`, keeping labels, `aria-label` and `role="note"`
-- [ ] T038 [US1] Change `frontend/src/features/challenge/Editor.tsx`: `theme="none"`, an `EditorView.theme` using `var(--…)` values marked dark, a `HighlightStyle` using `--syntax-*`, `EditorView.contentAttributes` for `aria-label` on the editable element, and "(read-only)" moved to translations; keep `.cm-content`, tabs, line numbers and autosave wiring
+- [X] T033 [US1] Create a single highlighter with `createHighlighterCore`, `createJavaScriptRegexEngine`, `createCssVariablesTheme` and only the Python, JSON, Bash, YAML and TypeScript grammars, in `frontend/src/components/content/highlighter.ts`, using imports `shiki/core`, `shiki/engine/javascript` and `shiki/langs/*`
+- [X] T034 [US1] Use the highlighter in `frontend/src/components/content/CodeBlock.tsx`: remove the `themes` light and dark options; keep the language label, copy, annotations, internal scroll with `tabindex="0"`, plain fallback and `figure.code-block`; move "Line {n}" to translations
+- [X] T035 [US1] Change `frontend/src/components/content/Diagram.tsx` to `theme: "base"` with `themeVariables` read from resolved tokens through `getComputedStyle` (use the variable set proven in research R6), remove `matchMedia`, and keep `securityLevel: "strict"`, accessible name, caption and fallback
+- [X] T036 [US1] Map `--code-*` to `--syntax-*`, and style code blocks, diagrams, callouts, tables and lesson prose, in `frontend/src/styles/content.css`
+- [X] T037 [US1] Apply `Icon`, `Badge` and tokens to `frontend/src/components/content/Callouts.tsx`, keeping labels, `aria-label` and `role="note"`
+- [X] T038 [US1] Change `frontend/src/features/challenge/Editor.tsx`: `theme="none"`, an `EditorView.theme` using `var(--…)` values marked dark, a `HighlightStyle` using `--syntax-*`, `EditorView.contentAttributes` for `aria-label` on the editable element, and "(read-only)" moved to translations; keep `.cm-content`, tabs, line numbers and autosave wiring
 
 ### Move existing screens onto the design system (no flow or route changes)
 
 For each task: use shared components, remove all inline `style`, remove legacy classes, and keep the listed selectors.
 
-- [ ] T039 [US1] Move the frame and not-found page in `frontend/src/app/Layout.tsx` and `frontend/src/app/NotFound.tsx`, moving "Main" to `ui.mainNav`
-- [ ] T040 [US1] Move all authentication and account pages in `frontend/src/features/auth/pages.tsx`
-- [ ] T041 [US1] Move the catalog and path pages in `frontend/src/features/catalog/CatalogPage.tsx` and `frontend/src/features/catalog/PathPage.tsx`
-- [ ] T042 [US1] Move the dashboard, competencies, completion and reset views in `frontend/src/features/dashboard/DashboardPage.tsx`, `frontend/src/features/dashboard/CompetenciesPage.tsx`, `frontend/src/features/dashboard/PathCompletion.tsx` and `frontend/src/features/dashboard/ResetPathDialog.tsx`, using `ProgressBar`
-- [ ] T043 [US1] Move module views in `frontend/src/features/module/ModulePage.tsx`, `frontend/src/features/module/LessonView.tsx` and `frontend/src/features/module/ModuleStatus.tsx`, using `Breadcrumb`
-- [ ] T044 [US1] Move knowledge-check views in `frontend/src/features/knowledge-check/KnowledgeCheckPage.tsx` and `frontend/src/features/knowledge-check/questions/QuestionInput.tsx`, keeping `.question`, `label.option` and `ol.ordering li`
-- [ ] T045 [US1] Move the challenge page in `frontend/src/features/challenge/ChallengePage.tsx`, keeping `#result`
-- [ ] T046 [US1] Move the laboratory in `frontend/src/features/lab/LabPage.tsx` and `frontend/src/features/lab/CompareView.tsx`, keeping button names and labelled comparison cards
-- [ ] T047 [US1] Delete `frontend/src/styles/legacy.css` and its layer; remove the exclusion in `frontend/tests/unit/design/no-raw-values.test.ts`; raise the lint rule to `error` in `frontend/eslint.config.js`; verify that inline styles remain only on the allow-list (SC-010; baseline 64)
+- [X] T039 [US1] Move the frame and not-found page in `frontend/src/app/Layout.tsx` and `frontend/src/app/NotFound.tsx`, moving "Main" to `ui.mainNav`
+- [X] T040 [US1] Move all authentication and account pages in `frontend/src/features/auth/pages.tsx`
+- [X] T041 [US1] Move the catalog and path pages in `frontend/src/features/catalog/CatalogPage.tsx` and `frontend/src/features/catalog/PathPage.tsx`
+- [X] T042 [US1] Move the dashboard, competencies, completion and reset views in `frontend/src/features/dashboard/DashboardPage.tsx`, `frontend/src/features/dashboard/CompetenciesPage.tsx`, `frontend/src/features/dashboard/PathCompletion.tsx` and `frontend/src/features/dashboard/ResetPathDialog.tsx`, using `ProgressBar`
+- [X] T043 [US1] Move module views in `frontend/src/features/module/ModulePage.tsx`, `frontend/src/features/module/LessonView.tsx` and `frontend/src/features/module/ModuleStatus.tsx`, using `Breadcrumb`
+- [X] T044 [US1] Move knowledge-check views in `frontend/src/features/knowledge-check/KnowledgeCheckPage.tsx` and `frontend/src/features/knowledge-check/questions/QuestionInput.tsx`, keeping `.question`, `label.option` and `ol.ordering li`
+- [X] T045 [US1] Move the challenge page in `frontend/src/features/challenge/ChallengePage.tsx`, keeping `#result`
+- [X] T046 [US1] Move the laboratory in `frontend/src/features/lab/LabPage.tsx` and `frontend/src/features/lab/CompareView.tsx`, keeping button names and labelled comparison cards
+- [X] T047 [US1] Delete `frontend/src/styles/legacy.css` and its layer; remove the exclusion in `frontend/tests/unit/design/no-raw-values.test.ts`; raise the lint rule to `error` in `frontend/eslint.config.js`; verify that inline styles remain only on the allow-list (SC-010; baseline 64)
 - [ ] T048 [US1] Run the full end-to-end suite and the build, then stop the development server and run the production test against `docker compose up --build api web`; record the new asset count, compared with the 344 baseline files, in the research note R4 of `specs/002-premium-product-experience/research.md`
 
 **Checkpoint**: US1 can ship alone. The worst measured defects are gone, including production highlighting (FR-054).

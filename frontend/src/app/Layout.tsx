@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { post } from "../api/client";
 import { OfflineBanner } from "../components/states";
+import { Alert } from "../components/ui/Alert";
+import { Button, LinkButton } from "../components/ui/Button";
 import { useAuthExpiryListener, useMe } from "./session";
 
 export function Layout() {
@@ -35,50 +37,52 @@ export function Layout() {
         {t("app.skipToContent")}
       </a>
       <header className="app-header">
-        <nav aria-label="Main">
-          <Link to="/" className="brand">
+        <nav aria-label={t("ui.mainNav")} className="app-nav">
+          <Link to="/" className="app-brand">
             {t("app.name")}
           </Link>
-          <NavLink to="/" end className="nav-link">
+          <NavLink to="/" end className="app-nav-link">
             {t("app.nav.catalog")}
           </NavLink>
           {me ? (
             <>
-              <NavLink to="/dashboard" className="nav-link">
+              <NavLink to="/dashboard" className="app-nav-link">
                 {t("app.nav.dashboard")}
               </NavLink>
-              <NavLink to="/account" className="nav-link">
+              <NavLink to="/account" className="app-nav-link">
                 {t("app.nav.account")}
               </NavLink>
-              <button type="button" className="linklike" onClick={signOut}>
+              <Button variant="ghost" onClick={signOut}>
                 {t("app.nav.signOut")}
-              </button>
+              </Button>
             </>
           ) : (
             <>
-              <NavLink to="/sign-in" className="nav-link">
+              <NavLink to="/sign-in" className="app-nav-link">
                 {t("app.nav.signIn")}
               </NavLink>
-              <NavLink to="/sign-up" className="nav-link">
+              <NavLink to="/sign-up" className="app-nav-link">
                 {t("app.nav.signUp")}
               </NavLink>
             </>
           )}
         </nav>
       </header>
-      <main id="main" tabIndex={-1}>
+      <main id="main" tabIndex={-1} className="stack">
         <OfflineBanner />
         {expired && !me && (
-          <div role="alert" className="alert warning stack">
-            <p style={{ margin: 0 }}>{t("auth.reauth")}</p>
-            <Link
-              className="btn secondary"
-              to={`/sign-in?next=${encodeURIComponent(location.pathname)}`}
-              onClick={() => setExpired(false)}
-            >
-              {t("app.nav.signIn")}
-            </Link>
-          </div>
+          <Alert tone="warning" role="alert">
+            <div className="stack">
+              <p>{t("auth.reauth")}</p>
+              <LinkButton
+                variant="secondary"
+                to={`/sign-in?next=${encodeURIComponent(location.pathname)}`}
+                onClick={() => setExpired(false)}
+              >
+                {t("app.nav.signIn")}
+              </LinkButton>
+            </div>
+          </Alert>
         )}
         <Outlet />
       </main>
