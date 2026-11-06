@@ -1,0 +1,24 @@
+id: memory-and-state
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Memory and state management
+summary: >-
+  Keep agents within their context budget, summarize instead of accumulating, separate working
+  state from long-term memory, and store only what is necessary.
+order: 4
+objectives:
+  - id: bound-context
+    statement: Keep conversation history within a budget by trimming and summarizing older turns.
+    competencies: [manage-agent-state]
+  - id: minimize-data
+    statement: Decide what to persist and remove sensitive data before storing it.
+    competencies: [manage-agent-state]
+prerequisites: [tools-and-function-calling]
+competencies: [manage-agent-state]
+lab_scenarios: []
+references:
+  - title: "Lost in the Middle: How Language Models Use Long Contexts (Liu et al., 2023)"
+    url: "https://arxiv.org/abs/2307.03172"
+  - title: "OWASP Top 10 for LLM Applications: Sensitive Information Disclosure"
+    url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/"

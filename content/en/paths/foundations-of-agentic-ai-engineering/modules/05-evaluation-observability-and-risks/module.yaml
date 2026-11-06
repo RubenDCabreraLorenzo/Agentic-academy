@@ -1,0 +1,26 @@
+id: evaluation-observability-and-risks
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Evaluation, observability and agentic risks
+summary: >-
+  Test agent code deterministically, evaluate behavior from execution traces, observe what agents
+  do without relying on private model reasoning, and catalogue the risks you must mitigate.
+order: 5
+objectives:
+  - id: evaluate-traces
+    statement: Evaluate agent runs from their execution traces against explicit policies.
+    competencies: [evaluate-agents-with-traces]
+  - id: detect-risks
+    statement: Detect prompt injection, unapproved destructive actions and excessive autonomy in a trace.
+    competencies: [mitigate-agentic-risks]
+prerequisites: [memory-and-state]
+competencies: [evaluate-agents-with-traces, mitigate-agentic-risks]
+lab_scenarios: [prompt-injection-and-approval]
+references:
+  - title: "OpenTelemetry semantic conventions for generative AI"
+    url: "https://opentelemetry.io/docs/specs/semconv/gen-ai/"
+  - title: "NIST AI Risk Management Framework"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+  - title: "OWASP Top 10 for Large Language Model Applications"
+    url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/"

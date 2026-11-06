@@ -1,0 +1,25 @@
+id: agent-fundamentals
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Agent fundamentals
+summary: >-
+  What makes a system an agent, how the model–tool loop works, how to stop it safely, and when a
+  fixed workflow is the better engineering choice.
+order: 2
+objectives:
+  - id: build-agent-loop
+    statement: Implement a bounded agent loop that executes tool calls and stops on an answer or a step limit.
+    competencies: [implement-agent-loop]
+  - id: compare-designs
+    statement: Decide whether a task needs an autonomous agent or a fixed workflow, and justify the decision.
+    competencies: [choose-workflow-or-agent]
+prerequisites: [llm-foundations]
+competencies: [implement-agent-loop, choose-workflow-or-agent]
+lab_scenarios: [research-agent-with-tools, workflow-vs-agent-loop]
+references:
+  - title: "ReAct: Synergizing Reasoning and Acting in Language Models (Yao et al., 2022)"
+    url: "https://arxiv.org/abs/2210.03629"
+  - title: "Building effective agents (Anthropic engineering blog)"
+    url: "https://www.anthropic.com/engineering/building-effective-agents"
+    vendor: Anthropic

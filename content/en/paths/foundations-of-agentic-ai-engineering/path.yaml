@@ -1,5 +1,5 @@
 id: foundations-of-agentic-ai-engineering
-version: 0.1.0
+version: 1.0.0
 lang: en
 last_reviewed: 2026-11-06
 title: Foundations of Agentic AI Engineering
@@ -29,6 +29,6 @@ prerequisite_paths: []
 # Modules are listed as they are published; planned order:
 # 01-llm-foundations, 02-agent-fundamentals, 03-tools-and-function-calling,
 # 04-memory-and-state, 05-evaluation-observability-and-risks.
-competencies: [explain-llm-mechanics, produce-structured-output, recognize-llm-limitations]
+competencies: [explain-llm-mechanics, produce-structured-output, recognize-llm-limitations, implement-agent-loop, choose-workflow-or-agent, design-tool-schemas, enforce-tool-safety, manage-agent-state, evaluate-agents-with-traces, mitigate-agentic-risks]
 estimated_hours: 15
-modules: [llm-foundations]
+modules: [llm-foundations, agent-fundamentals, tools-and-function-calling, memory-and-state, evaluation-observability-and-risks]

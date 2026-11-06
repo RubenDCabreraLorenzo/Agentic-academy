@@ -1,0 +1,47 @@
+id: bounded-memory
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Bounded conversation memory with summaries and redaction
+difficulty_rank: 5
+scenario: >-
+  A long-running support agent keeps every message forever. Calls are slow and expensive, and
+  customers' pasted API keys end up in every prompt.
+problem: Implement `ConversationMemory` in `memory.py`.
+expected_outcome: >-
+  The system message is always kept, at most `max_recent` other messages are kept verbatim, older
+  ones are folded into a single summary produced by the summarizer model, and secrets are redacted
+  before anything is stored.
+instructions: |
+  1. `ConversationMemory(system, max_recent, summarizer)` stores a system prompt, a limit and a
+     `ModelClient` used only for summaries.
+  2. `add(role, content)` redacts secrets (`sk-…` keys of 16+ characters after `sk-`, and AWS-style
+     `AKIA` keys) by replacing them with `[REDACTED]`, then appends the message.
+  3. When more than `max_recent` non-system messages are stored, call the summarizer once with the
+     previous summary (if any) and the overflowing messages, and keep its answer as the new summary.
+  4. `messages()` returns: the system message, then — if there is a summary — a `system` message
+     starting with `Summary of earlier conversation:`, then the recent messages.
+criteria:
+  - id: bounded
+    description: System message always kept; at most max_recent recent messages.
+    mandatory: true
+    tests: ["test_memory.py::test_keeps_system_and_recent"]
+    feedback: Keep the system prompt separately; after appending, drop the oldest recent messages beyond the limit.
+  - id: summarizes
+    description: Dropped messages are summarized once per overflow and included as a summary message.
+    mandatory: true
+    tests: ["test_memory.py::test_summarizes_dropped_messages", "test_memory.py::test_summary_accumulates"]
+    feedback: Pass the dropped messages (and the previous summary) to the summarizer and store its content.
+  - id: redacts
+    description: Secrets are redacted before storage.
+    mandatory: true
+    tests: ["test_memory.py::test_redacts_secrets"]
+    feedback: Apply a regex for sk-… and AKIA… keys in add() before storing the text.
+hints:
+  - Store `self.recent` as a list of Message objects and compute the overflow as `self.recent[:-max_recent]`.
+  - Send the summarizer a single user message containing the previous summary and the dropped messages as plain text.
+reference_explanation: >-
+  Bounding memory keeps cost and context predictable, summaries preserve what matters from older
+  turns, and redaction at the point of storage prevents secrets from spreading into every later
+  prompt, summary and log — data minimization applied at the right layer.
+competencies: [manage-agent-state]

@@ -1,0 +1,26 @@
+id: tools-and-function-calling
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Tools and function calling
+summary: >-
+  Design tools a model can use reliably, validate every argument, apply least privilege, require
+  human approval for destructive actions and treat tool results as untrusted data.
+order: 3
+objectives:
+  - id: design-schema
+    statement: Design a tool name, description and argument schema that a model can use reliably.
+    competencies: [design-tool-schemas]
+  - id: execute-safely
+    statement: Validate tool arguments, apply least privilege and require human approval before destructive actions.
+    competencies: [enforce-tool-safety]
+prerequisites: [agent-fundamentals]
+competencies: [design-tool-schemas, enforce-tool-safety]
+lab_scenarios: [prompt-injection-and-approval]
+references:
+  - title: "OWASP Top 10 for Large Language Model Applications"
+    url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+  - title: "JSON Schema reference"
+    url: "https://json-schema.org/understanding-json-schema/"
+  - title: "Model Context Protocol specification"
+    url: "https://modelcontextprotocol.io/specification"

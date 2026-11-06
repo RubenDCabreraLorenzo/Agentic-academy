@@ -1,0 +1,52 @@
+id: bounded-agent-loop
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Build a bounded agent loop and a fixed workflow
+difficulty_rank: 3
+scenario: >-
+  Your team needs two building blocks: a small agent that answers questions using read-only tools,
+  and a ticket-triage workflow whose steps are always the same.
+problem: >-
+  Implement `run_agent` (a bounded loop) and `triage_workflow` (a fixed sequence) in `agent.py`.
+expected_outcome: >-
+  The agent answers directly or after tool calls, reports unknown tools back to the model, and stops
+  at the step limit. The workflow always classifies, fetches the template and calls the model once.
+instructions: |
+  1. `run_agent(model, tools, task, max_steps=5)` returns an `AgentResult(answer, steps, stopped)`.
+     - Call `model.complete(messages, specs)` where `specs` are the tools' `.spec`.
+     - If the response has no tool calls: return the answer with `stopped="answered"`.
+     - Otherwise append an `assistant` message with the tool calls, run each tool with its
+       arguments, and append one `tool` message per call (`tool_call_id`, `name`, result as text).
+     - Unknown tools: append a `tool` message whose content contains `unknown tool`.
+     - After `max_steps` model calls without an answer, return `stopped="step_limit"`, `answer=None`.
+  2. `triage_workflow(email, classify, get_template, model)` calls `classify(text=email)`, then
+     `get_template(category=...)`, then the model exactly once, and returns the model's content.
+criteria:
+  - id: loop-runs-tools
+    description: The loop answers directly or after executing requested tools with their results fed back.
+    mandatory: true
+    tests: ["test_agent.py::test_answers_without_tools", "test_agent.py::test_runs_tool_and_feeds_result"]
+    feedback: >-
+      Append the assistant message with tool calls, then a `tool` message per call with
+      `tool_call_id=call.id`, before calling the model again.
+  - id: loop-is-bounded
+    description: Unknown tools are reported back and the loop stops at the step limit.
+    mandatory: true
+    tests: ["test_agent.py::test_unknown_tool_is_reported", "test_agent.py::test_stops_at_step_limit"]
+    feedback: >-
+      Never index tools without checking; return an `unknown tool` message instead. Count model calls
+      and stop with `stopped="step_limit"` when you reach `max_steps`.
+  - id: workflow-fixed-order
+    description: The workflow runs a fixed sequence with exactly one model call.
+    mandatory: true
+    tests: ["test_agent.py::test_workflow_fixed_sequence"]
+    feedback: Call classify, then get_template with the category, then the model once — no loop.
+hints:
+  - Keep a step counter and use `for step in range(1, max_steps + 1)` so the bound is impossible to forget.
+  - Tool results go back as `Message("tool", str(result), tool_call_id=call.id, name=call.name)`.
+reference_explanation: >-
+  The loop is small on purpose: the model proposes, your code executes, and hard bounds keep it
+  safe. The workflow shows the alternative — when steps are known, code owns the sequence and the
+  model is used only where language is needed, which is cheaper and easier to test.
+competencies: [implement-agent-loop, choose-workflow-or-agent]

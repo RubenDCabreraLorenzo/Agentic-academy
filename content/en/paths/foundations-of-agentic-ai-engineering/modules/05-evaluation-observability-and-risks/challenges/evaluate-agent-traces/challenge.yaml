@@ -1,0 +1,48 @@
+id: evaluate-agent-traces
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: Evaluate agent runs from their traces
+difficulty_rank: 6
+scenario: >-
+  Your team records every agent run with a TraceRecorder. Before releasing a new prompt, you want an
+  automatic report that flags policy violations and risk signals on a set of recorded runs.
+problem: Implement the functions in `evaluation.py`.
+expected_outcome: >-
+  Tool usage is counted, destructive calls without approval and suspicious tool results are flagged
+  by element id, and a run passes policy only when it uses allowed tools within the step budget with
+  no unapproved destructive calls.
+instructions: |
+  Traces are lists of element dicts as produced by `academy_sim.TraceRecorder.elements`
+  (`kind`, `id`, and for tool calls `tool`, `arguments`, `result`, `permission`, `approval`).
+  1. `count_tool_calls(trace)` → `{tool_name: count}`.
+  2. `unapproved_destructive(trace)` → ids of tool calls with `permission == "destructive"` whose
+     `approval` is not `"approved"`.
+  3. `suspicious_results(trace)` → ids of tool calls whose result, as lower-case text, contains any
+     of `SUSPICIOUS`.
+  4. `passes_policy(trace, allowed_tools, max_tool_calls)` → True only if every tool is allowed, the
+     number of tool calls is at most `max_tool_calls`, and there are no unapproved destructive calls.
+criteria:
+  - id: metrics
+    description: Tool calls are counted per tool.
+    mandatory: true
+    tests: ["test_evaluation.py::test_counts_tool_calls"]
+    feedback: Iterate over elements with kind == "tool_call" and count by "tool".
+  - id: risk-signals
+    description: Unapproved destructive calls and suspicious tool results are flagged by id.
+    mandatory: true
+    tests: ["test_evaluation.py::test_flags_unapproved_destructive", "test_evaluation.py::test_flags_suspicious_results"]
+    feedback: Return element ids; compare approval with "approved" and search str(result).lower() for each pattern.
+  - id: policy
+    description: The policy check combines allowed tools, budget and approvals.
+    mandatory: true
+    tests: ["test_evaluation.py::test_policy"]
+    feedback: Reuse your other functions; any violation makes the run fail.
+hints:
+  - Build `calls = [e for e in trace if e["kind"] == "tool_call"]` once and reuse it.
+  - "`collections.Counter` counts tools in one line."
+reference_explanation: >-
+  Trace-based checks turn safety rules into tests that run on every recorded execution. They catch
+  regressions such as a prompt change that makes the agent call a destructive tool without
+  approval. Keyword signals are only signals: they support review, they do not prove safety.
+competencies: [evaluate-agents-with-traces, mitigate-agentic-risks]

@@ -1,0 +1,63 @@
+id: memory-check
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+pass_threshold: 0.7
+questions:
+  - id: why-bound
+    type: multiple_choice
+    prompt: Why bound an agent's conversation history? Select all that apply.
+    explanation: Context limits, cost per call and buried instructions all grow with unbounded history.
+    objective_id: bound-context
+    lesson_anchor: context-budget#trim-summarize
+    options:
+      - { id: window, text: "It eventually exceeds the context window" }
+      - { id: cost, text: "Every call becomes more expensive" }
+      - { id: accuracy, text: "Longer history always makes answers more accurate" }
+    correct: [window, cost]
+  - id: always-keep
+    type: single_choice
+    prompt: When trimming history, which message should always be kept?
+    explanation: The system message holds the task and rules; dropping it changes the agent's behavior.
+    objective_id: bound-context
+    lesson_anchor: context-budget#trim-summarize
+    options:
+      - { id: system, text: "The system message" }
+      - { id: first-user, text: "The first user message" }
+      - { id: longest, text: "The longest message" }
+    correct: [system]
+  - id: trim-steps
+    type: ordering
+    prompt: Order the steps when the history exceeds its budget.
+    explanation: Identify what falls out, summarize it, then replace it with the summary.
+    objective_id: bound-context
+    lesson_anchor: context-budget#trim-summarize
+    items:
+      - { id: detect, text: "Detect that the history exceeds the budget" }
+      - { id: select, text: "Select the oldest non-system messages to drop" }
+      - { id: summarize, text: "Summarize them with a model call" }
+      - { id: replace, text: "Replace them with the summary message" }
+  - id: kinds
+    type: matching
+    prompt: Match each item with where it belongs.
+    explanation: The current step is working state; a user's preferred language may be long-term memory.
+    objective_id: minimize-data
+    lesson_anchor: what-to-keep#state-vs-memory
+    left:
+      - { id: step, text: "The current step of the plan" }
+      - { id: language, text: "The user's preferred reply language" }
+    right:
+      - { id: state, text: "Working state" }
+      - { id: memory, text: "Long-term memory" }
+    pairs: { step: state, language: memory }
+  - id: secrets
+    type: single_choice
+    prompt: A user pastes an API key into the chat. What should the memory layer do?
+    explanation: Redact secrets before storing them so they do not spread into summaries and logs.
+    objective_id: minimize-data
+    lesson_anchor: what-to-keep#minimize
+    options:
+      - { id: redact, text: "Redact it before storing the message" }
+      - { id: keep, text: "Store it so the agent can reuse it later" }
+      - { id: summarize, text: "Put it in the summary instead" }
+    correct: [redact]

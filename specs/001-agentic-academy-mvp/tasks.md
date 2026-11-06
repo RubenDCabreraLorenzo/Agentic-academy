@@ -307,7 +307,7 @@ explanations and human approval — without model calls.
 - [X] T107 [US5] Implement the trace player state machine in `frontend/src/features/lab/player.ts`
 - [X] T108 [US5] Implement the laboratory page (task, objective, tools with permissions, pattern; trace list with element-kind labels; state panel before/after; decision summaries visually marked "Educational explanation"; controls pause/resume/restart/jump; `aria-live` announcements; failure highlight with risk and mitigation; approval prompt choosing the approved or rejected branch) in `frontend/src/features/lab/LabPage.tsx`
 - [X] T109 [US5] Implement the side-by-side comparison view (per variant: element count, tool-call count, final outcome; elements present in only one variant marked) in `frontend/src/features/lab/CompareView.tsx`
-- [ ] T110 [US5] Link lab scenarios from their modules (`lab_scenarios` in `module.yaml` of modules 02 and 03) and show them as guided practice on the module page in `frontend/src/features/module/ModulePage.tsx`
+- [X] T110 [US5] Link lab scenarios from their modules (`lab_scenarios` in `module.yaml` of modules 02 and 03) and show them as guided practice on the module page in `frontend/src/features/module/ModulePage.tsx`
 
 **Checkpoint**: US5 works on its own.
 
@@ -344,10 +344,10 @@ example, ≥ 1 diagram with alt text, references, a knowledge check with ≥ 5 q
 objectives, and ≥ 1 challenge with tests using `academy_sim`, a `solution/`, ≥ 2 hints and a
 strictly higher `difficulty_rank`, passing `academy content validate --run-solutions`.
 
-- [ ] T117 [P] Author Module 2 "Agent fundamentals" (agent loop, workflow vs agent, stopping conditions, step limits, excessive autonomy; challenge `difficulty_rank: 3`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/02-agent-fundamentals/`
-- [ ] T118 [P] Author Module 3 "Tools and function calling" (tool schemas, argument validation, least privilege, human approval for destructive tools, prompt injection via tool results; challenge `difficulty_rank: 4`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/03-tools-and-function-calling/`
-- [ ] T119 [P] Author Module 4 "Memory and state management" (conversation state, scratchpads, summarization, persistence boundaries, privacy and data minimization; challenge `difficulty_rank: 5`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/04-memory-and-state/`
-- [ ] T120 [P] Author Module 5 "Evaluation, observability and agentic risks" (trace-based evaluation, test doubles for models, hallucination detection, observability without private reasoning, risk catalogue; challenge `difficulty_rank: 6`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/05-evaluation-observability-and-risks/`
+- [X] T117 [P] Author Module 2 "Agent fundamentals" (agent loop, workflow vs agent, stopping conditions, step limits, excessive autonomy; challenge `difficulty_rank: 3`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/02-agent-fundamentals/`
+- [X] T118 [P] Author Module 3 "Tools and function calling" (tool schemas, argument validation, least privilege, human approval for destructive tools, prompt injection via tool results; challenge `difficulty_rank: 4`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/03-tools-and-function-calling/`
+- [X] T119 [P] Author Module 4 "Memory and state management" (conversation state, scratchpads, summarization, persistence boundaries, privacy and data minimization; challenge `difficulty_rank: 5`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/04-memory-and-state/`
+- [X] T120 [P] Author Module 5 "Evaluation, observability and agentic risks" (trace-based evaluation, test doubles for models, hallucination detection, observability without private reasoning, risk catalogue; challenge `difficulty_rank: 6`) in `content/en/paths/foundations-of-agentic-ai-engineering/modules/05-evaluation-observability-and-risks/`
 - [ ] T121 Technical review of all five modules by a subject-matter expert, setting `last_reviewed` and recording findings in `docs/content-review/2026-foundations.md`
 
 ---

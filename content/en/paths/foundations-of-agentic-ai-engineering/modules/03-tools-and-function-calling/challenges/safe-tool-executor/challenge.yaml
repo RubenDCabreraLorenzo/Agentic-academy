@@ -1,0 +1,60 @@
+id: safe-tool-executor
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+title: A safe tool executor with validation and human approval
+difficulty_rank: 4
+scenario: >-
+  A support agent can read and close tickets. Closing is destructive. A previous incident closed the
+  wrong tickets after the model passed an integer id and an injected instruction was obeyed.
+problem: >-
+  Implement `close_ticket_schema()` and `ToolExecutor.execute()` in `executor.py`.
+expected_outcome: >-
+  Calls with invalid arguments or unknown tools return errors without running anything; destructive
+  calls run only after approval; rejections and tool failures are reported, never raised.
+instructions: |
+  1. `close_ticket_schema()` returns a JSON-Schema-style dict for `close_ticket`: an object with a
+     required string property `ticket_id`, and `additionalProperties: False`.
+  2. `ToolExecutor(tools, gate)` receives `tools` as `{name: (FakeTool, schema)}` and an `ApprovalGate`.
+  3. `execute(call)` returns `Outcome(ok, value)`:
+     - unknown tool → `Outcome(False, "unknown tool …")`;
+     - arguments not matching the schema (missing required, wrong type for `string`/`integer`,
+       extra arguments when `additionalProperties` is False) → `Outcome(False, "invalid arguments: …")`;
+     - destructive tool → ask `gate.request(name, arguments)`; if rejected return
+       `Outcome(False, "rejected by human")` without running it; if approved run it with `approved=True`;
+     - any exception raised by the tool → `Outcome(False, "tool error: …")`.
+criteria:
+  - id: schema
+    description: The close_ticket schema requires a string ticket_id and forbids extra arguments.
+    mandatory: true
+    tests: ["test_executor.py::test_schema_is_strict"]
+    feedback: >-
+      Return an object schema whose properties contain ticket_id of type string, with
+      "required": ["ticket_id"] and "additionalProperties": False.
+  - id: validation
+    description: Invalid arguments and unknown tools never run anything.
+    mandatory: true
+    tests: ["test_executor.py::test_invalid_arguments_rejected", "test_executor.py::test_unknown_tool"]
+    feedback: Check required fields, types and extra keys before calling the tool.
+  - id: approval
+    description: Destructive tools run only after approval; rejection is reported.
+    mandatory: true
+    tests: ["test_executor.py::test_destructive_requires_approval", "test_executor.py::test_rejection_does_not_run"]
+    feedback: Call gate.request(...) before running a destructive tool and pass approved=True only when it returns True.
+  - id: errors-reported
+    description: Tool exceptions become error outcomes instead of crashing the agent.
+    mandatory: false
+    tests: ["test_executor.py::test_tool_errors_are_reported"]
+    feedback: >-
+      Wrap the tool call in try/except and return Outcome(False, f"tool error: {exc}").
+hints:
+  - >-
+    Write a small `validate(arguments, schema)` that returns an error string or None.
+  - >-
+    Map JSON-Schema types to Python with {"string": str, "integer": int} — and remember that bool
+    is a subclass of int.
+reference_explanation: >-
+  The executor is where safety lives: the model only proposes. Strict schemas turn wrong calls into
+  correctable errors, approval keeps irreversible actions under human control, and injected text in
+  tool results cannot bypass a gate that the model does not control.
+competencies: [design-tool-schemas, enforce-tool-safety]

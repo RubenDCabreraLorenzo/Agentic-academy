@@ -1,0 +1,74 @@
+id: agent-fundamentals-check
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+pass_threshold: 0.7
+questions:
+  - id: who-executes
+    type: single_choice
+    prompt: In an agent loop, who executes a tool call?
+    explanation: The model only requests a call; your code validates and executes it, then returns the result.
+    objective_id: build-agent-loop
+    lesson_anchor: agent-loop#the-loop
+    options:
+      - { id: code, text: "The application code" }
+      - { id: model, text: "The model itself" }
+      - { id: provider, text: "Always the model provider's servers" }
+    correct: [code]
+  - id: loop-order
+    type: ordering
+    prompt: Order one iteration of the agent loop.
+    explanation: Call the model, run the requested tools, append the results, then call the model again.
+    objective_id: build-agent-loop
+    lesson_anchor: agent-loop#the-loop
+    items:
+      - { id: call, text: "Call the model with messages and tool definitions" }
+      - { id: run, text: "Validate and run the requested tools" }
+      - { id: append, text: "Append tool results to the messages" }
+      - { id: again, text: "Call the model again" }
+  - id: stop-conditions
+    type: multiple_choice
+    prompt: Which belong in a production agent's stopping logic? Select all that apply.
+    explanation: Bounded steps and budgets plus an explicit success condition; "until it works" is unbounded.
+    objective_id: build-agent-loop
+    lesson_anchor: agent-loop#stopping
+    options:
+      - { id: steps, text: "A maximum number of steps" }
+      - { id: answer, text: "Stop when the model answers without tool calls" }
+      - { id: forever, text: "Keep looping until the model succeeds" }
+    correct: [steps, answer]
+  - id: unknown-tool
+    type: single_choice
+    prompt: The model requests a tool that does not exist. What should the loop do?
+    explanation: Return an error as a tool result so the model can recover; crashing or silently ignoring hides the problem.
+    objective_id: build-agent-loop
+    lesson_anchor: agent-loop#stopping
+    options:
+      - { id: report, text: "Return an error message as the tool result" }
+      - { id: crash, text: "Raise and stop the application" }
+      - { id: guess, text: "Call the most similar tool" }
+    correct: [report]
+  - id: choose-design
+    type: matching
+    prompt: Match each task with the more suitable design.
+    explanation: Known steps → workflow; path depends on findings → bounded agent loop.
+    objective_id: compare-designs
+    lesson_anchor: workflow-or-agent#prefer-workflows
+    left:
+      - { id: invoice, text: "Extract fields from an invoice and store them" }
+      - { id: debug, text: "Investigate why a deployment fails, checking logs as needed" }
+    right:
+      - { id: workflow, text: "Fixed workflow" }
+      - { id: agent, text: "Bounded agent loop" }
+    pairs: { invoice: workflow, debug: agent }
+  - id: autonomy-cost
+    type: single_choice
+    prompt: Why is a workflow often preferable when the steps are known?
+    explanation: Fewer model decisions mean predictable cost, latency and behavior, and simpler tests.
+    objective_id: compare-designs
+    lesson_anchor: workflow-or-agent#prefer-workflows
+    options:
+      - { id: predictable, text: "It is more predictable, cheaper and easier to test" }
+      - { id: smarter, text: "It makes the model smarter" }
+      - { id: required, text: "Providers require it" }
+    correct: [predictable]

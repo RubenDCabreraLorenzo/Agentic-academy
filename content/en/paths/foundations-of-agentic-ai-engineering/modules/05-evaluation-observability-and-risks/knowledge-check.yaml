@@ -1,0 +1,64 @@
+id: evaluation-check
+version: 1.0.0
+lang: en
+last_reviewed: 2026-11-06
+pass_threshold: 0.7
+questions:
+  - id: doubles
+    type: single_choice
+    prompt: What do tests with a scripted model double verify?
+    explanation: They check how your code handles given model responses, deterministically.
+    objective_id: evaluate-traces
+    lesson_anchor: evaluating-agents#test-doubles
+    options:
+      - { id: code, text: "That your code handles model responses correctly" }
+      - { id: quality, text: "That the real model gives good answers" }
+      - { id: latency, text: "The provider's latency" }
+    correct: [code]
+  - id: observable
+    type: multiple_choice
+    prompt: Which belong in an agent's observability trace? Select all that apply.
+    explanation: Observable events, tool calls and state; a model's self-explanation is not a faithful record.
+    objective_id: evaluate-traces
+    lesson_anchor: evaluating-agents#observability
+    options:
+      - { id: calls, text: "Tool calls with arguments and results" }
+      - { id: state, text: "State transitions" }
+      - { id: reasoning, text: "The model's explanation of why it acted, as ground truth" }
+    correct: [calls, state]
+  - id: layers
+    type: ordering
+    prompt: Order the evaluation layers from fastest feedback to slowest.
+    explanation: Unit tests run in seconds, trace policies per run, datasets over time.
+    objective_id: evaluate-traces
+    lesson_anchor: evaluating-agents#traces
+    items:
+      - { id: unit, text: "Unit tests with scripted models" }
+      - { id: policy, text: "Policy checks on each run's trace" }
+      - { id: dataset, text: "Evaluation datasets tracked over time" }
+  - id: risk-mitigation
+    type: matching
+    prompt: Match each risk with a mitigation.
+    explanation: Approval and least privilege for injection; validation for hallucinated arguments; limits for excessive autonomy.
+    objective_id: detect-risks
+    lesson_anchor: agentic-risks#catalogue
+    left:
+      - { id: injection, text: "Prompt injection" }
+      - { id: hallucination, text: "Hallucinated tool argument" }
+      - { id: autonomy, text: "Excessive autonomy" }
+    right:
+      - { id: approval, text: "Least privilege and approval for destructive actions" }
+      - { id: validate, text: "Validate arguments in code" }
+      - { id: limits, text: "Step and budget limits" }
+    pairs: { injection: approval, hallucination: validate, autonomy: limits }
+  - id: detection-limits
+    type: single_choice
+    prompt: A keyword detector found no injection in a run. What can you conclude?
+    explanation: Detection catches only known patterns; absence of a signal does not prove safety.
+    objective_id: detect-risks
+    lesson_anchor: agentic-risks#detection
+    options:
+      - { id: signal, text: "Only that no known pattern was found" }
+      - { id: safe, text: "That the run was safe" }
+      - { id: none, text: "That no tool results were returned" }
+    correct: [signal]
